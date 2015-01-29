@@ -15,8 +15,21 @@ class BaseController extends FOSRestController
      * @param string  $type
      *
      * @return mixed
+     *
+     * @deprecated
      */
     protected function serializeRequestContent(Request $request, $type)
+    {
+        return $this->deserializeRequestContent($request, $type);
+    }
+
+    /**
+     * @param Request $request
+     * @param string  $type
+     *
+     * @return mixed
+     */
+    protected function deserializeRequestContent(Request $request, $type)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
