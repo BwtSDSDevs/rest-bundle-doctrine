@@ -1,0 +1,31 @@
+{
+  "name": "dontdrinkandroot/rest-bundle",
+  "type": "symfony-bundle",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Philip Washington Sorst",
+      "email": "philip@sorst.net",
+      "homepage": "http://sorst.net"
+    }
+  ],
+  "require": {
+    "php": ">=5.5",
+    "symfony/framework-bundle": "2.5.*",
+    "symfony/validator": "2.5.*",
+    "friendsofsymfony/rest-bundle": "1.4.*",
+    "jms/serializer": "0.16.*"
+  },
+  "require-dev": {
+  },
+  "autoload": {
+    "psr-4": {
+      "Dontdrinkandroot\\RestBundle\\": ""
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "0.1.x-dev"
+    }
+  }
+}

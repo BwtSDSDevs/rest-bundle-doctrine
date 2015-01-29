@@ -1,0 +1,22 @@
+services:
+    # We do not want serialization into underscored properties
+    ddr.serializer.naming_strategy.identical_property_naming:
+        class: 'JMS\Serializer\Naming\IdenticalPropertyNamingStrategy'
+        public: false
+
+    # Wrapping naming strategy into cached naming strategy for speed
+    jms_serializer.naming_strategy:
+        class: 'JMS\Serializer\Naming\CacheNamingStrategy'
+        arguments:
+            - '@ddr.serializer.naming_strategy.identical_property_naming'
+
+    # This is a workaround since Symfony does not handle InsufficientAuthenticationException with a 401 status code when
+    # firewall has anonymous enabled.
+    # See https://github.com/symfony/symfony/issues/8467
+    ddr.rest.kernel.listener.exception:
+        class: Dontdrinkandroot\RestBundle\Security\ExceptionListener
+        arguments:
+            - '@security.context'
+            - '@security.authentication.trust_resolver'
+        tags:
+          - { name: kernel.event_listener, event: kernel.exception, method: onKernelException, priority: 1000 }
