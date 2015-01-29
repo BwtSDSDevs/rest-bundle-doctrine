@@ -13,7 +13,7 @@
     "php": ">=5.5",
     "symfony/framework-bundle": "2.5.*",
     "symfony/validator": "2.5.*",
-    "friendsofsymfony/rest-bundle": "1.4.*",
+    "friendsofsymfony/rest-bundle": "1.5.*",
     "jms/serializer": "0.16.*"
   },
   "require-dev": {
