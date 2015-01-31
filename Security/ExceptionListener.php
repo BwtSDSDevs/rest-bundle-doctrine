@@ -2,6 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Security;
 
+use Dontdrinkandroot\Utils\StringUtils;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -18,6 +19,11 @@ class ExceptionListener
 {
 
     /**
+     * @var string
+     */
+    protected $restApiPath;
+
+    /**
      * @var SecurityContextInterface
      */
     protected $securityContext;
@@ -29,10 +35,12 @@ class ExceptionListener
 
     public function __construct(
         SecurityContextInterface $securityContext,
-        AuthenticationTrustResolverInterface $trustResolver
+        AuthenticationTrustResolverInterface $trustResolver,
+        $restApiPath
     ) {
         $this->securityContext = $securityContext;
         $this->trustResolver = $trustResolver;
+        $this->restApiPath = $restApiPath;
     }
 
     /**
@@ -45,9 +53,12 @@ class ExceptionListener
         $exception = $event->getException();
         if ($exception instanceof AccessDeniedException) {
             $token = $this->securityContext->getToken();
-            if (!$this->trustResolver->isFullFledged($token)) {
+            if (
+                !$this->trustResolver->isFullFledged($token)
+                && StringUtils::startsWith($event->getRequest()->getPathInfo(), $this->restApiPath)
+            ) {
                 $event->setException(new AccessDeniedHttpException($exception->getMessage(), $exception));
-                $event->setResponse(new Response($exception->getMessage(), 401));
+                $event->setResponse(new Response($exception->getMessage(), Response::HTTP_UNAUTHORIZED));
             }
         }
     }

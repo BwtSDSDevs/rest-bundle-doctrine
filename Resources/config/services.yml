@@ -18,5 +18,6 @@ services:
         arguments:
             - '@security.context'
             - '@security.authentication.trust_resolver'
+            - '%ddr.rest.api_path%'
         tags:
           - { name: kernel.event_listener, event: kernel.exception, method: onKernelException, priority: 1000 }

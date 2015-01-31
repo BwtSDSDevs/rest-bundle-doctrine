@@ -15,6 +15,12 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('ddr_rest');
 
+        // @formatter:off
+        $rootNode->children()
+            ->scalarNode('api_path')->defaultValue('/api')->end()
+        ->end();
+        // @formatter:on
+
         return $treeBuilder;
     }
 }
