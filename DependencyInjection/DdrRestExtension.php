@@ -31,16 +31,34 @@ class DdrRestExtension extends Extension implements PrependExtensionInterface
      */
     public function prepend(ContainerBuilder $container)
     {
-//        $configs = $container->getExtensionConfig($this->getAlias());
-//        $configuration = $this->getConfiguration($configs, $container);
-//        $config = $this->processConfiguration($configuration, $configs);
-//
-//        $securityConfig = ['firewalls' => ['api' => []]];
-//
-//        $securityConfig['firewalls']['api']['stateless'] = true;
-//        $securityConfig['firewalls']['api']['pattern'] = '^' . $config['api_path'];
-//        $securityConfig['firewalls']['api']['simple_preauth'] = ['authenticator' => 'ddr.fetchtool.security.auth_token_authenticator'];
+        $configs = $container->getExtensionConfig($this->getAlias());
+        $config = $this->processConfiguration(new Configuration(), $configs);
+
+//        $securityConfig = [
+//            'firewalls' => [
+//                'api' => [
+//                    'stateless' => true,
+//                    'pattern' => '^' . $config['api_path'],
+//                    'simple_preauth' => [
+//                        'authenticator' => 'ddr.fetchtool.security.auth_token_authenticator'
+//                    ]
+//                ]
+//            ]
+//        ];
 //
 //        $container->prependExtensionConfig('security', $securityConfig);
+
+//        $fosRestConfig = [
+//            'format_listener' => [
+//                'rules' => [
+//                    [
+//                        'path'             => '^/' . $config['api_path'],
+//                        'priorities'       => ['json', 'xml', 'html'],
+//                        'prefer_extension' => true
+//                    ]
+//                ]
+//            ]
+//        ];
+//        $container->prependExtensionConfig('fos_rest', $fosRestConfig);
     }
 }
