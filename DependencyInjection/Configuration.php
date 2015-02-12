@@ -18,6 +18,7 @@ class Configuration implements ConfigurationInterface
         // @formatter:off
         $rootNode->children()
             ->scalarNode('api_path')->defaultValue('/api')->end()
+            ->integerNode('exception_listener_priority')->defaultValue(255)->end()
         ->end();
         // @formatter:on
 
