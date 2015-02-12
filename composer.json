@@ -19,6 +19,9 @@
     },
     "require-dev": {
     },
+    "suggest": {
+        "liip/functional-test-bundle": "To use RestTestCase"
+    },
     "autoload": {
         "psr-4": {
             "Dontdrinkandroot\\RestBundle\\": ""
