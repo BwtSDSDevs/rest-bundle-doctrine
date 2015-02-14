@@ -74,7 +74,7 @@ abstract class RestTestCase extends WebTestCase
         foreach ($headers as $key => $value) {
             $mergedHeaders['HTTP_' . $key] = $value;
         }
-        $this->client->request('GET', $route, $parameters, $files, $mergedHeaders);
+        $this->client->request($method, $route, $parameters, $files, $mergedHeaders);
 
         return $this->client->getResponse();
     }
