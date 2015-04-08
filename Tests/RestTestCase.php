@@ -6,6 +6,7 @@ use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Symfony\Bundle\FrameworkBundle\Client;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 abstract class RestTestCase extends WebTestCase
@@ -53,6 +54,17 @@ abstract class RestTestCase extends WebTestCase
     }
 
     /**
+     * @param array $data
+     */
+    protected function assertLinksAndUnset(array &$data)
+    {
+        $this->assertArrayHasKey('_links', $data);
+        unset($data['_links']);
+    }
+
+    /**
+     * @deprecated
+     *
      * @param string $route
      * @param string $method
      * @param array  $parameters
@@ -80,7 +92,115 @@ abstract class RestTestCase extends WebTestCase
     }
 
     /**
+     * @param string $route
+     * @param array  $parameters
+     * @param array  $headers
+     *
+     * @return null|Response
+     */
+    protected function doGetCall($route, array $parameters = [], array $headers = [])
+    {
+        $this->client->request(
+            Request::METHOD_GET,
+            $this->getUrl($route, $parameters),
+            [],
+            [],
+            $this->transformHeaders($headers)
+        );
+
+        return $this->client->getResponse();
+    }
+
+    /**
+     * @param string      $route
+     * @param array       $parameters
+     * @param array       $headers
+     * @param string|null $content
+     * @param array       $files
+     *
+     * @return null|Response
+     */
+    protected function doPostCall(
+        $route,
+        array $parameters = [],
+        array $headers = [],
+        $content = null,
+        array $files = []
+    ) {
+        $this->client->request(
+            Request::METHOD_POST,
+            $this->getUrl($route, $parameters),
+            [],
+            $files,
+            $this->transformHeaders($headers),
+            $content
+        );
+
+        return $this->client->getResponse();
+    }
+
+    /**
+     * @param string      $route
+     * @param array       $parameters
+     * @param array       $headers
+     * @param string|null $content
+     *
+     * @return null|Response
+     */
+    protected function doPutCall($route, array $parameters = [], array $headers = [], $content = null)
+    {
+        $this->client->request(
+            Request::METHOD_PUT,
+            $this->getUrl($route, $parameters),
+            [],
+            [],
+            $this->transformHeaders($headers),
+            $content
+        );
+
+        return $this->client->getResponse();
+    }
+
+    /**
+     * @param string $route
+     * @param array  $parameters
+     * @param array  $headers
+     *
+     * @return null|Response
+     */
+    protected function doDeleteCall($route, array $parameters = [], array $headers = [])
+    {
+        $this->client->request(
+            Request::METHOD_DELETE,
+            $this->getUrl($route, $parameters),
+            [],
+            [],
+            $this->transformHeaders($headers)
+        );
+
+        return $this->client->getResponse();
+    }
+
+    /**
+     * @param array $headers
+     *
+     * @return array
+     */
+    protected function transformHeaders(array $headers)
+    {
+        $transformedHeaders = [
+            'HTTP_ACCEPT'  => 'application/json',
+            'CONTENT_TYPE' => 'application/json'
+        ];
+        foreach ($headers as $key => $value) {
+            $transformedHeaders['HTTP_' . $key] = $value;
+        }
+
+        return $transformedHeaders;
+    }
+
+    /**
      * @return string[]
      */
-    protected abstract function getFixtureClasses();
+    abstract protected function getFixtureClasses();
 }

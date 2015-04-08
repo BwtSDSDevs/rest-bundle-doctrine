@@ -35,7 +35,8 @@ class BaseController extends FOSRestController
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
         $content = $request->getContent();
-        $object = $serializer->deserialize($content, $type, $request->getContentType());
+        $contentType = $request->getContentType();
+        $object = $serializer->deserialize($content, $type, $contentType);
 
         return $object;
     }
