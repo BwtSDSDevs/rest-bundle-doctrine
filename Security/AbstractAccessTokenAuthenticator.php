@@ -9,23 +9,37 @@ use Symfony\Component\Security\Core\Authentication\SimplePreAuthenticatorInterfa
 use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 
-abstract class AbstractAccessTokenAuthenticator implements SimplePreAuthenticatorInterface, AuthenticationFailureHandlerInterface
+abstract class AbstractAccessTokenAuthenticator
+    implements SimplePreAuthenticatorInterface, AuthenticationFailureHandlerInterface
 {
     const DEFAULT_TOKEN_QUERY_PARAMETER_NAME = 'token';
     const DEFAULT_TOKEN_HEADER_NAME = 'X-Access-Token';
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $tokenQueryParameterName = self::DEFAULT_TOKEN_QUERY_PARAMETER_NAME;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $tokenHeaderName = self::DEFAULT_TOKEN_HEADER_NAME;
 
     /**
-     * @inheritdoc
+     * If set to true an AuthenticationException will be thrown if no Access Token was found. Otherwise if will simply
+     * continue with other authentication methods.
+     *
+     * @var bool
+     */
+    protected $tokenRequired = false;
+
+    /**
+     * {@inheritdoc}
      */
     public function authenticateToken(TokenInterface $token, UserProviderInterface $userProvider, $providerKey)
     {
@@ -46,7 +60,7 @@ abstract class AbstractAccessTokenAuthenticator implements SimplePreAuthenticato
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function supportsToken(TokenInterface $token, $providerKey)
     {
@@ -54,7 +68,7 @@ abstract class AbstractAccessTokenAuthenticator implements SimplePreAuthenticato
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function createToken(Request $request, $providerKey)
     {
@@ -64,7 +78,11 @@ abstract class AbstractAccessTokenAuthenticator implements SimplePreAuthenticato
         }
 
         if (null === $token || 'null' === $token) {
-            return null;
+            if ($this->tokenRequired) {
+                throw $this->createTokenMissingException();
+            } else {
+                return null;
+            }
         }
 
         return new PreAuthenticatedToken(
@@ -75,7 +93,7 @@ abstract class AbstractAccessTokenAuthenticator implements SimplePreAuthenticato
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
@@ -112,6 +130,30 @@ abstract class AbstractAccessTokenAuthenticator implements SimplePreAuthenticato
     public function setTokenHeaderName($tokenHeaderName)
     {
         $this->tokenHeaderName = $tokenHeaderName;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTokenRequired()
+    {
+        return $this->tokenRequired;
+    }
+
+    /**
+     * @param bool $tokenRequired
+     */
+    public function setTokenRequired($tokenRequired)
+    {
+        $this->tokenRequired = $tokenRequired;
+    }
+
+    /**
+     * @return AuthenticationException
+     */
+    protected function createTokenMissingException()
+    {
+        return new BadCredentialsException('No Access Token found');
     }
 
     /**
