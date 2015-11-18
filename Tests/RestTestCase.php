@@ -65,7 +65,7 @@ abstract class RestTestCase extends WebTestCase
     /**
      * @deprecated
      *
-     * @param string $route
+     * @param string $url
      * @param string $method
      * @param array  $parameters
      * @param array  $headers
@@ -74,7 +74,7 @@ abstract class RestTestCase extends WebTestCase
      * @return Response
      */
     protected function requestJson(
-        $route,
+        $url,
         $method = 'GET',
         array $parameters = [],
         array $headers = [],
@@ -86,24 +86,24 @@ abstract class RestTestCase extends WebTestCase
         foreach ($headers as $key => $value) {
             $mergedHeaders['HTTP_' . $key] = $value;
         }
-        $this->client->request($method, $route, $parameters, $files, $mergedHeaders);
+        $this->client->request($method, $url, $parameters, $files, $mergedHeaders);
 
         return $this->client->getResponse();
     }
 
     /**
-     * @param string $route
+     * @param string $url
      * @param array  $parameters
      * @param array  $headers
      *
      * @return null|Response
      */
-    protected function doGetCall($route, array $parameters = [], array $headers = [])
+    protected function doGetCall($url, array $parameters = [], array $headers = [])
     {
         $this->client->request(
             Request::METHOD_GET,
-            $this->getUrl($route, $parameters),
-            [],
+            $url,
+            $parameters,
             [],
             $this->transformHeaders($headers)
         );
@@ -112,8 +112,8 @@ abstract class RestTestCase extends WebTestCase
     }
 
     /**
-     * @param string      $route
-     * @param array       $parameters
+     * @param string $url
+     * @param array  $parameters
      * @param array       $headers
      * @param string|null $content
      * @param array       $files
@@ -121,7 +121,7 @@ abstract class RestTestCase extends WebTestCase
      * @return null|Response
      */
     protected function doPostCall(
-        $route,
+        $url,
         array $parameters = [],
         array $headers = [],
         $content = null,
@@ -129,8 +129,8 @@ abstract class RestTestCase extends WebTestCase
     ) {
         $this->client->request(
             Request::METHOD_POST,
-            $this->getUrl($route, $parameters),
-            [],
+            $url,
+            $parameters,
             $files,
             $this->transformHeaders($headers),
             $content
@@ -140,19 +140,19 @@ abstract class RestTestCase extends WebTestCase
     }
 
     /**
-     * @param string      $route
-     * @param array       $parameters
+     * @param string $url
+     * @param array  $parameters
      * @param array       $headers
      * @param string|null $content
      *
      * @return null|Response
      */
-    protected function doPutCall($route, array $parameters = [], array $headers = [], $content = null)
+    protected function doPutCall($url, array $parameters = [], array $headers = [], $content = null)
     {
         $this->client->request(
             Request::METHOD_PUT,
-            $this->getUrl($route, $parameters),
-            [],
+            $url,
+            $parameters,
             [],
             $this->transformHeaders($headers),
             $content
@@ -162,18 +162,18 @@ abstract class RestTestCase extends WebTestCase
     }
 
     /**
-     * @param string $route
+     * @param string $url
      * @param array  $parameters
      * @param array  $headers
      *
      * @return null|Response
      */
-    protected function doDeleteCall($route, array $parameters = [], array $headers = [])
+    protected function doDeleteCall($url, array $parameters = [], array $headers = [])
     {
         $this->client->request(
             Request::METHOD_DELETE,
-            $this->getUrl($route, $parameters),
-            [],
+            $url,
+            $parameters,
             [],
             $this->transformHeaders($headers)
         );
