@@ -2,6 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Controller;
 
+use Dontdrinkandroot\Pagination\Pagination;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\Serializer;
@@ -72,5 +73,18 @@ class BaseController extends FOSRestController
         );
 
         return $view;
+    }
+
+    /**
+     * @param Pagination $pagination
+     * @param View       $view
+     */
+    protected function addPaginationHeaders(Pagination $pagination, View $view)
+    {
+        $view->setHeader('X-Pagination-Current-Page', $pagination->getCurrentPage());
+        $view->setHeader('X-Pagination-Per-Page', $pagination->getPerPage());
+        $view->setHeader('X-Pagination-Total-Pages', $pagination->getTotalPages());
+        $view->setHeader('X-Pagination-Total', $pagination->getTotal());
+        $view->setHeader('X-Pagination', $pagination);
     }
 }
