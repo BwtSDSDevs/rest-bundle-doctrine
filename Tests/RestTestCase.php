@@ -115,7 +115,7 @@ abstract class RestTestCase extends WebTestCase
      * @param string $url
      * @param array  $parameters
      * @param array       $headers
-     * @param string|null $content
+     * @param array       $content
      * @param array       $files
      *
      * @return null|Response
@@ -124,7 +124,7 @@ abstract class RestTestCase extends WebTestCase
         $url,
         array $parameters = [],
         array $headers = [],
-        $content = null,
+        array $content = [],
         array $files = []
     ) {
         $this->client->request(
@@ -133,7 +133,7 @@ abstract class RestTestCase extends WebTestCase
             $parameters,
             $files,
             $this->transformHeaders($headers),
-            $content
+            json_encode($content)
         );
 
         return $this->client->getResponse();
@@ -147,7 +147,7 @@ abstract class RestTestCase extends WebTestCase
      *
      * @return null|Response
      */
-    protected function doPutCall($url, array $parameters = [], array $headers = [], $content = null)
+    protected function doPutCall($url, array $parameters = [], array $headers = [], array $content = [])
     {
         $this->client->request(
             Request::METHOD_PUT,
@@ -155,7 +155,7 @@ abstract class RestTestCase extends WebTestCase
             $parameters,
             [],
             $this->transformHeaders($headers),
-            $content
+            json_encode($content)
         );
 
         return $this->client->getResponse();
