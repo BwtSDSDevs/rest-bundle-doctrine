@@ -200,6 +200,23 @@ abstract class RestTestCase extends WebTestCase
     }
 
     /**
+     * @param Response $response
+     * @param int      $page
+     * @param int      $perPage
+     * @param int      $totalPages
+     * @param int      $total
+     */
+    protected function assertPagination($response, $page, $perPage, $totalPages, $total)
+    {
+        $headers = $response->headers;
+
+        $this->assertEquals($page, $headers->get('x-pagination-current-page'));
+        $this->assertEquals($perPage, $headers->get('x-pagination-per-page'));
+        $this->assertEquals($totalPages, $headers->get('x-pagination-total-pages'));
+        $this->assertEquals($total, $headers->get('x-pagination-total'));
+    }
+
+    /**
      * @return string[]
      */
     abstract protected function getFixtureClasses();
