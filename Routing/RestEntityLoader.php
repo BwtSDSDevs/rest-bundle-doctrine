@@ -29,27 +29,32 @@ class RestEntityLoader extends EntityLoader
         $routes = new RouteCollection();
 
         /* Edit */
-        $route = new Route($pathPrefix . '{id}', ['_controller' => $resource . ':edit']);
+        $route = new Route($pathPrefix . '{id}');
+        $route->setDefaults(['_controller' => $resource . ':edit']);
         $route->setMethods(['PUT']);
         $routes->add($routePrefix . '.edit', $route);
 
         /* Delete */
-        $route = new Route($pathPrefix . '{id}', ['_controller' => $resource . ':delete']);
+        $route = new Route($pathPrefix . '{id}');
+        $route->setDefaults(['_controller' => $resource . ':delete']);
         $route->setMethods(['DELETE']);
         $routes->add($routePrefix . '.delete', $route);
 
         /* Detail */
-        new Route($pathPrefix . '{id}', ['_controller' => $resource . ':detail']);
+        $route = new Route($pathPrefix . '{id}');
+        $route->setDefaults(['_controller' => $resource . ':detail']);
         $route->setMethods(['GET']);
         $routes->add($routePrefix . '.detail', $route);
 
         /* Create */
-        $route = new Route($pathPrefix, ['_controller' => $resource . ':edit']);
+        $route = new Route($pathPrefix);
+        $route->setDefaults(['_controller' => $resource . ':edit']);
         $route->setMethods(['POST']);
         $routes->add($routePrefix . '.create', $route);
 
         /* List */
-        $route = new Route($pathPrefix, ['_controller' => $resource . ':list']);
+        $route = new Route($pathPrefix);
+        $route->setDefaults(['_controller' => $resource . ':list']);
         $route->setMethods(['GET']);
         $routes->add($routePrefix . '.list', $route);
 
