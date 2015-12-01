@@ -21,3 +21,10 @@ services:
             - '%ddr.rest.api_path%'
         tags:
           - { name: kernel.event_listener, event: kernel.exception, method: onKernelException, priority: %ddr.rest.kernel.listener.exception.priority% }
+
+    ddr_utils.routing.rest_entity_loader:
+        class: Dontdrinkandroot\RestBundle\Routing\RestEntityLoader
+        arguments:
+            - '@kernel'
+        tags:
+            - { name: routing.loader }
