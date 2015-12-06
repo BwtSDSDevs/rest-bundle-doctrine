@@ -15,7 +15,7 @@
         "symfony/validator": "~2.5",
         "symfony/security": "~2.5",
         "friendsofsymfony/rest-bundle": "1.5.*",
-        "dontdrinkandroot/utils-bundle": "0.2.x-dev",
+        "dontdrinkandroot/utils-bundle": "0.2.*",
         "jms/serializer-bundle": "0.13.*"
     },
     "require-dev": {
