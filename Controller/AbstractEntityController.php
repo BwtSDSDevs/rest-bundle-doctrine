@@ -7,6 +7,7 @@ use Dontdrinkandroot\Entity\EntityInterface;
 use Dontdrinkandroot\Repository\OrmEntityRepository;
 use Dontdrinkandroot\Utils\StringUtils;
 use Dontdrinkandroot\UtilsBundle\Controller\EntityControllerInterface;
+use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -18,6 +19,12 @@ abstract class AbstractEntityController extends BaseController implements Entity
 
     protected $pathPrefix = null;
 
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     * @throws \Exception
+     */
     public function listAction(Request $request)
     {
         $user = $this->getUser();
@@ -25,15 +32,27 @@ abstract class AbstractEntityController extends BaseController implements Entity
 
         $page = $request->query->get('page', 1);
         $perPage = $request->query->get('perpage', 10);
+
         $paginatedEntities = $this->getRepository()->findPaginatedBy($page, $perPage);
         $entities = $paginatedEntities->getResults();
         $pagination = $paginatedEntities->getPagination();
+
         $view = $this->view($entities);
         $this->addPaginationHeaders($pagination, $view);
+
+        $serializationContext = $view->getSerializationContext();
+        $serializationContext = $this->configureListActionSerializiationContext($serializationContext);
+        $view->setSerializationContext($serializationContext);
 
         return $this->handleView($view);
     }
 
+    /**
+     * @param Request $request
+     * @param mixed   $id
+     *
+     * @return Response
+     */
     public function detailAction(Request $request, $id)
     {
         $entity = $this->fetchEntity($id);
@@ -41,8 +60,11 @@ abstract class AbstractEntityController extends BaseController implements Entity
         $user = $this->getUser();
         $this->checkDetailActionAuthorization($user, $entity);
 
-
         $view = $this->view($entity);
+
+        $serializationContext = $view->getSerializationContext();
+        $serializationContext = $this->configureDetailActionSerializiationContext($serializationContext);
+        $view->setSerializationContext($serializationContext);
 
         return $this->handleView($view);
     }
@@ -71,7 +93,7 @@ abstract class AbstractEntityController extends BaseController implements Entity
 
         $errors = $this->validate($entity);
         if (count($errors) > 0) {
-            $view = $this->view($errors, 400);
+            $view = $this->view($errors, Response::HTTP_BAD_REQUEST);
 
             return $this->handleView($view);
         }
@@ -82,7 +104,7 @@ abstract class AbstractEntityController extends BaseController implements Entity
             $entity = $this->getRepository()->merge($entity);
         }
 
-        $status = $create ? 201 : 200;
+        $status = $create ? Response::HTTP_CREATED : Response::HTTP_OK;
 
         $view = $this->view($entity, $status);
 
@@ -96,6 +118,13 @@ abstract class AbstractEntityController extends BaseController implements Entity
         return $this->handleView($view);
     }
 
+    /**
+     * @param Request $request
+     * @param mixed   $id
+     *
+     * @return Response
+     * @throws \Exception
+     */
     public function deleteAction(Request $request, $id)
     {
         $user = $this->getUser();
@@ -104,7 +133,7 @@ abstract class AbstractEntityController extends BaseController implements Entity
 
         $this->getRepository()->remove($entity);
         $view = $this->view();
-        $view->setStatusCode(204);
+        $view->setStatusCode(Response::HTTP_NO_CONTENT);
 
         return $this->handleView($view);
     }
@@ -181,6 +210,10 @@ abstract class AbstractEntityController extends BaseController implements Entity
         return '/' . strtolower($entityName) . '/';
     }
 
+    /**
+     * @return array
+     * @throws \Exception
+     */
     protected function extractBundleAndEntityName()
     {
         $shortName = $this->getEntityShortName();
@@ -216,6 +249,11 @@ abstract class AbstractEntityController extends BaseController implements Entity
         return $shortName;
     }
 
+    /**
+     * @param array $entityClassParts
+     *
+     * @return string
+     */
     private function findBundle(array $entityClassParts)
     {
         foreach ($entityClassParts as $part) {
@@ -238,22 +276,60 @@ abstract class AbstractEntityController extends BaseController implements Entity
         return $entity;
     }
 
+    /**
+     * @param SerializationContext $serializationContext
+     *
+     * @return SerializationContext
+     */
+    protected function configureListActionSerializiationContext(SerializationContext $serializationContext)
+    {
+        return $serializationContext;
+    }
+
+    /**
+     * @param SerializationContext $serializationContext
+     *
+     * @return SerializationContext
+     */
+    protected function configureDetailActionSerializiationContext(SerializationContext $serializationContext)
+    {
+        return $serializationContext;
+    }
+
+    /**
+     * @param $user
+     */
     protected function checkListActionAuthorization($user)
     {
     }
 
+    /**
+     * @param                 $user
+     * @param EntityInterface $entity
+     */
     protected function checkDetailActionAuthorization($user, EntityInterface $entity)
     {
     }
 
+    /**
+     * @param $user
+     */
     protected function checkCreateActionAuthorization($user)
     {
     }
 
+    /**
+     * @param                 $user
+     * @param EntityInterface $entity
+     */
     protected function checkUpdateActionAuthorization($user, EntityInterface $entity)
     {
     }
 
+    /**
+     * @param                 $user
+     * @param EntityInterface $entity
+     */
     protected function checkDeleteActionAuthorization($user, EntityInterface $entity)
     {
     }
@@ -262,4 +338,6 @@ abstract class AbstractEntityController extends BaseController implements Entity
      * @return string
      */
     protected abstract function getEntityClass();
+
+
 }
