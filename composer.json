@@ -1,12 +1,13 @@
 {
     "name": "dontdrinkandroot/rest-bundle",
+    "description": "Symfony bundle that provides REST utitilies",
     "type": "symfony-bundle",
     "license": "Apache-2.0",
     "authors": [
         {
             "name": "Philip Washington Sorst",
             "email": "philip@sorst.net",
-            "homepage": "http://sorst.net"
+            "homepage": "https://sorst.net"
         }
     ],
     "require": {
@@ -15,7 +16,7 @@
         "symfony/validator": "~2.5",
         "symfony/security": "~2.5",
         "friendsofsymfony/rest-bundle": "1.5.*",
-        "dontdrinkandroot/utils-bundle": "0.3.x-dev",
+        "dontdrinkandroot/doctrine-bundle": "0.1.x-dev",
         "jms/serializer-bundle": "0.13.*"
     },
     "require-dev": {
