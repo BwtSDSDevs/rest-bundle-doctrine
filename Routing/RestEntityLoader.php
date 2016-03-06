@@ -2,8 +2,8 @@
 
 namespace Dontdrinkandroot\RestBundle\Routing;
 
-use Dontdrinkandroot\UtilsBundle\Controller\EntityControllerInterface;
-use Dontdrinkandroot\UtilsBundle\Routing\EntityLoader;
+use Dontdrinkandroot\DoctrineBundle\Configuration\Routing\EntityLoader;
+use Dontdrinkandroot\DoctrineBundle\Controller\EntityControllerInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 

@@ -3,10 +3,10 @@
 
 namespace Dontdrinkandroot\RestBundle\Controller;
 
+use Dontdrinkandroot\DoctrineBundle\Controller\EntityControllerInterface;
 use Dontdrinkandroot\Entity\EntityInterface;
 use Dontdrinkandroot\Repository\OrmEntityRepository;
 use Dontdrinkandroot\Utils\StringUtils;
-use Dontdrinkandroot\UtilsBundle\Controller\EntityControllerInterface;
 use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
