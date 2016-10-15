@@ -2,6 +2,7 @@
     "name": "dontdrinkandroot/rest-bundle",
     "description": "Symfony bundle that provides REST utitilies",
     "type": "symfony-bundle",
+    "keywords": ["REST", "Utils"],
     "license": "Apache-2.0",
     "authors": [
         {
@@ -10,14 +11,16 @@
             "homepage": "https://sorst.net"
         }
     ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
-        "php": ">=5.5",
-        "symfony/framework-bundle": "~2.5",
-        "symfony/validator": "~2.5",
-        "symfony/security": "~2.5",
-        "friendsofsymfony/rest-bundle": "1.5.*",
-        "dontdrinkandroot/doctrine-bundle": "0.1.x-dev",
-        "jms/serializer-bundle": "0.13.*"
+        "php": ">=5.6",
+        "symfony/framework-bundle": "^2.8|^3.0",
+        "symfony/validator": "^2.8|^3.0",
+        "symfony/security": "^2.8|^3.0",
+        "friendsofsymfony/rest-bundle": "^2.1",
+        "dontdrinkandroot/doctrine-bundle": "0.2.x-dev",
+        "jms/serializer-bundle": "^1.1"
     },
     "require-dev": {
     },
@@ -31,7 +34,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.1.x-dev"
+            "dev-master": "0.2.x-dev"
         }
     }
 }
