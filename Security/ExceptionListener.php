@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Security\Core\Authentication\AuthenticationTrustResolverInterface;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 
 /**
@@ -50,7 +51,7 @@ class ExceptionListener
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         $exception = $event->getException();
-        if (is_a($exception, 'Symfony\Component\Security\Core\Exception\AuthenticationException')) {
+        if (is_a($exception, AuthenticationException::class)) {
             $token = $this->securityContext->getToken();
             if (
                 !$this->trustResolver->isFullFledged($token)
