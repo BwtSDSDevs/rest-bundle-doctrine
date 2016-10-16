@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-abstract class AbstractEntityController extends BaseController implements EntityControllerInterface
+abstract class AbstractEntityControllerDdr extends DdrRestController implements EntityControllerInterface
 {
 
     protected $routePrefix = null;

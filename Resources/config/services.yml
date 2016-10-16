@@ -1,4 +1,25 @@
 services:
+
+    ddr.rest.repository.access_token:
+        class: Dontdrinkandroot\RestBundle\Repository\AccessTokenRepository
+        factory: ['@doctrine.orm.entity_manager', getRepository]
+        arguments: [ '%ddr.rest.access_token_class%' ]
+
+    ddr.rest.service.access_token:
+        class: Dontdrinkandroot\RestBundle\Service\AccessTokenService
+        arguments:
+            - '@ddr.rest.repository.access_token'
+            - '%ddr.rest.access_token_class%'
+            - '@fos_user.user_provider.username_email'
+            - '@security.encoder_factory'
+
+    ddr.rest.security.access_token_authenticator:
+        class: Dontdrinkandroot\RestBundle\Security\DefaultAccessTokenAuthenticator
+        arguments:
+            - '@ddr.rest.service.access_token'
+        calls:
+            - ['setTokenRequired', [false]]
+
     # We do not want serialization into underscored properties
     ddr.serializer.naming_strategy.identical_property_naming:
         class: 'JMS\Serializer\Naming\IdenticalPropertyNamingStrategy'
@@ -28,3 +49,4 @@ services:
             - '@kernel'
         tags:
             - { name: routing.loader }
+

@@ -17,6 +17,7 @@ class Configuration implements ConfigurationInterface
 
         // @formatter:off
         $rootNode->children()
+            ->scalarNode('access_token_class')->isRequired()->end()
             ->scalarNode('api_path')->defaultValue('/api')->end()
             ->integerNode('exception_listener_priority')->defaultValue(255)->end()
         ->end();

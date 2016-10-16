@@ -1,0 +1,11 @@
+Dontdrinkandroot\RestBundle\Entity\AccessToken:
+    repositoryClass: Dontdrinkandroot\RestBundle\Repository\AccessTokenRepository
+    type: mappedSuperclass
+    fields:
+        token:
+            length: 32
+            type: string
+            nullable: false
+        expiry:
+            type: datetime
+            nullable: true

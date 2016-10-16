@@ -9,7 +9,7 @@ use JMS\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-class BaseController extends FOSRestController
+class DdrRestController extends FOSRestController
 {
 
     /**
@@ -73,5 +73,25 @@ class BaseController extends FOSRestController
         $view->setHeader('X-Pagination-Total-Pages', $pagination->getTotalPages());
         $view->setHeader('X-Pagination-Total', $pagination->getTotal());
         $view->setHeader('X-Pagination', $pagination);
+    }
+
+    protected function createAndHandleForm(Request $request, $type, $data = null, array $options = [])
+    {
+        $form = null;
+        if ('json' === $request->getRequestFormat()) {
+            /* We want a form with no name in the JSON REST API, as the content is not prefixed with the form name */
+            $form = $this->container->get('form.factory')->createNamed('', $type, $data, $options);
+            $form->handleRequest($request);
+            /* Forms without a name are not submitted automatically if the data was empty.
+               We want to enforce validation. */
+            if (!$form->isSubmitted()) {
+                $form->submit([]);
+            }
+        } else {
+            $form = parent::createForm($type, $data, $options);
+            $form->handleRequest($request);
+        }
+
+        return $form;
     }
 }

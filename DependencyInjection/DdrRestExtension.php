@@ -20,6 +20,7 @@ class DdrRestExtension extends Extension implements PrependExtensionInterface
 
         $container->setParameter('ddr.rest.api_path', $config['api_path']);
         $container->setParameter('ddr.rest.kernel.listener.exception.priority', $config['exception_listener_priority']);
+        $container->setParameter('ddr.rest.access_token_class', $config['access_token_class']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
