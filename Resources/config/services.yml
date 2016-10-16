@@ -31,22 +31,9 @@ services:
         arguments:
             - '@ddr.serializer.naming_strategy.identical_property_naming'
 
-    # This is a workaround since Symfony does not handle InsufficientAuthenticationException with a 401 status code when
-    # firewall has anonymous enabled.
-    # See https://github.com/symfony/symfony/issues/8467
-    ddr.rest.kernel.listener.exception:
-        class: Dontdrinkandroot\RestBundle\Security\ExceptionListener
-        arguments:
-            - '@security.context'
-            - '@security.authentication.trust_resolver'
-            - '%ddr.rest.api_path%'
-        tags:
-          - { name: kernel.event_listener, event: kernel.exception, method: onKernelException, priority: %ddr.rest.kernel.listener.exception.priority% }
-
     ddr_utils.routing.rest_entity_loader:
         class: Dontdrinkandroot\RestBundle\Routing\RestEntityLoader
         arguments:
             - '@kernel'
         tags:
             - { name: routing.loader }
-
