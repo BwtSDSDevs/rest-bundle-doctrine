@@ -96,7 +96,7 @@ abstract class AbstractAccessTokenAuthenticator
      */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        return new Response("Authentication Failed.", 403);
+        throw new BadCredentialsException($exception->getMessage(), Response::HTTP_FORBIDDEN, $exception);
     }
 
     /**

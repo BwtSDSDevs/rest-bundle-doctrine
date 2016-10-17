@@ -3,7 +3,7 @@ Dontdrinkandroot\RestBundle\Entity\AccessToken:
     type: mappedSuperclass
     fields:
         token:
-            length: 32
+            length: 64
             type: string
             nullable: false
         expiry:
