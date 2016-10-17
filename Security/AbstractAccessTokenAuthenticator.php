@@ -50,11 +50,14 @@ abstract class AbstractAccessTokenAuthenticator
             throw new AuthenticationException('Invalid Access Token');
         }
 
+        $userRoles = $user->getRoles();
+        $userRoles[] = 'ROLE_REST_API';
+
         return new PreAuthenticatedToken(
             $user,
             $tokenString,
             $providerKey,
-            $user->getRoles()
+            $userRoles
         );
     }
 
