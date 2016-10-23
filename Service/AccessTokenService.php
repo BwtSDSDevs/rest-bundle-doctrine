@@ -31,6 +31,11 @@ class AccessTokenService implements AccessTokenServiceInterface
      */
     private $accesTokenClass;
 
+    /**
+     * @var string
+     */
+    private $defaultExpirationDuration = '+1 month';
+
     public function __construct(
         AccessTokenRepositoryInterface $accessTokenRepository,
         $accesTokenClass,
@@ -75,9 +80,39 @@ class AccessTokenService implements AccessTokenServiceInterface
         $accessToken = new $this->accesTokenClass;
         $accessToken->setToken($token);
         $accessToken->setUser($user);
+        $accessToken->setExpiry(new \DateTime($this->defaultExpirationDuration));
 
         $accessToken = $this->accessTokenRepository->persist($accessToken);
 
         return $accessToken;
+    }
+
+    /**
+     * @return int
+     */
+    public function cleanUpExpiredTokens()
+    {
+        $accessTokens = $this->accessTokenRepository->findExpiredTokens();
+        foreach ($accessTokens as $accessToken) {
+            $this->accessTokenRepository->remove($accessToken);
+        }
+
+        return count($accessTokens);
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultExpirationDuration()
+    {
+        return $this->defaultExpirationDuration;
+    }
+
+    /**
+     * @param string $defaultExpirationDuration
+     */
+    public function setDefaultExpirationDuration($defaultExpirationDuration)
+    {
+        $this->defaultExpirationDuration = $defaultExpirationDuration;
     }
 }

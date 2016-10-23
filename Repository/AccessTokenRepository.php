@@ -32,6 +32,18 @@ class AccessTokenRepository extends OrmEntityRepository implements AccessTokenRe
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function findExpiredTokens()
+    {
+        $queryBuilder = $this->createQueryBuilder('token');
+        $queryBuilder->where('token.expiry < :now');
+        $queryBuilder->setParameter('now', new \DateTime());
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    /**
      * @param AccessToken $accessToken
      *
      * @return bool

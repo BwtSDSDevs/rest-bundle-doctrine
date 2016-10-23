@@ -21,4 +21,9 @@ interface AccessTokenServiceInterface
      * @return UserInterface|null
      */
     public function findUserByToken($token);
+
+    /**
+     * @return int
+     */
+    public function cleanUpExpiredTokens();
 }
