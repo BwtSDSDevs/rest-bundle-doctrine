@@ -3,6 +3,7 @@
 namespace Dontdrinkandroot\RestBundle\Controller;
 
 use Dontdrinkandroot\Pagination\Pagination;
+use Dontdrinkandroot\RestBundle\Form\DateTimeSubscriber;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\Serializer;
@@ -79,8 +80,11 @@ class DdrRestController extends FOSRestController
     {
         $form = null;
         if ('json' === $request->getRequestFormat()) {
+            $options['method'] = $request->getMethod();
             /* We want a form with no name in the JSON REST API, as the content is not prefixed with the form name */
-            $form = $this->container->get('form.factory')->createNamed('', $type, $data, $options);
+            $formBuilder = $this->container->get('form.factory')->createNamedBuilder('', $type, $data, $options);
+            $formBuilder->addEventSubscriber(new DateTimeSubscriber());
+            $form = $formBuilder->getForm();
             $form->handleRequest($request);
             /* Forms without a name are not submitted automatically if the data was empty.
                We want to enforce validation. */
