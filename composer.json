@@ -23,6 +23,7 @@
         "jms/serializer-bundle": "^1.1"
     },
     "require-dev": {
+        "phpunit/phpunit": "^4.0"
     },
     "suggest": {
         "liip/functional-test-bundle": "To use RestTestCase"
