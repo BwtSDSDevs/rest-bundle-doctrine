@@ -23,8 +23,8 @@ class DateTimeSubscriber implements EventSubscriberInterface
         $children = $form->all();
         $dateTimeFields = [];
         foreach ($children as $child) {
-            $typeName = $child->getConfig()->getType()->getName();
-            if ('datetime' === $typeName) {
+            $prefix = $child->getConfig()->getType()->getBlockPrefix();
+            if ('datetime' === $prefix) {
                 $dateTimeFields[] = $child->getName();
             }
         }
