@@ -19,6 +19,7 @@ class DdrRestExtension extends Extension implements PrependExtensionInterface
         $config = $this->processConfiguration($configuration, $configs);
 
         $container->setParameter('ddr.rest.access_token_class', $config['access_token_class']);
+        $container->setParameter('ddr.rest.authentication_provider_key', $config['authentication_provider_key']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');

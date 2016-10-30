@@ -2,13 +2,13 @@
 
 namespace Dontdrinkandroot\RestBundle\Security;
 
-use Dontdrinkandroot\RestBundle\Service\AccessTokenServiceInterface;
+use Dontdrinkandroot\RestBundle\Repository\AccessTokenRepositoryInterface;
 
 class DefaultAccessTokenAuthenticator extends AbstractAccessTokenAuthenticator
 {
     private $service;
 
-    public function __construct(AccessTokenServiceInterface $service)
+    public function __construct(AccessTokenRepositoryInterface $service)
     {
         $this->service = $service;
     }

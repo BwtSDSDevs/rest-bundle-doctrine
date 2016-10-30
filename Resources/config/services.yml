@@ -1,3 +1,6 @@
+parameters:
+    fos_user.security.interactive_login_listener.class: Dontdrinkandroot\RestBundle\Security\PreAuthenticatedTokenIgnoringInteractiveLoginListener
+
 services:
 
     ddr.rest.repository.access_token:
@@ -10,13 +13,13 @@ services:
         arguments:
             - '@ddr.rest.repository.access_token'
             - '%ddr.rest.access_token_class%'
-            - '@fos_user.user_provider.username_email'
-            - '@security.encoder_factory'
+            - '@security.authentication.manager'
+            - '%ddr.rest.authentication_provider_key%'
 
     ddr.rest.security.access_token_authenticator:
         class: Dontdrinkandroot\RestBundle\Security\DefaultAccessTokenAuthenticator
         arguments:
-            - '@ddr.rest.service.access_token'
+            - '@ddr.rest.repository.access_token'
         calls:
             - ['setTokenRequired', [false]]
 
