@@ -2,6 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Repository;
 
+use Doctrine\ORM\Query;
 use Dontdrinkandroot\Repository\OrmEntityRepository;
 use Dontdrinkandroot\RestBundle\Entity\AccessToken;
 
@@ -15,7 +16,7 @@ class AccessTokenRepository extends OrmEntityRepository implements AccessTokenRe
         return $this->getTransactionManager()->transactional(
             function () use ($token) {
                 /** @var AccessToken $accessToken */
-                $accessToken = $this->findOneBy(['token' => $token]);
+                $accessToken = $this->createFindUserByTokenQuery($token)->getSingleResult();
                 if (null === $accessToken) {
                     return null;
                 }
@@ -29,6 +30,20 @@ class AccessTokenRepository extends OrmEntityRepository implements AccessTokenRe
                 return $accessToken->getUser();
             }
         );
+    }
+
+    /**
+     * @param string $token
+     *
+     * @return Query
+     */
+    protected function createFindUserByTokenQuery($token)
+    {
+        $queryBuilder = $this->createQueryBuilder('accessToken');
+        $queryBuilder->where('accessToken.token = :token');
+        $queryBuilder->setParameter('token', $token);
+
+        return $queryBuilder->getQuery();
     }
 
     /**
