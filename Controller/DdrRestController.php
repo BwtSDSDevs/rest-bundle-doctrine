@@ -12,7 +12,6 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class DdrRestController extends FOSRestController
 {
-
     /**
      * @param Request $request
      * @param string  $type

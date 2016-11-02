@@ -1,20 +1,17 @@
 <?php
 
-
 namespace Dontdrinkandroot\RestBundle\Controller;
 
 use Dontdrinkandroot\DoctrineBundle\Controller\EntityControllerInterface;
 use Dontdrinkandroot\Entity\EntityInterface;
 use Dontdrinkandroot\Repository\OrmEntityRepository;
 use Dontdrinkandroot\Utils\StringUtils;
-use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-abstract class AbstractEntityControllerDdr extends DdrRestController implements EntityControllerInterface
+abstract class AbstractEntityController extends DdrRestController implements EntityControllerInterface
 {
-
     protected $routePrefix = null;
 
     protected $pathPrefix = null;
@@ -40,9 +37,7 @@ abstract class AbstractEntityControllerDdr extends DdrRestController implements 
         $view = $this->view($entities);
         $this->addPaginationHeaders($pagination, $view);
 
-        $serializationContext = $view->getSerializationContext();
-        $serializationContext = $this->configureListActionSerializiationContext($serializationContext);
-        $view->setSerializationContext($serializationContext);
+        $view->getContext()->setGroups($this->getListSerializationGroups());
 
         return $this->handleView($view);
     }
@@ -62,15 +57,13 @@ abstract class AbstractEntityControllerDdr extends DdrRestController implements 
 
         $view = $this->view($entity);
 
-        $serializationContext = $view->getSerializationContext();
-        $serializationContext = $this->configureDetailActionSerializiationContext($serializationContext);
-        $view->setSerializationContext($serializationContext);
+        $view->getContext()->setGroups($this->getDetailSerializationGroups());
 
         return $this->handleView($view);
     }
 
     /**
-     * @param Request $request
+     * @param Request           $request
      * @param mixed|null|string $id
      *
      * @return Response
@@ -277,23 +270,19 @@ abstract class AbstractEntityControllerDdr extends DdrRestController implements 
     }
 
     /**
-     * @param SerializationContext $serializationContext
-     *
-     * @return SerializationContext
+     * @return string[]
      */
-    protected function configureListActionSerializiationContext(SerializationContext $serializationContext)
+    protected function getListSerializationGroups()
     {
-        return $serializationContext;
+        return ['Default'];
     }
 
     /**
-     * @param SerializationContext $serializationContext
-     *
-     * @return SerializationContext
+     * @return string[]
      */
-    protected function configureDetailActionSerializiationContext(SerializationContext $serializationContext)
+    protected function getDetailSerializationGroups()
     {
-        return $serializationContext;
+        return ['Default'];
     }
 
     /**
@@ -338,6 +327,4 @@ abstract class AbstractEntityControllerDdr extends DdrRestController implements 
      * @return string
      */
     protected abstract function getEntityClass();
-
-
 }
