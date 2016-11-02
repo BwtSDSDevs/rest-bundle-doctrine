@@ -7,6 +7,7 @@ use Dontdrinkandroot\RestBundle\Repository\AccessTokenRepositoryInterface;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class AccessTokenService implements AccessTokenServiceInterface
 {
@@ -65,6 +66,14 @@ class AccessTokenService implements AccessTokenServiceInterface
     public function findUserByToken($token)
     {
         return $this->accessTokenRepository->findUserByToken($token);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function listByUser(UserInterface $user)
+    {
+        return $this->accessTokenRepository->findBy(['user' => $user]);
     }
 
     private function generateAndSaveAccessToken($user)

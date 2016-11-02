@@ -26,4 +26,11 @@ interface AccessTokenServiceInterface
      * @return int
      */
     public function cleanUpExpiredTokens();
+
+    /**
+     * @param UserInterface $user
+     *
+     * @return AccessToken[]
+     */
+    public function listByUser(UserInterface $user);
 }

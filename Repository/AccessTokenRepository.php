@@ -16,7 +16,7 @@ class AccessTokenRepository extends OrmEntityRepository implements AccessTokenRe
         return $this->getTransactionManager()->transactional(
             function () use ($token) {
                 /** @var AccessToken $accessToken */
-                $accessToken = $this->createFindUserByTokenQuery($token)->getSingleResult();
+                $accessToken = $this->createFindUserByTokenQuery($token)->getOneOrNullResult();
                 if (null === $accessToken) {
                     return null;
                 }
