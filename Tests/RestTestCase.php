@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 abstract class RestTestCase extends WebTestCase
 {
-
     /**
      * @var ReferenceRepository
      */

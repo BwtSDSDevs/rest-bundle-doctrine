@@ -23,6 +23,16 @@ services:
         calls:
             - ['setTokenRequired', [false]]
 
+    ddr.rest.metadata.driver.annotation:
+        class: Dontdrinkandroot\RestBundle\Metadata\AnnotationDriver
+        arguments:
+            - '@annotation_reader'
+
+    ddr.rest.metadata.factory:
+        class: Metadata\MetadataFactory
+        arguments:
+            - '@ddr.rest.metadata.driver.annotation'
+
     # We do not want serialization into underscored properties
     ddr.serializer.naming_strategy.identical_property_naming:
         class: 'JMS\Serializer\Naming\IdenticalPropertyNamingStrategy'
