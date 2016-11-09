@@ -5,7 +5,6 @@ namespace Dontdrinkandroot\RestBundle\Controller;
 use Dontdrinkandroot\Service\EntityServiceInterface;
 use Dontdrinkandroot\Service\UuidEntityServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class GenericEntityController extends DdrRestController
 {
@@ -23,9 +22,13 @@ class GenericEntityController extends DdrRestController
 
     public function postAction(Request $request)
     {
+        $entity = $this->parseRequest($request);
         $this->denyAccessUnlessGranted('ROLE_USER');
+        $form = $this->createAndHandleForm($request, $request->attributes->get('_formType'));
+        if ($form->isValid()) {
+        }
 
-        return $this->handleView($this->view(null, Response::HTTP_CREATED));
+        return $this->handleView($this->view($form));
     }
 
     public function getAction(Request $request, $id)
@@ -67,5 +70,13 @@ class GenericEntityController extends DdrRestController
     public function setService($service)
     {
         $this->service = $service;
+    }
+
+    private function parseRequest(Request $request)
+    {
+        $entityClass = $this->getService($request)->getEntityClass();
+        $data = $request->request->all();
+        $metaDataFactory = $this->get('ddr.rest.metadata.factory');
+        $classMetadata = $metaDataFactory->getMetadataForClass($entityClass);
     }
 }
