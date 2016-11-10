@@ -2,9 +2,11 @@
 
 namespace Dontdrinkandroot\RestBundle\Controller;
 
+use Dontdrinkandroot\Entity\EntityInterface;
 use Dontdrinkandroot\Service\EntityServiceInterface;
 use Dontdrinkandroot\Service\UuidEntityServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class GenericEntityController extends DdrRestController
 {
@@ -22,13 +24,16 @@ class GenericEntityController extends DdrRestController
 
     public function postAction(Request $request)
     {
-        $entity = $this->parseRequest($request);
         $this->denyAccessUnlessGranted('ROLE_USER');
-        $form = $this->createAndHandleForm($request, $request->attributes->get('_formType'));
-        if ($form->isValid()) {
+        $entity = $this->parseRequest($request);
+        $entity = $this->postProcessPostedEntity($request, $entity);
+        $errors = $this->validate($entity);
+        if ($errors->count() > 0) {
+            return $this->handleView($this->view($errors, Response::HTTP_BAD_REQUEST));
         }
+        $entity = $this->getService($request)->save($entity);
 
-        return $this->handleView($this->view($form));
+        return $this->handleView($this->view($entity, Response::HTTP_CREATED));
     }
 
     public function getAction(Request $request, $id)
@@ -48,7 +53,7 @@ class GenericEntityController extends DdrRestController
      *
      * @return EntityServiceInterface|UuidEntityServiceInterface
      */
-    private function getService(Request $request)
+    protected function getService(Request $request)
     {
         if (null === $this->service) {
             $serviceName = $request->attributes->get('_service');
@@ -72,11 +77,23 @@ class GenericEntityController extends DdrRestController
         $this->service = $service;
     }
 
-    private function parseRequest(Request $request)
+    private function parseRequest(Request $request, EntityInterface $entity = null)
     {
-        $entityClass = $this->getService($request)->getEntityClass();
-        $data = $request->request->all();
-        $metaDataFactory = $this->get('ddr.rest.metadata.factory');
-        $classMetadata = $metaDataFactory->getMetadataForClass($entityClass);
+        return $this->get('ddr.rest.parser.request')->parseEntity(
+            $request,
+            $this->getService($request)->getEntityClass(),
+            $entity
+        );
+    }
+
+    /**
+     * @param Request         $request
+     * @param EntityInterface $entity
+     *
+     * @return EntityInterface
+     */
+    protected function postProcessPostedEntity(Request $request, EntityInterface $entity)
+    {
+        return $entity;
     }
 }
