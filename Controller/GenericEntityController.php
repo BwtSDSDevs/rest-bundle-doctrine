@@ -3,7 +3,10 @@
 namespace Dontdrinkandroot\RestBundle\Controller;
 
 use Dontdrinkandroot\Entity\EntityInterface;
+use Dontdrinkandroot\Repository\UuidEntityRepositoryInterface;
+use Dontdrinkandroot\Service\EntityService;
 use Dontdrinkandroot\Service\EntityServiceInterface;
+use Dontdrinkandroot\Service\UuidEntityService;
 use Dontdrinkandroot\Service\UuidEntityServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -58,12 +61,22 @@ class GenericEntityController extends DdrRestController
         if (null === $this->service) {
             $serviceName = $request->attributes->get('_service');
             if (null === $serviceName) {
-                throw new \RuntimeException('No service given');
-            }
-            /** @var EntityServiceInterface|UuidEntityServiceInterface $service */
-            $service = $this->get($serviceName);
+                $entityClass = $request->attributes->get('_entityClass');
+                if (null === $entityClass) {
+                    throw new \RuntimeException('No service or entity class given');
+                }
+                $repository = $this->get('doctrine')->getRepository($entityClass);
+                if ($repository instanceof UuidEntityRepositoryInterface) {
+                    return new EntityService($repository);
+                } else {
+                    return new UuidEntityService($repository);
+                }
+            } else {
+                /** @var EntityServiceInterface|UuidEntityServiceInterface $service */
+                $service = $this->get($serviceName);
 
-            return $service;
+                return $service;
+            }
         }
 
         return $this->service;

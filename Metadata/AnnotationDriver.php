@@ -4,8 +4,8 @@ namespace Dontdrinkandroot\RestBundle\Metadata;
 use Doctrine\Common\Annotations\Reader;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Postable;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Puttable;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\RestResource;
 use Metadata\Driver\DriverInterface;
-use Metadata\MergeableClassMetadata;
 
 class AnnotationDriver implements DriverInterface
 {
@@ -21,7 +21,25 @@ class AnnotationDriver implements DriverInterface
      */
     public function loadMetadataForClass(\ReflectionClass $class)
     {
-        $classMetadata = new MergeableClassMetadata($class->getName());
+        $classMetadata = new ClassMetadata($class->getName());
+
+        /** @var RestResource $restResourceAnnotation */
+        $restResourceAnnotation = $this->reader->getClassAnnotation($class, RestResource::class);
+        if (null !== $restResourceAnnotation) {
+            $classMetadata->setRestResource(true);
+            if (null !== $restResourceAnnotation->namePrefix) {
+                $classMetadata->setNamePrefix($restResourceAnnotation->namePrefix);
+            }
+            if (null !== $restResourceAnnotation->pathPrefix) {
+                $classMetadata->setPathPrefix($restResourceAnnotation->pathPrefix);
+            }
+            if (null !== $restResourceAnnotation->service) {
+                $classMetadata->setService($restResourceAnnotation->service);
+            }
+            if (null !== $restResourceAnnotation->controller) {
+                $classMetadata->setController($restResourceAnnotation->controller);
+            }
+        }
 
         foreach ($class->getProperties() as $reflectionProperty) {
             $propertyMetadata = new PropertyMetadata($class->getName(), $reflectionProperty->getName());

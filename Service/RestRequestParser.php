@@ -2,7 +2,6 @@
 
 namespace Dontdrinkandroot\RestBundle\Service;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Dontdrinkandroot\Entity\EntityInterface;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use JMS\Serializer\SerializerInterface;
@@ -18,11 +17,6 @@ class RestRequestParser
     private $metadataFactory;
 
     /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
      * @var SerializerInterface
      */
     private $serializer;
@@ -34,10 +28,16 @@ class RestRequestParser
         $this->serializer = $serializer;
     }
 
-    public function parseEntity(Request $request, string $entityClass, EntityInterface $entity = null): EntityInterface
+    /**
+     * @param Request              $request
+     * @param string               $entityClass
+     * @param EntityInterface|null $entity
+     *
+     * @return EntityInterface
+     */
+    public function parseEntity(Request $request, $entityClass, EntityInterface $entity = null)
     {
-        $post = null === $entity;
-
+        $method = $request->getMethod();
         $parsedEntity = $this->serializer->deserialize(
             $request->getContent(),
             $entityClass,
@@ -50,17 +50,21 @@ class RestRequestParser
 
         $classMetadata = $this->metadataFactory->getMetadataForClass($entityClass);
         $accessor = PropertyAccess::createPropertyAccessor();
+
         /** @var PropertyMetadata $propertyMetadata */
         foreach ($classMetadata->propertyMetadata as $propertyMetadata) {
-            if ($post) {
+            $propertyName = $propertyMetadata->name;
+            if (Request::METHOD_POST === $method) {
                 if ($propertyMetadata->isPostable()) {
-                    $value = $accessor->getValue($parsedEntity, $propertyMetadata->name);
-                    $accessor->setValue($entity, $propertyMetadata->name, $value);
+                    $value = $accessor->getValue($parsedEntity, $propertyName);
+                    $accessor->setValue($entity, $propertyName, $value);
                 }
-            } else {
-                if ($propertyMetadata->isPostable()) {
-                    $value = $accessor->getValue($parsedEntity, $propertyMetadata->name);
-                    $accessor->setValue($entity, $propertyMetadata->name, $value);
+            }
+
+            if (Request::METHOD_PUT === $method) {
+                if ($propertyMetadata->isPuttable()) {
+                    $value = $accessor->getValue($parsedEntity, $propertyName);
+                    $accessor->setValue($entity, $propertyName, $value);
                 }
             }
         }

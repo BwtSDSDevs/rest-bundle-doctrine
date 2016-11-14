@@ -23,20 +23,20 @@ services:
         calls:
             - ['setTokenRequired', [false]]
 
-    ddr.rest.metadata.driver.annotation:
+    ddr_rest.metadata.driver.annotation:
         class: Dontdrinkandroot\RestBundle\Metadata\AnnotationDriver
         arguments:
             - '@annotation_reader'
 
-    ddr.rest.metadata.factory:
+    ddr_rest.metadata.factory:
         class: Metadata\MetadataFactory
         arguments:
-            - '@ddr.rest.metadata.driver.annotation'
+            - '@ddr_rest.metadata.driver.annotation'
 
     ddr.rest.parser.request:
         class: Dontdrinkandroot\RestBundle\Service\RestRequestParser
         arguments:
-            - '@ddr.rest.metadata.factory'
+            - '@ddr_rest.metadata.factory'
             - '@jms_serializer'
 
     # We do not want serialization into underscored properties
@@ -54,5 +54,13 @@ services:
         class: Dontdrinkandroot\RestBundle\Routing\RestEntityLoader
         arguments:
             - '@kernel'
+        tags:
+            - { name: routing.loader }
+
+    ddr_rest.routing.generic_entity_loader:
+        class: Dontdrinkandroot\RestBundle\Routing\GenericEntityLoader
+        arguments:
+            - '@file_locator'
+            - '@ddr_rest.metadata.factory'
         tags:
             - { name: routing.loader }

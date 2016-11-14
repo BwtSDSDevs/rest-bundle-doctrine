@@ -9,7 +9,6 @@ use Symfony\Component\Routing\RouteCollection;
 
 class RestEntityLoader extends EntityLoader
 {
-
     /**
      * {@inheritdoc}
      */
