@@ -50,15 +50,8 @@ services:
         arguments:
             - '@ddr.serializer.naming_strategy.identical_property_naming'
 
-    ddr_utils.routing.rest_entity_loader:
+    ddr_rest.routing.rest_entity_loader:
         class: Dontdrinkandroot\RestBundle\Routing\RestEntityLoader
-        arguments:
-            - '@kernel'
-        tags:
-            - { name: routing.loader }
-
-    ddr_rest.routing.generic_entity_loader:
-        class: Dontdrinkandroot\RestBundle\Routing\GenericEntityLoader
         arguments:
             - '@file_locator'
             - '@ddr_rest.metadata.factory'
