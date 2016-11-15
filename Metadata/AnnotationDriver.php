@@ -2,6 +2,7 @@
 namespace Dontdrinkandroot\RestBundle\Metadata;
 
 use Doctrine\Common\Annotations\Reader;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Includable;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Postable;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Puttable;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\RestResource;
@@ -52,6 +53,11 @@ class AnnotationDriver implements DriverInterface
             $postableAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Postable::class);
             if (null !== $postableAnnotation) {
                 $propertyMetadata->setPostable(true);
+            }
+
+            $includableAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Includable::class);
+            if (null !== $includableAnnotation) {
+                $propertyMetadata->setIncludable(true);
             }
 
             $classMetadata->addPropertyMetadata($propertyMetadata);

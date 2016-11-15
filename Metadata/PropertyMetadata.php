@@ -17,6 +17,11 @@ class PropertyMetadata extends BasePropertyMetadata
     private $postable = false;
 
     /**
+     * @var bool
+     */
+    private $includable = false;
+
+    /**
      * @return boolean
      */
     public function isPuttable()
@@ -46,5 +51,21 @@ class PropertyMetadata extends BasePropertyMetadata
     public function setPostable($postable)
     {
         $this->postable = $postable;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isIncludable()
+    {
+        return $this->includable;
+    }
+
+    /**
+     * @param boolean $includable
+     */
+    public function setIncludable($includable)
+    {
+        $this->includable = $includable;
     }
 }

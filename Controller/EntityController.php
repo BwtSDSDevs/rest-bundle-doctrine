@@ -21,6 +21,7 @@ class EntityController extends DdrRestController
         $service = $this->getService();
         $paginatedResult = $service->listPaginated(1, 10);
         $view = $this->view($paginatedResult->getResults());
+        $view->getContext()->addGroups(['Default', 'ddr.rest.list']);
         $this->addPaginationHeaders($paginatedResult->getPagination(), $view);
 
         return $this->handleView($view);

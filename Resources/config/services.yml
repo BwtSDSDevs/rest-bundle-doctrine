@@ -57,3 +57,15 @@ services:
             - '@ddr_rest.metadata.factory'
         tags:
             - { name: routing.loader }
+
+    fos_rest.serializer.jms:
+        class: Dontdrinkandroot\RestBundle\Serialization\JMSSerializerAdapter
+        arguments:
+            - '@jms_serializer.serializer'
+            - '@ddr_rest.serialization.exclusion_strategy.includes'
+
+    ddr_rest.serialization.exclusion_strategy.includes:
+        class: Dontdrinkandroot\RestBundle\Serialization\IncludesExclusionStrategy
+        arguments:
+            - '@request_stack'
+            - '@ddr_rest.metadata.factory'
