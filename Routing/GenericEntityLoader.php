@@ -61,10 +61,7 @@ class GenericEntityLoader extends Loader
 
                 $namePrefix = $this->getNamePrefix($classMetadata);
                 $pathPrefix = $this->getPathPrefix($classMetadata);
-                $controller = 'DdrRestBundle:GenericEntity';
-                if (null !== $classMetadata->getController()) {
-                    $controller = $classMetadata->getController();
-                }
+                $controller = $this->getController($classMetadata);
 
                 $defaults = [
                     '_entityClass' => $class
@@ -98,8 +95,6 @@ class GenericEntityLoader extends Loader
                 $deleteRoute->setMethods(Request::METHOD_DELETE);
                 $deleteRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':delete']));
                 $routes->add($namePrefix . '.delete', $deleteRoute);
-            } else {
-                continue;
             }
         }
 
@@ -184,5 +179,20 @@ class GenericEntityLoader extends Loader
         }
 
         return Inflector::pluralize(strtolower($classMetadata->reflection->getShortName()));
+    }
+
+    /**
+     * @param ClassMetadata $classMetadata
+     *
+     * @return string
+     */
+    protected function getController(ClassMetadata $classMetadata)
+    {
+        $controller = 'DdrRestBundle:GenericEntity';
+        if (null !== $classMetadata->getController()) {
+            $controller = $classMetadata->getController();
+        }
+
+        return $controller;
     }
 }
