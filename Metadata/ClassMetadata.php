@@ -2,6 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Metadata;
 
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Metadata\MergeableClassMetadata;
 use Metadata\MergeableInterface;
 
@@ -33,16 +34,47 @@ class ClassMetadata extends MergeableClassMetadata
     public $controller;
 
     /**
+     * @var Right|null
+     */
+    public $postRight;
+
+    /**
+     * @var Right|null
+     */
+    public $putRight;
+
+    /**
+     * @var Right|null
+     */
+    public $deleteRight;
+
+    /**
+     * @var Right|null
+     */
+    public $listRight;
+
+    /**
+     * @var Right|null
+     */
+    public $getRight;
+
+    /**
      * {@inheritdoc}
      */
     public function merge(MergeableInterface $object)
     {
         parent::merge($object);
+        /** @var ClassMetadata $object */
         $this->restResource = $object->restResource;
         $this->namePrefix = $object->namePrefix;
         $this->pathPrefix = $object->pathPrefix;
         $this->service = $object->service;
         $this->controller = $object->controller;
+        $this->listRight = $object->listRight;
+        $this->getRight = $object->getRight;
+        $this->postRight = $object->postRight;
+        $this->putRight = $object->putRight;
+        $this->deleteRight = $object->deleteRight;
     }
 
     /**
@@ -123,5 +155,85 @@ class ClassMetadata extends MergeableClassMetadata
     public function setService($service)
     {
         $this->service = $service;
+    }
+
+    /**
+     * @return Right|null
+     */
+    public function getDeleteRight()
+    {
+        return $this->deleteRight;
+    }
+
+    /**
+     * @param Right|null $deleteRight
+     */
+    public function setDeleteRight(Right $deleteRight)
+    {
+        $this->deleteRight = $deleteRight;
+    }
+
+    /**
+     * @return Right|null
+     */
+    public function getPostRight()
+    {
+        return $this->postRight;
+    }
+
+    /**
+     * @param Right|null $postRight
+     */
+    public function setPostRight(Right $postRight)
+    {
+        $this->postRight = $postRight;
+    }
+
+    /**
+     * @return Right|null
+     */
+    public function getPutRight()
+    {
+        return $this->putRight;
+    }
+
+    /**
+     * @param Right|null $putRight
+     */
+    public function setPutRight(Right $putRight)
+    {
+        $this->putRight = $putRight;
+    }
+
+    /**
+     * @return Right|null
+     */
+    public function getListRight()
+    {
+        return $this->listRight;
+    }
+
+    /**
+     * @param Right|null $listRight
+     */
+    public function setListRight(Right $listRight)
+    {
+        $this->listRight = $listRight;
+    }
+
+    /**
+     * @return Right|null
+     */
+    public function getGetRight()
+    {
+        return $this->getRight;
+    }
+
+    /**
+     * @param Right|null $getRight
+     */
+    public function setGetRight(Right $getRight)
+    {
+        $this->getRight = $getRight;
     }
 }

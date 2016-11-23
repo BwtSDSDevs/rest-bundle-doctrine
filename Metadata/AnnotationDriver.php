@@ -41,6 +41,21 @@ class AnnotationDriver implements DriverInterface
             if (null !== $restResourceAnnotation->controller) {
                 $classMetadata->setController($restResourceAnnotation->controller);
             }
+            if (null !== $restResourceAnnotation->listRight) {
+                $classMetadata->setListRight($restResourceAnnotation->listRight);
+            }
+            if (null !== $restResourceAnnotation->postRight) {
+                $classMetadata->setPostRight($restResourceAnnotation->postRight);
+            }
+            if (null !== $restResourceAnnotation->getRight) {
+                $classMetadata->setGetRight($restResourceAnnotation->getRight);
+            }
+            if (null !== $restResourceAnnotation->putRight) {
+                $classMetadata->setPutRight($restResourceAnnotation->putRight);
+            }
+            if (null !== $restResourceAnnotation->deleteRight) {
+                $classMetadata->setDeleteRight($restResourceAnnotation->deleteRight);
+            }
         }
 
         foreach ($class->getProperties() as $reflectionProperty) {

@@ -4,9 +4,9 @@ namespace Dontdrinkandroot\RestBundle\Controller;
 
 use Dontdrinkandroot\Entity\EntityInterface;
 use Dontdrinkandroot\Entity\UuidEntityInterface;
-use Dontdrinkandroot\FullStackTestBundle\Entity\BlogPost;
 use Dontdrinkandroot\Pagination\PaginatedResult;
 use Dontdrinkandroot\Repository\UuidEntityRepositoryInterface;
+use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\Service\EntityService;
 use Dontdrinkandroot\Service\EntityServiceInterface;
 use Dontdrinkandroot\Service\UuidEntityService;
@@ -170,7 +170,7 @@ class EntityController extends DdrRestController
 
     protected function isUuid($id)
     {
-        return preg_match('/' . UuidEntityInterface::VALID_UUID_PATTERN . '/', $id);
+        return preg_match('/'.UuidEntityInterface::VALID_UUID_PATTERN.'/', $id);
     }
 
     protected function getEntityClass()
@@ -195,7 +195,15 @@ class EntityController extends DdrRestController
 
     protected function assertPostGranted()
     {
-        $this->denyAccessUnlessGranted('ROLE_USER');
+        $metaDataFactory = $this->get('ddr_rest.metadata.factory');
+        /** @var ClassMetadata $classMetaData */
+        $classMetaData = $metaDataFactory->getMetadataForClass($this->getEntityClass());
+        $postRight = $classMetaData->getPostRight();
+        if (null == $postRight) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $this->denyAccessUnlessGranted($postRight->attributes);
     }
 
     protected function assertGetGranted(EntityInterface $entity)
@@ -210,7 +218,7 @@ class EntityController extends DdrRestController
 
     protected function assertDeleteGranted(EntityInterface $entity)
     {
-        /* Hook */
+        throw $this->createAccessDeniedException();
     }
 
     protected function assertSubresourceListGranted($entity, $subresource)
