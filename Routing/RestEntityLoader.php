@@ -4,6 +4,7 @@ namespace Dontdrinkandroot\RestBundle\Routing;
 
 use Doctrine\Common\Util\Inflector;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
+use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\MetadataFactoryInterface;
 use Symfony\Component\Config\FileLocatorInterface;
 use Symfony\Component\Config\Loader\Loader;
@@ -27,7 +28,6 @@ class RestEntityLoader extends Loader
 
     public function __construct(FileLocatorInterface $fileLocator, MetadataFactoryInterface $metadataFactory)
     {
-
         $this->fileLocator = $fileLocator;
         $this->metadataFactory = $metadataFactory;
     }
@@ -95,6 +95,24 @@ class RestEntityLoader extends Loader
                 $deleteRoute->setMethods(Request::METHOD_DELETE);
                 $deleteRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':delete']));
                 $routes->add($namePrefix . '.delete', $deleteRoute);
+
+                /** @var PropertyMetadata $propertyMetadata */
+                foreach ($classMetadata->propertyMetadata as $propertyMetadata) {
+                    if ($propertyMetadata->isSubResource()) {
+                        $subResourceRoute = new Route($pathPrefix . '/{id}/' . $propertyMetadata->name . '/');
+                        $subResourceRoute->setMethods(Request::METHOD_GET);
+                        $subResourceRoute->setDefaults(
+                            array_merge(
+                                $defaults,
+                                [
+                                    '_controller'  => $controller . ':listSubresource',
+                                    '_subresource' => $propertyMetadata->name
+                                ]
+                            )
+                        );
+                        $routes->add($namePrefix . '.list_' . $propertyMetadata->name, $subResourceRoute);
+                    }
+                }
             }
         }
 

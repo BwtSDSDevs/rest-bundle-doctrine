@@ -6,7 +6,7 @@ namespace Dontdrinkandroot\RestBundle\Metadata\Annotation;
  * @Annotation
  * @Target({"CLASS"})
  */
-class RestResource
+class RootResource
 {
     /**
      * @var string

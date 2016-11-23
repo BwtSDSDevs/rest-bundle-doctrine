@@ -5,7 +5,8 @@ use Doctrine\Common\Annotations\Reader;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Includable;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Postable;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Puttable;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\RestResource;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\RootResource;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\SubResource;
 use Metadata\Driver\DriverInterface;
 
 class AnnotationDriver implements DriverInterface
@@ -24,8 +25,8 @@ class AnnotationDriver implements DriverInterface
     {
         $classMetadata = new ClassMetadata($class->getName());
 
-        /** @var RestResource $restResourceAnnotation */
-        $restResourceAnnotation = $this->reader->getClassAnnotation($class, RestResource::class);
+        /** @var RootResource $restResourceAnnotation */
+        $restResourceAnnotation = $this->reader->getClassAnnotation($class, RootResource::class);
         if (null !== $restResourceAnnotation) {
             $classMetadata->setRestResource(true);
             if (null !== $restResourceAnnotation->namePrefix) {
@@ -58,6 +59,11 @@ class AnnotationDriver implements DriverInterface
             $includableAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Includable::class);
             if (null !== $includableAnnotation) {
                 $propertyMetadata->setIncludable(true);
+            }
+
+            $subResourceAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, SubResource::class);
+            if (null !== $subResourceAnnotation) {
+                $propertyMetadata->setSubResource(true);
             }
 
             $classMetadata->addPropertyMetadata($propertyMetadata);

@@ -5,11 +5,13 @@ namespace Dontdrinkandroot\RestBundle\Controller;
 use Dontdrinkandroot\Entity\EntityInterface;
 use Dontdrinkandroot\Entity\UuidEntityInterface;
 use Dontdrinkandroot\FullStackTestBundle\Entity\BlogPost;
+use Dontdrinkandroot\Pagination\PaginatedResult;
 use Dontdrinkandroot\Repository\UuidEntityRepositoryInterface;
 use Dontdrinkandroot\Service\EntityService;
 use Dontdrinkandroot\Service\EntityServiceInterface;
 use Dontdrinkandroot\Service\UuidEntityService;
 use Dontdrinkandroot\Service\UuidEntityServiceInterface;
+use FOS\RestBundle\View\View;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,11 +20,9 @@ class EntityController extends DdrRestController
     public function listAction(Request $request)
     {
         $this->assertListGranted();
-        $service = $this->getService();
-        $paginatedResult = $service->listPaginated(1, 10);
-        $view = $this->view($paginatedResult->getResults());
+        $result = $this->listEntities($request->query->get('page', 1), $request->query->get('perPage', 50));
+        $view = $this->createViewFromListResult($result);
         $view->getContext()->addGroups(['Default', 'ddr.rest.list']);
-        $this->addPaginationHeaders($paginatedResult->getPagination(), $view);
 
         return $this->handleView($view);
     }
@@ -73,6 +73,22 @@ class EntityController extends DdrRestController
         $this->getService()->remove($entity);
 
         return $this->handleView($this->view(null, Response::HTTP_NO_CONTENT));
+    }
+
+    public function listSubresourceAction(Request $request, $id)
+    {
+        $subresource = $this->getCurrentRequest()->attributes->get('_subresource');
+        $entity = $this->fetchEntity($id);
+        $this->assertSubresourceListGranted($entity, $subresource);
+        $result = $this->listSubresource(
+            $entity,
+            $subresource,
+            $request->query->get('page', 1),
+            $request->query->get('perPage', 50)
+        );
+        $view = $this->createViewFromListResult($result);
+
+        return $this->handleView($view);
     }
 
     /**
@@ -138,6 +154,20 @@ class EntityController extends DdrRestController
         }
     }
 
+    protected function listEntities($page = 1, $perPage = 50)
+    {
+        $service = $this->getService();
+
+        return $service->listPaginated(1, 10);
+    }
+
+    protected function listSubresource(EntityInterface $entity, $subresource, $page = 1, $perPage = 50)
+    {
+        $propertyAccessor = $this->container->get('property_accessor');
+
+        return $propertyAccessor->getValue($entity, $subresource);
+    }
+
     protected function isUuid($id)
     {
         return preg_match('/' . UuidEntityInterface::VALID_UUID_PATTERN . '/', $id);
@@ -160,6 +190,7 @@ class EntityController extends DdrRestController
 
     protected function assertListGranted()
     {
+        /* Hook */
     }
 
     protected function assertPostGranted()
@@ -169,37 +200,38 @@ class EntityController extends DdrRestController
 
     protected function assertGetGranted(EntityInterface $entity)
     {
+        /* Hook */
     }
 
     protected function assertPutGranted(EntityInterface $entity)
     {
-        if ($this->isGranted('ROLE_ADMIN')) {
-            return;
-        }
-
-        if (!$this->isGranted('ROLE_USER')) {
-            throw $this->createAccessDeniedException();
-        }
-
-        /** @var BlogPost $entity */
-        if (!($entity->getAuthor()->getId() === $this->getUser()->getId())) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->assertPostGranted();
     }
 
     protected function assertDeleteGranted(EntityInterface $entity)
     {
-        if ($this->isGranted('ROLE_ADMIN')) {
-            return;
+        /* Hook */
+    }
+
+    protected function assertSubresourceListGranted($entity, $subresource)
+    {
+        /* Hook */
+    }
+
+    /**
+     * @param array|PaginatedResult $result
+     *
+     * @return View
+     */
+    protected function createViewFromListResult($result)
+    {
+        if ($result instanceof PaginatedResult) {
+            $view = $this->view($result->getResults());
+            $this->addPaginationHeaders($result->getPagination(), $view);
+
+            return $view;
         }
 
-        if (!$this->isGranted('ROLE_USER')) {
-            throw $this->createAccessDeniedException();
-        }
-
-        /** @var BlogPost $entity */
-        if (!($entity->getAuthor()->getId() === $this->getUser()->getId())) {
-            throw $this->createAccessDeniedException();
-        }
+        return $this->view($result);
     }
 }

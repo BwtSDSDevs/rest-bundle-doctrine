@@ -22,6 +22,11 @@ class PropertyMetadata extends BasePropertyMetadata
     private $includable = false;
 
     /**
+     * @var bool
+     */
+    private $subResource = false;
+
+    /**
      * @return boolean
      */
     public function isPuttable()
@@ -67,5 +72,21 @@ class PropertyMetadata extends BasePropertyMetadata
     public function setIncludable($includable)
     {
         $this->includable = $includable;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSubResource()
+    {
+        return $this->subResource;
+    }
+
+    /**
+     * @param boolean $subResource
+     */
+    public function setSubResource($subResource)
+    {
+        $this->subResource = $subResource;
     }
 }
