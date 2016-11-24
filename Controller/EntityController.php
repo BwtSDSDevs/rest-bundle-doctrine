@@ -6,6 +6,7 @@ use Dontdrinkandroot\Entity\EntityInterface;
 use Dontdrinkandroot\Entity\UuidEntityInterface;
 use Dontdrinkandroot\Pagination\PaginatedResult;
 use Dontdrinkandroot\Repository\UuidEntityRepositoryInterface;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\Service\EntityService;
 use Dontdrinkandroot\Service\EntityServiceInterface;
@@ -190,35 +191,57 @@ class EntityController extends DdrRestController
 
     protected function assertListGranted()
     {
-        /* Hook */
+        $classMetadata = $this->getClassMetadata();
+        $right = $classMetadata->getListRight();
+        if (null == $right) {
+            return;
+        }
+
+        $this->denyAccessUnlessGranted($right->attributes);
     }
 
     protected function assertPostGranted()
     {
-        $metaDataFactory = $this->get('ddr_rest.metadata.factory');
-        /** @var ClassMetadata $classMetaData */
-        $classMetaData = $metaDataFactory->getMetadataForClass($this->getEntityClass());
-        $postRight = $classMetaData->getPostRight();
-        if (null == $postRight) {
+        $classMetadata = $this->getClassMetadata();
+        $right = $classMetadata->getPostRight();
+        if (null == $right) {
             throw $this->createAccessDeniedException();
         }
 
-        $this->denyAccessUnlessGranted($postRight->attributes);
+        $this->denyAccessUnlessGranted($right->attributes);
     }
 
     protected function assertGetGranted(EntityInterface $entity)
     {
-        /* Hook */
+        $classMetadata = $this->getClassMetadata();
+        $right = $classMetadata->getGetRight();
+        if (null == $right) {
+            return;
+        }
+
+        $this->assertRightGranted($entity, $right);
     }
 
     protected function assertPutGranted(EntityInterface $entity)
     {
-        $this->assertPostGranted();
+        $classMetadata = $this->getClassMetadata();
+        $right = $classMetadata->getPutRight();
+        if (null == $right) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $this->assertRightGranted($entity, $right);
     }
 
     protected function assertDeleteGranted(EntityInterface $entity)
     {
-        throw $this->createAccessDeniedException();
+        $classMetadata = $this->getClassMetadata();
+        $right = $classMetadata->getDeleteRight();
+        if (null == $right) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $this->assertRightGranted($entity, $right);
     }
 
     protected function assertSubresourceListGranted($entity, $subresource)
@@ -241,5 +264,42 @@ class EntityController extends DdrRestController
         }
 
         return $this->view($result);
+    }
+
+    /**
+     * @return ClassMetadata
+     */
+    protected function getClassMetadata()
+    {
+        $metaDataFactory = $this->get('ddr_rest.metadata.factory');
+        /** @var ClassMetadata $classMetaData */
+        $classMetaData = $metaDataFactory->getMetadataForClass($this->getEntityClass());
+
+        return $classMetaData;
+    }
+
+    protected function resolveSubject(EntityInterface $entity, $propertyPath)
+    {
+        if ('this' === $propertyPath) {
+            return $entity;
+        }
+        $propertyAccessor = $this->get('property_accessor');
+
+        return $propertyAccessor->getValue($entity, $propertyPath);
+    }
+
+    /**
+     * @param EntityInterface $entity
+     * @param Right $right
+     */
+    protected function assertRightGranted(EntityInterface $entity, Right $right)
+    {
+        $propertyPath = $right->propertyPath;
+        if (null === $propertyPath) {
+            $this->denyAccessUnlessGranted($right->attributes);
+        } else {
+            $subject = $this->resolveSubject($entity, $propertyPath);
+            $this->denyAccessUnlessGranted($right->attributes, $subject);
+        }
     }
 }

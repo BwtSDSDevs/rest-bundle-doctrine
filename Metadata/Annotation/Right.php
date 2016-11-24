@@ -19,5 +19,5 @@ class Right
     /**
      * @var string
      */
-    public $path;
+    public $propertyPath;
 }
