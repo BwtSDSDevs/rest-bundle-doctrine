@@ -221,7 +221,7 @@ class EntityController extends DdrRestController
     {
         $classMetadata = $this->getClassMetadata();
         $right = $classMetadata->getListRight();
-        if (null == $right) {
+        if (null === $right) {
             return;
         }
 
@@ -232,7 +232,7 @@ class EntityController extends DdrRestController
     {
         $classMetadata = $this->getClassMetadata();
         $right = $classMetadata->getPostRight();
-        if (null == $right) {
+        if (null === $right) {
             throw $this->createAccessDeniedException();
         }
 
@@ -243,7 +243,7 @@ class EntityController extends DdrRestController
     {
         $classMetadata = $this->getClassMetadata();
         $right = $classMetadata->getGetRight();
-        if (null == $right) {
+        if (null === $right) {
             return;
         }
 
@@ -254,7 +254,7 @@ class EntityController extends DdrRestController
     {
         $classMetadata = $this->getClassMetadata();
         $right = $classMetadata->getPutRight();
-        if (null == $right) {
+        if (null === $right) {
             throw $this->createAccessDeniedException();
         }
 
@@ -265,7 +265,7 @@ class EntityController extends DdrRestController
     {
         $classMetadata = $this->getClassMetadata();
         $right = $classMetadata->getDeleteRight();
-        if (null == $right) {
+        if (null === $right) {
             throw $this->createAccessDeniedException();
         }
 
@@ -278,7 +278,7 @@ class EntityController extends DdrRestController
         /** @var PropertyMetadata $propertyMetadata */
         $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
         $right = $propertyMetadata->getSubResourceListRight();
-        if (null == $right) {
+        if (null === $right) {
             return;
         }
 
@@ -291,7 +291,7 @@ class EntityController extends DdrRestController
         /** @var PropertyMetadata $propertyMetadata */
         $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
         $right = $propertyMetadata->getSubResourcePostRight();
-        if (null == $right) {
+        if (null === $right) {
             throw $this->createAccessDeniedException();
         }
 
