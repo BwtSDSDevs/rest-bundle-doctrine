@@ -28,6 +28,11 @@ class PropertyMetadata extends BasePropertyMetadata
     private $subResource = false;
 
     /**
+     * @var string|null
+     */
+    private $subResourcePath;
+
+    /**
      * @var Right|null
      */
     private $subResourceListRight;
@@ -152,5 +157,21 @@ class PropertyMetadata extends BasePropertyMetadata
     public function setSubResourceEntityClass($subResourceEntityClass)
     {
         $this->subResourceEntityClass = $subResourceEntityClass;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getSubResourcePath()
+    {
+        return $this->subResourcePath;
+    }
+
+    /**
+     * @param null|string $subResourcePath
+     */
+    public function setSubResourcePath($subResourcePath)
+    {
+        $this->subResourcePath = $subResourcePath;
     }
 }

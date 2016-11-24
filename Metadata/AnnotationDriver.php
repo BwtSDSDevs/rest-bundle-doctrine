@@ -83,6 +83,9 @@ class AnnotationDriver implements DriverInterface
                 if (null !== $subResourceAnnotation->listRight) {
                     $propertyMetadata->setSubResourceListRight($subResourceAnnotation->listRight);
                 }
+                if (null !== $subResourceAnnotation->path) {
+                    $propertyMetadata->setSubResourcePath($subResourceAnnotation->path);
+                }
 
                 if (null !== $subResourceAnnotation->postRight && null === $subResourceAnnotation->entityClass) {
                     throw new \RuntimeException('Must provide entity class for postable sub resource');

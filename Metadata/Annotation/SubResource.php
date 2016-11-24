@@ -22,4 +22,9 @@ class SubResource
      * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Right
      */
     public $postRight;
+
+    /**
+     * @var string
+     */
+    public $path;
 }

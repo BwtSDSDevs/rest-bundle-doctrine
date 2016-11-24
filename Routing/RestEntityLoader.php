@@ -99,8 +99,12 @@ class RestEntityLoader extends Loader
                 /** @var PropertyMetadata $propertyMetadata */
                 foreach ($classMetadata->propertyMetadata as $propertyMetadata) {
                     if ($propertyMetadata->isSubResource()) {
-                        $subResourcePath = $pathPrefix . '/{id}/' . $propertyMetadata->name . '/';
-                        $subResourceRoute = new Route($subResourcePath);
+                        $subResourcePath = $propertyMetadata->name;
+                        if (null !== $propertyMetadata->getSubResourcePath()) {
+                            $subResourcePath = $propertyMetadata->getSubResourcePath();
+                        }
+                        $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath . '/';
+                        $subResourceRoute = new Route($subResourceFullPath);
                         $subResourceRoute->setMethods(Request::METHOD_GET);
                         $subResourceRoute->setDefaults(
                             array_merge(
@@ -115,8 +119,8 @@ class RestEntityLoader extends Loader
 
                         $postRight = $propertyMetadata->getSubResourcePostRight();
                         if (null !== $postRight) {
-                            $subResourcePath = $pathPrefix . '/{id}/' . $propertyMetadata->name . '/';
-                            $subResourceRoute = new Route($subResourcePath);
+                            $subResourceFullPath = $pathPrefix . '/{id}/' . $propertyMetadata->name . '/';
+                            $subResourceRoute = new Route($subResourceFullPath);
                             $subResourceRoute->setMethods(Request::METHOD_POST);
                             $subResourceRoute->setDefaults(
                                 array_merge(
