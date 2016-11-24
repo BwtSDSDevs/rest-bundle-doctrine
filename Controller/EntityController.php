@@ -8,6 +8,7 @@ use Dontdrinkandroot\Pagination\PaginatedResult;
 use Dontdrinkandroot\Repository\UuidEntityRepositoryInterface;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
+use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Dontdrinkandroot\Service\EntityService;
 use Dontdrinkandroot\Service\EntityServiceInterface;
 use Dontdrinkandroot\Service\UuidEntityService;
@@ -92,6 +93,22 @@ class EntityController extends DdrRestController
         return $this->handleView($view);
     }
 
+    public function postSubresourceAction(Request $request, $id)
+    {
+        $subresource = $this->getCurrentRequest()->attributes->get('_subresource');
+        $parent = $this->fetchEntity($id);
+        $this->assertSubresourcePostGranted($parent, $subresource);
+        $entity = $this->parseRequest($request, null, $this->getSubResourceEntityClass($subresource));
+        $entity = $this->postProcessSubResourcePostedEntity($entity, $parent);
+        $errors = $this->validate($entity);
+        if ($errors->count() > 0) {
+            return $this->handleView($this->view($errors, Response::HTTP_BAD_REQUEST));
+        }
+        $entity = $this->getService()->save($entity);
+
+        return $this->handleView($this->view($entity, Response::HTTP_CREATED));
+    }
+
     /**
      * @return EntityServiceInterface|UuidEntityServiceInterface
      */
@@ -117,13 +134,13 @@ class EntityController extends DdrRestController
         }
     }
 
-    protected function parseRequest(Request $request, EntityInterface $entity = null)
+    protected function parseRequest(Request $request, EntityInterface $entity = null, $entityClass = null)
     {
-        return $this->get('ddr.rest.parser.request')->parseEntity(
-            $request,
-            $this->getService()->getEntityClass(),
-            $entity
-        );
+        if (null === $entityClass) {
+            $entityClass = $this->getService()->getEntityClass();
+        }
+
+        return $this->get('ddr.rest.parser.request')->parseEntity($request, $entityClass, $entity);
     }
 
     /**
@@ -142,6 +159,17 @@ class EntityController extends DdrRestController
      * @return EntityInterface
      */
     protected function postProcessPuttedEntity(EntityInterface $entity)
+    {
+        return $entity;
+    }
+
+    /**
+     * @param EntityInterface $parent
+     * @param EntityInterface $entity
+     *
+     * @return EntityInterface
+     */
+    protected function postProcessSubResourcePostedEntity(EntityInterface $entity, EntityInterface $parent)
     {
         return $entity;
     }
@@ -171,7 +199,7 @@ class EntityController extends DdrRestController
 
     protected function isUuid($id)
     {
-        return preg_match('/'.UuidEntityInterface::VALID_UUID_PATTERN.'/', $id);
+        return preg_match('/' . UuidEntityInterface::VALID_UUID_PATTERN . '/', $id);
     }
 
     protected function getEntityClass()
@@ -244,9 +272,30 @@ class EntityController extends DdrRestController
         $this->assertRightGranted($entity, $right);
     }
 
-    protected function assertSubresourceListGranted($entity, $subresource)
+    protected function assertSubresourceListGranted(EntityInterface $entity, $subresource)
     {
-        /* Hook */
+        $classMetadata = $this->getClassMetadata();
+        /** @var PropertyMetadata $propertyMetadata */
+        $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
+        $right = $propertyMetadata->getSubResourceListRight();
+        if (null == $right) {
+            return;
+        }
+
+        $this->assertRightGranted($entity, $right);
+    }
+
+    protected function assertSubresourcePostGranted(EntityInterface $entity, $subresource)
+    {
+        $classMetadata = $this->getClassMetadata();
+        /** @var PropertyMetadata $propertyMetadata */
+        $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
+        $right = $propertyMetadata->getSubResourcePostRight();
+        if (null == $right) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $this->assertRightGranted($entity, $right);
     }
 
     /**
@@ -278,6 +327,14 @@ class EntityController extends DdrRestController
         return $classMetaData;
     }
 
+    protected function getSubResourceEntityClass($subresource)
+    {
+        /** @var PropertyMetadata $propertyMetadata */
+        $propertyMetadata = $this->getClassMetadata()->propertyMetadata[$subresource];
+
+        return $propertyMetadata->getSubResourceEntityClass();
+    }
+
     protected function resolveSubject(EntityInterface $entity, $propertyPath)
     {
         if ('this' === $propertyPath) {
@@ -290,7 +347,7 @@ class EntityController extends DdrRestController
 
     /**
      * @param EntityInterface $entity
-     * @param Right $right
+     * @param Right           $right
      */
     protected function assertRightGranted(EntityInterface $entity, Right $right)
     {

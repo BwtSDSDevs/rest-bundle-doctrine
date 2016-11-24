@@ -76,9 +76,24 @@ class AnnotationDriver implements DriverInterface
                 $propertyMetadata->setIncludable(true);
             }
 
+            /** @var SubResource $subResourceAnnotation */
             $subResourceAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, SubResource::class);
             if (null !== $subResourceAnnotation) {
                 $propertyMetadata->setSubResource(true);
+                if (null !== $subResourceAnnotation->listRight) {
+                    $propertyMetadata->setSubResourceListRight($subResourceAnnotation->listRight);
+                }
+
+                if (null !== $subResourceAnnotation->postRight && null === $subResourceAnnotation->entityClass) {
+                    throw new \RuntimeException('Must provide entity class for postable sub resource');
+                }
+
+                if (null !== $subResourceAnnotation->postRight) {
+                    $propertyMetadata->setSubResourcePostRight($subResourceAnnotation->postRight);
+                }
+                if (null !== $subResourceAnnotation->entityClass) {
+                    $propertyMetadata->setSubResourceEntityClass($subResourceAnnotation->entityClass);
+                }
             }
 
             $classMetadata->addPropertyMetadata($propertyMetadata);

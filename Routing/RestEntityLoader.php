@@ -64,7 +64,7 @@ class RestEntityLoader extends Loader
                 $controller = $this->getController($classMetadata);
 
                 $defaults = [
-                    '_entityClass' => $class
+                    '_entityClass' => $class,
                 ];
 
                 if (null !== $classMetadata->getService()) {
@@ -99,18 +99,36 @@ class RestEntityLoader extends Loader
                 /** @var PropertyMetadata $propertyMetadata */
                 foreach ($classMetadata->propertyMetadata as $propertyMetadata) {
                     if ($propertyMetadata->isSubResource()) {
-                        $subResourceRoute = new Route($pathPrefix . '/{id}/' . $propertyMetadata->name . '/');
+                        $subResourcePath = $pathPrefix . '/{id}/' . $propertyMetadata->name . '/';
+                        $subResourceRoute = new Route($subResourcePath);
                         $subResourceRoute->setMethods(Request::METHOD_GET);
                         $subResourceRoute->setDefaults(
                             array_merge(
                                 $defaults,
                                 [
                                     '_controller'  => $controller . ':listSubresource',
-                                    '_subresource' => $propertyMetadata->name
+                                    '_subresource' => $propertyMetadata->name,
                                 ]
                             )
                         );
-                        $routes->add($namePrefix . '.list_' . $propertyMetadata->name, $subResourceRoute);
+                        $routes->add($namePrefix . '.' . $propertyMetadata->name . '.list', $subResourceRoute);
+
+                        $postRight = $propertyMetadata->getSubResourcePostRight();
+                        if (null !== $postRight) {
+                            $subResourcePath = $pathPrefix . '/{id}/' . $propertyMetadata->name . '/';
+                            $subResourceRoute = new Route($subResourcePath);
+                            $subResourceRoute->setMethods(Request::METHOD_POST);
+                            $subResourceRoute->setDefaults(
+                                array_merge(
+                                    $defaults,
+                                    [
+                                        '_controller'  => $controller . ':postSubresource',
+                                        '_subresource' => $propertyMetadata->name,
+                                    ]
+                                )
+                            );
+                            $routes->add($namePrefix . '.' . $propertyMetadata->name . '.post', $subResourceRoute);
+                        }
                     }
                 }
             }
