@@ -2,6 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Metadata;
 
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Metadata\MergeableClassMetadata;
 use Metadata\MergeableInterface;
@@ -59,6 +60,11 @@ class ClassMetadata extends MergeableClassMetadata
     public $getRight;
 
     /**
+     * @var string[]
+     */
+    public $methods = ['LIST', 'POST', 'GET', 'PUT', 'DELETE'];
+
+    /**
      * {@inheritdoc}
      */
     public function merge(MergeableInterface $object)
@@ -75,6 +81,7 @@ class ClassMetadata extends MergeableClassMetadata
         $this->postRight = $object->postRight;
         $this->putRight = $object->putRight;
         $this->deleteRight = $object->deleteRight;
+        $this->methods = $this->mergeMethods($this->methods, $object->methods);
     }
 
     /**
@@ -235,5 +242,33 @@ class ClassMetadata extends MergeableClassMetadata
     public function setGetRight(Right $getRight)
     {
         $this->getRight = $getRight;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getMethods()
+    {
+        return $this->methods;
+    }
+
+    /**
+     * @param string[] $methods
+     */
+    public function setMethods(array $methods)
+    {
+        $this->methods = $methods;
+    }
+
+    private function mergeMethods($thisMethods, $otherMethods)
+    {
+        $mergedMethods = [];
+        foreach ($thisMethods as $thisMethod) {
+            if (in_array($thisMethod, $otherMethods)) {
+                $mergedMethods[] = $thisMethod;
+            }
+        }
+
+        return $mergedMethods;
     }
 }

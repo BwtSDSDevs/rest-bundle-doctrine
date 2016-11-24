@@ -2,6 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Controller;
 
+use Doctrine\Common\Util\Inflector;
 use Dontdrinkandroot\Entity\EntityInterface;
 use Dontdrinkandroot\Entity\UuidEntityInterface;
 use Dontdrinkandroot\Pagination\PaginatedResult;
@@ -208,6 +209,11 @@ class EntityController extends DdrRestController
         return $this->getCurrentRequest()->attributes->get('_entityClass');
     }
 
+    protected function getShortName()
+    {
+        return Inflector::tableize($this->getClassMetadata()->reflection->getShortName());
+    }
+
     protected function getServiceId()
     {
         return $this->getCurrentRequest()->attributes->get('_service');
@@ -366,6 +372,6 @@ class EntityController extends DdrRestController
      */
     protected function getSubresourceSerializationGroups($subresource)
     {
-        return ['Default', 'ddr.rest.subresource', 'ddr.rest.subresource.' . $subresource];
+        return ['Default', 'ddr.rest.subresource', 'ddr.rest.' . $this->getShortName() . '.' . $subresource];
     }
 }

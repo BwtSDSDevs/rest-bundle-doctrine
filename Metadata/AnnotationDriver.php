@@ -56,6 +56,9 @@ class AnnotationDriver implements DriverInterface
             if (null !== $restResourceAnnotation->deleteRight) {
                 $classMetadata->setDeleteRight($restResourceAnnotation->deleteRight);
             }
+            if (null !== $restResourceAnnotation->methods) {
+                $classMetadata->setMethods($restResourceAnnotation->methods);
+            }
         }
 
         foreach ($class->getProperties() as $reflectionProperty) {

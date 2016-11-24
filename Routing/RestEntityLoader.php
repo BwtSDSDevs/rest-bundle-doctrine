@@ -59,6 +59,7 @@ class RestEntityLoader extends Loader
             $classMetadata = $this->metadataFactory->getMetadataForClass($class);
             if ($classMetadata->isRestResource()) {
 
+                $methods = $classMetadata->getMethods();
                 $namePrefix = $this->getNamePrefix($classMetadata);
                 $pathPrefix = $this->getPathPrefix($classMetadata);
                 $controller = $this->getController($classMetadata);
@@ -71,30 +72,40 @@ class RestEntityLoader extends Loader
                     $defaults['_service'] = $classMetadata->getService();
                 }
 
-                $listRoute = new Route($pathPrefix);
-                $listRoute->setMethods(Request::METHOD_GET);
-                $listRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':list']));
-                $routes->add($namePrefix . '.list', $listRoute);
+                if (in_array('LIST', $methods)) {
+                    $listRoute = new Route($pathPrefix);
+                    $listRoute->setMethods(Request::METHOD_GET);
+                    $listRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':list']));
+                    $routes->add($namePrefix . '.list', $listRoute);
+                }
 
-                $postRoute = new Route($pathPrefix);
-                $postRoute->setMethods(Request::METHOD_POST);
-                $postRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':post']));
-                $routes->add($namePrefix . '.post', $postRoute);
+                if (in_array('POST', $methods)) {
+                    $postRoute = new Route($pathPrefix);
+                    $postRoute->setMethods(Request::METHOD_POST);
+                    $postRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':post']));
+                    $routes->add($namePrefix . '.post', $postRoute);
+                }
 
-                $getRoute = new Route($pathPrefix . '/{id}');
-                $getRoute->setMethods(Request::METHOD_GET);
-                $getRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':get']));
-                $routes->add($namePrefix . '.get', $getRoute);
+                if (in_array('GET', $methods)) {
+                    $getRoute = new Route($pathPrefix . '/{id}');
+                    $getRoute->setMethods(Request::METHOD_GET);
+                    $getRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':get']));
+                    $routes->add($namePrefix . '.get', $getRoute);
+                }
 
-                $putRoute = new Route($pathPrefix . '/{id}');
-                $putRoute->setMethods(Request::METHOD_PUT);
-                $putRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':put']));
-                $routes->add($namePrefix . '.put', $putRoute);
+                if (in_array('PUT', $methods)) {
+                    $putRoute = new Route($pathPrefix . '/{id}');
+                    $putRoute->setMethods(Request::METHOD_PUT);
+                    $putRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':put']));
+                    $routes->add($namePrefix . '.put', $putRoute);
+                }
 
-                $deleteRoute = new Route($pathPrefix . '/{id}');
-                $deleteRoute->setMethods(Request::METHOD_DELETE);
-                $deleteRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':delete']));
-                $routes->add($namePrefix . '.delete', $deleteRoute);
+                if (in_array('DELETE', $methods)) {
+                    $deleteRoute = new Route($pathPrefix . '/{id}');
+                    $deleteRoute->setMethods(Request::METHOD_DELETE);
+                    $deleteRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':delete']));
+                    $routes->add($namePrefix . '.delete', $deleteRoute);
+                }
 
                 /** @var PropertyMetadata $propertyMetadata */
                 foreach ($classMetadata->propertyMetadata as $propertyMetadata) {

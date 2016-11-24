@@ -52,4 +52,9 @@ class RootResource
      * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Right
      */
     public $getRight;
+
+    /**
+     * @var string[]
+     */
+    public $methods;
 }
