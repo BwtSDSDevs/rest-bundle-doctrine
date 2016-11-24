@@ -89,6 +89,7 @@ class EntityController extends DdrRestController
             $request->query->get('perPage', 50)
         );
         $view = $this->createViewFromListResult($result);
+        $view->getContext()->addGroups($this->getSubresourceSerializationGroups($subresource));
 
         return $this->handleView($view);
     }
@@ -358,5 +359,13 @@ class EntityController extends DdrRestController
             $subject = $this->resolveSubject($entity, $propertyPath);
             $this->denyAccessUnlessGranted($right->attributes, $subject);
         }
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function getSubresourceSerializationGroups($subresource)
+    {
+        return ['Default', 'ddr.rest.subresource', 'ddr.rest.subresource.' . $subresource];
     }
 }

@@ -71,12 +71,12 @@ class RestEntityLoader extends Loader
                     $defaults['_service'] = $classMetadata->getService();
                 }
 
-                $listRoute = new Route($pathPrefix . '/');
+                $listRoute = new Route($pathPrefix);
                 $listRoute->setMethods(Request::METHOD_GET);
                 $listRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':list']));
                 $routes->add($namePrefix . '.list', $listRoute);
 
-                $postRoute = new Route($pathPrefix . '/');
+                $postRoute = new Route($pathPrefix);
                 $postRoute->setMethods(Request::METHOD_POST);
                 $postRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':post']));
                 $routes->add($namePrefix . '.post', $postRoute);
@@ -103,7 +103,7 @@ class RestEntityLoader extends Loader
                         if (null !== $propertyMetadata->getSubResourcePath()) {
                             $subResourcePath = $propertyMetadata->getSubResourcePath();
                         }
-                        $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath . '/';
+                        $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath;
                         $subResourceRoute = new Route($subResourceFullPath);
                         $subResourceRoute->setMethods(Request::METHOD_GET);
                         $subResourceRoute->setDefaults(
@@ -119,7 +119,7 @@ class RestEntityLoader extends Loader
 
                         $postRight = $propertyMetadata->getSubResourcePostRight();
                         if (null !== $postRight) {
-                            $subResourceFullPath = $pathPrefix . '/{id}/' . $propertyMetadata->name . '/';
+                            $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath;
                             $subResourceRoute = new Route($subResourceFullPath);
                             $subResourceRoute->setMethods(Request::METHOD_POST);
                             $subResourceRoute->setDefaults(
