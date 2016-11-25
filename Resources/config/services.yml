@@ -37,6 +37,7 @@ services:
         arguments:
             - '@ddr_rest.metadata.factory'
             - '@jms_serializer'
+            - '@property_accessor'
 
     # We do not want serialization into underscored properties
     ddr.serializer.naming_strategy.identical_property_naming:

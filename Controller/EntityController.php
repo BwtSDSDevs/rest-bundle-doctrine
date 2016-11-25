@@ -101,7 +101,7 @@ class EntityController extends DdrRestController
         $parent = $this->fetchEntity($id);
         $this->assertSubresourcePostGranted($parent, $subresource);
         $entity = $this->parseRequest($request, null, $this->getSubResourceEntityClass($subresource));
-        $entity = $this->postProcessSubResourcePostedEntity($entity, $parent);
+        $entity = $this->postProcessSubResourcePostedEntity($subresource, $entity, $parent);
         $errors = $this->validate($entity);
         if ($errors->count() > 0) {
             return $this->handleView($this->view($errors, Response::HTTP_BAD_REQUEST));
@@ -166,13 +166,17 @@ class EntityController extends DdrRestController
     }
 
     /**
+     * @param string          $subresource
      * @param EntityInterface $parent
      * @param EntityInterface $entity
      *
      * @return EntityInterface
      */
-    protected function postProcessSubResourcePostedEntity(EntityInterface $entity, EntityInterface $parent)
-    {
+    protected function postProcessSubResourcePostedEntity(
+        $subresource,
+        EntityInterface $entity,
+        EntityInterface $parent
+    ) {
         return $entity;
     }
 
