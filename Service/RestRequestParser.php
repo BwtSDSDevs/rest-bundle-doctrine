@@ -90,7 +90,7 @@ class RestRequestParser
     protected function updateProperty(&$object, $method, $data, $propertyName)
     {
         $dataValue = $this->propertyAccessor->getValue($data, $propertyName);
-        if (is_object($dataValue)) {
+        if (is_object($dataValue) && !$this->isAtomicObject($dataValue)) {
             $this->updatePropertyObject($object, $method, $propertyName, $dataValue);
         } else {
             $this->propertyAccessor->setValue($object, $propertyName, $dataValue);
@@ -130,5 +130,13 @@ class RestRequestParser
         }
 
         return false;
+    }
+
+    private function isAtomicObject($object)
+    {
+        $atomicClasses = [\DateTime::class];
+        $class = get_class($object);
+
+        return in_array($class, $atomicClasses);
     }
 }
