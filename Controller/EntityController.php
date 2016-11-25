@@ -106,7 +106,7 @@ class EntityController extends DdrRestController
         if ($errors->count() > 0) {
             return $this->handleView($this->view($errors, Response::HTTP_BAD_REQUEST));
         }
-        $entity = $this->getService()->save($entity);
+        $entity = $this->saveSubResource($subresource, $entity);
 
         return $this->handleView($this->view($entity, Response::HTTP_CREATED));
     }
@@ -377,5 +377,16 @@ class EntityController extends DdrRestController
     protected function getSubresourceSerializationGroups($subresource)
     {
         return ['Default', 'ddr.rest.subresource', 'ddr.rest.' . $this->getShortName() . '.' . $subresource];
+    }
+
+    /**
+     * @param string          $subresource
+     * @param EntityInterface $entity
+     *
+     * @return EntityInterface
+     */
+    protected function saveSubResource($subresource, EntityInterface $entity)
+    {
+        return $this->getService()->save($entity);
     }
 }
