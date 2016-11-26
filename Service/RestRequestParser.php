@@ -46,7 +46,7 @@ class RestRequestParser
     public function parseEntity(Request $request, $entityClass, EntityInterface $entity = null)
     {
         $method = $request->getMethod();
-        $content = $request->getContent();
+        $content = $this->getRequestContent($request);
         $format = $request->getRequestFormat();
 
         $parsedEntity = $this->serializer->deserialize(
@@ -62,6 +62,26 @@ class RestRequestParser
         $this->updateObject($entity, $method, $parsedEntity);
 
         return $entity;
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return string
+     */
+    protected function getRequestContent(Request $request)
+    {
+        $content = $request->getContent();
+        if ('' !== $content) {
+            return $content;
+        }
+
+        $parameters = $request->request->all();
+        if (count($parameters) > 0) {
+            return json_encode($parameters);
+        }
+
+        return $content;
     }
 
     /**
