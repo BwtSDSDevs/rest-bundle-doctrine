@@ -81,7 +81,7 @@ class RestRequestParser
             return json_encode($parameters);
         }
 
-        return $content;
+        return '{}';
     }
 
     /**
