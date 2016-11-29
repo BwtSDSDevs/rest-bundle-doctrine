@@ -41,17 +41,14 @@ class IncludesExclusionStrategy implements ExclusionStrategyInterface
     public function shouldSkipProperty(PropertyMetadata $property, Context $context)
     {
         $includes = $this->getIncludes();
-        if ($context->getDepth() > 1) {
-            return false;
-        }
-
         $classMetadata = $this->metadataFactory->getMetadataForClass($property->class);
         /** @var \Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata[] $propertyMetadatas */
         $propertyMetadatas = $classMetadata->propertyMetadata;
         if (array_key_exists($property->name, $propertyMetadatas)) {
             $propertyMetadata = $propertyMetadatas[$property->name];
             if ($propertyMetadata->isIncludable()) {
-                if (!$this->hasInclude($propertyMetadata->name)) {
+                $path = $this->getPathString($context, $property);
+                if (!$this->hasInclude($path, $includes)) {
                     return true;
                 }
             }
@@ -71,10 +68,20 @@ class IncludesExclusionStrategy implements ExclusionStrategyInterface
         return explode(',', $includeString);
     }
 
-    private function hasInclude($name)
+    private function hasInclude($path, array $includes)
     {
-        $includes = $this->getIncludes();
+        return in_array($path, $includes);
+    }
 
-        return in_array($name, $includes);
+    private function getPathString(Context $context, PropertyMetadata $property)
+    {
+        $name = $property->name;
+        if (1 === $context->getDepth()) {
+            return $name;
+        }
+        $pathString = implode('.', $context->getCurrentPath());
+        $pathString .= '.' . $name;
+
+        return $pathString;
     }
 }
