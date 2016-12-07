@@ -80,7 +80,7 @@ class EntityController extends DdrRestController
 
     public function listSubresourceAction(Request $request, $id)
     {
-        $subresource = $this->getCurrentRequest()->attributes->get('_subresource');
+        $subresource = $this->getSubresource();
         $entity = $this->fetchEntity($id);
         $this->assertSubresourceListGranted($entity, $subresource);
         $result = $this->listSubresource(
@@ -97,7 +97,7 @@ class EntityController extends DdrRestController
 
     public function postSubresourceAction(Request $request, $id)
     {
-        $subresource = $this->getCurrentRequest()->attributes->get('_subresource');
+        $subresource = $this->getSubresource();
         $parent = $this->fetchEntity($id);
         $this->assertSubresourcePostGranted($parent, $subresource);
         $entity = $this->parseRequest($request, null, $this->getSubResourceEntityClass($subresource));
@@ -388,5 +388,13 @@ class EntityController extends DdrRestController
     protected function saveSubResource($subresource, EntityInterface $entity)
     {
         return $this->getService()->save($entity);
+    }
+
+    /**
+     * @return string|null
+     */
+    protected function getSubresource()
+    {
+        return $this->getCurrentRequest()->attributes->get('_subresource');
     }
 }

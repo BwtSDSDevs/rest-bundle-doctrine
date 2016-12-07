@@ -44,10 +44,12 @@ abstract class RestTestCase extends WebTestCase
             $response->getStatusCode(),
             $content
         );
-        $this->assertTrue(
-            $response->headers->contains('Content-Type', 'application/json'),
-            $response->headers
-        );
+        if (Response::HTTP_NO_CONTENT !== $statusCode) {
+            $this->assertTrue(
+                $response->headers->contains('Content-Type', 'application/json'),
+                sprintf('JSON content type missing, given: %s', $response->headers->get('Content-Type'))
+            );
+        }
 
         return json_decode($content, true);
     }
@@ -113,9 +115,9 @@ abstract class RestTestCase extends WebTestCase
     /**
      * @param string $url
      * @param array  $parameters
-     * @param array       $headers
-     * @param array       $content
-     * @param array       $files
+     * @param array  $headers
+     * @param array  $content
+     * @param array  $files
      *
      * @return null|Response
      */
@@ -139,8 +141,8 @@ abstract class RestTestCase extends WebTestCase
     }
 
     /**
-     * @param string $url
-     * @param array  $parameters
+     * @param string      $url
+     * @param array       $parameters
      * @param array       $headers
      * @param string|null $content
      *
