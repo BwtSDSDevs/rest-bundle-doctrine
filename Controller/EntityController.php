@@ -39,7 +39,7 @@ class EntityController extends DdrRestController
         if ($errors->count() > 0) {
             return $this->handleView($this->view($errors, Response::HTTP_BAD_REQUEST));
         }
-        $entity = $this->getService()->save($entity);
+        $entity = $this->createEntity($entity);
 
         return $this->handleView($this->view($entity, Response::HTTP_CREATED));
     }
@@ -64,7 +64,7 @@ class EntityController extends DdrRestController
         if ($errors->count() > 0) {
             return $this->handleView($this->view($errors, Response::HTTP_BAD_REQUEST));
         }
-        $entity = $this->getService()->save($entity);
+        $entity = $this->updateEntity($entity);
 
         return $this->handleView($this->view($entity));
     }
@@ -194,6 +194,16 @@ class EntityController extends DdrRestController
         $service = $this->getService();
 
         return $service->listPaginated(1, 10);
+    }
+
+    protected function createEntity(EntityInterface $entity)
+    {
+        return $this->getService()->save($entity);
+    }
+
+    protected function updateEntity(EntityInterface $entity)
+    {
+        return $this->getService()->save($entity);
     }
 
     protected function listSubresource(EntityInterface $entity, $subresource, $page = 1, $perPage = 50)
