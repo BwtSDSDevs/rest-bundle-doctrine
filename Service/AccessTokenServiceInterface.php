@@ -7,30 +7,13 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 interface AccessTokenServiceInterface
 {
-    /**
-     * @param string $username
-     * @param string $password
-     *
-     * @return AccessToken
-     */
-    public function createAcessToken($username, $password);
+    public function createAccessToken(string $username, string $password): AccessToken;
 
-    /**
-     * @param string $token
-     *
-     * @return UserInterface|null
-     */
-    public function findUserByToken($token);
+    public function createAccessTokenForUser(UserInterface $user): AccessToken;
 
-    /**
-     * @return int
-     */
-    public function cleanUpExpiredTokens();
+    public function findUserByToken(string $token): ?UserInterface;
 
-    /**
-     * @param UserInterface $user
-     *
-     * @return AccessToken[]
-     */
-    public function listByUser(UserInterface $user);
+    public function cleanUpExpiredTokens(): int;
+
+    public function listByUser(UserInterface $user): array;
 }

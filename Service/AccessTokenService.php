@@ -51,11 +51,11 @@ class AccessTokenService implements AccessTokenServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function createAcessToken($username, $password)
+    public function createAccessToken(string $username, string $password): AccessToken
     {
         $usernamePasswordToken = new UsernamePasswordToken($username, $password, $this->authenticationProviderKey);
         $token = $this->authenticationManager->authenticate($usernamePasswordToken);
-        $accessToken = $this->generateAndSaveAccessToken($token->getUser());
+        $accessToken = $this->createAccessTokenForUser($token->getUser());
 
         return $accessToken;
     }
@@ -63,7 +63,7 @@ class AccessTokenService implements AccessTokenServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function findUserByToken($token)
+    public function findUserByToken(string $token): ?UserInterface
     {
         return $this->accessTokenRepository->findUserByToken($token);
     }
@@ -71,12 +71,15 @@ class AccessTokenService implements AccessTokenServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function listByUser(UserInterface $user)
+    public function listByUser(UserInterface $user): array
     {
         return $this->accessTokenRepository->findBy(['user' => $user]);
     }
 
-    private function generateAndSaveAccessToken($user)
+    /**
+     * {@inheritdoc}
+     */
+    public function createAccessTokenForUser(UserInterface $user): AccessToken
     {
         $token = bin2hex(random_bytes(32));
         /** @var AccessToken $accessToken */
@@ -91,9 +94,9 @@ class AccessTokenService implements AccessTokenServiceInterface
     }
 
     /**
-     * @return int
+     * {@inheritdoc}
      */
-    public function cleanUpExpiredTokens()
+    public function cleanUpExpiredTokens(): int
     {
         $accessTokens = $this->accessTokenRepository->findExpiredTokens();
         foreach ($accessTokens as $accessToken) {
