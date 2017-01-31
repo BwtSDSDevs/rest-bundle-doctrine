@@ -17,8 +17,8 @@ class Configuration implements ConfigurationInterface
 
         // @formatter:off
         $rootNode->children()
-            ->scalarNode('access_token_class')->isRequired()->end()
-            ->scalarNode('authentication_provider_key')->isRequired()->end()
+            ->scalarNode('access_token_class')->defaultNull()->end()
+            ->scalarNode('authentication_provider_key')->defaultNull()->end()
         ->end();
         // @formatter:on
 
