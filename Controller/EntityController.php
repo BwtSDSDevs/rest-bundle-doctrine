@@ -6,15 +6,13 @@ use Doctrine\Common\Util\Inflector;
 use Dontdrinkandroot\Entity\EntityInterface;
 use Dontdrinkandroot\Entity\UuidEntityInterface;
 use Dontdrinkandroot\Pagination\PaginatedResult;
-use Dontdrinkandroot\Repository\UuidEntityRepositoryInterface;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
-use Dontdrinkandroot\Service\EntityService;
-use Dontdrinkandroot\Service\EntityServiceInterface;
-use Dontdrinkandroot\Service\UuidEntityService;
-use Dontdrinkandroot\Service\UuidEntityServiceInterface;
+use Dontdrinkandroot\RestBundle\Service\CrudServiceInterface;
+use Dontdrinkandroot\RestBundle\Service\DoctrineEntityRepositoryCrudService;
 use FOS\RestBundle\View\View;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -24,10 +22,12 @@ class EntityController extends DdrRestController
     {
         $this->assertListGranted();
         $result = $this->listEntities($request->query->get('page', 1), $request->query->get('perPage', 50));
-        $view = $this->createViewFromListResult($result);
-        $view->getContext()->addGroups(['Default', 'ddr.rest.list']);
 
-        return $this->handleView($view);
+        return new JsonResponse(iterator_to_array($result));
+        //$view = $this->createViewFromListResult($result);
+        //$view->getContext()->addGroups(['Default', 'ddr.rest.list']);
+
+        //return $this->handleView($view);
     }
 
     public function postAction(Request $request)
@@ -112,7 +112,7 @@ class EntityController extends DdrRestController
     }
 
     /**
-     * @return EntityServiceInterface|UuidEntityServiceInterface
+     * @return CrudServiceInterface
      */
     protected function getService()
     {
@@ -123,13 +123,10 @@ class EntityController extends DdrRestController
                 throw new \RuntimeException('No service or entity class given');
             }
             $repository = $this->get('doctrine')->getRepository($entityClass);
-            if ($repository instanceof UuidEntityRepositoryInterface) {
-                return new EntityService($repository);
-            } else {
-                return new UuidEntityService($repository);
-            }
+
+            return new DoctrineEntityRepositoryCrudService($repository);
         } else {
-            /** @var EntityServiceInterface|UuidEntityServiceInterface $service */
+            /** @var CrudServiceInterface $service */
             $service = $this->get($serviceId);
 
             return $service;
@@ -193,7 +190,7 @@ class EntityController extends DdrRestController
     {
         $service = $this->getService();
 
-        return $service->listPaginated(1, 10);
+        return $service->listPaginated($page, $perPage);
     }
 
     protected function createEntity(EntityInterface $entity)
