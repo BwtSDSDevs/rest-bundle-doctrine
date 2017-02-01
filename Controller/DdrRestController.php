@@ -7,10 +7,11 @@ use Dontdrinkandroot\RestBundle\Form\DateTimeSubscriber;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\Serializer;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-class DdrRestController extends FOSRestController
+class DdrRestController extends Controller
 {
     /**
      * @param Request $request
