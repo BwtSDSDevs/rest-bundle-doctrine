@@ -16,6 +16,7 @@ use JMS\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EntityController extends DdrRestController
 {
@@ -24,10 +25,7 @@ class EntityController extends DdrRestController
         $this->assertListGranted();
         $result = $this->listEntities($request->query->get('page', 1), $request->query->get('perPage', 50));
         $entities = iterator_to_array($result);
-
-        /** @var Serializer $serializer */
-        $serializer = $this->get('jms_serializer');
-        $content = $serializer->serialize($entities, 'json');
+        $content = $this->serialize($entities);
 
         return new JsonResponse($content, Response::HTTP_OK, [], true);
     }
@@ -48,12 +46,14 @@ class EntityController extends DdrRestController
 
     public function getAction(Request $request, $id)
     {
-        $entity = $this->fetchEntity($id);
+        $entity = $this->getService()->findById($id);
+        if (null === $entity) {
+            throw new NotFoundHttpException();
+        }
         $this->assertGetGranted($entity);
-        $view = $this->view($entity);
-        $view->getContext()->addGroups(['Default', 'ddr.rest.get']);
+        $content = $this->serialize($entity);
 
-        return $this->handleView($view);
+        return new JsonResponse($content, Response::HTTP_OK, [], true);
     }
 
     public function putAction(Request $request, $id)
@@ -212,11 +212,6 @@ class EntityController extends DdrRestController
         return $propertyAccessor->getValue($entity, $subresource);
     }
 
-    protected function isUuid($id)
-    {
-        return preg_match('/' . UuidEntityInterface::VALID_UUID_PATTERN . '/', $id);
-    }
-
     protected function getEntityClass()
     {
         return $this->getCurrentRequest()->attributes->get('_entityClass');
@@ -259,7 +254,7 @@ class EntityController extends DdrRestController
         $this->denyAccessUnlessGranted($right->attributes);
     }
 
-    protected function assertGetGranted(EntityInterface $entity)
+    protected function assertGetGranted($entity)
     {
         $classMetadata = $this->getClassMetadata();
         $right = $classMetadata->getGetRight();
@@ -405,5 +400,18 @@ class EntityController extends DdrRestController
     protected function getSubresource()
     {
         return $this->getCurrentRequest()->attributes->get('_subresource');
+    }
+
+    /**
+     * @param $data
+     *
+     * @return mixed|string
+     */
+    protected function serialize($data)
+    {
+        /** @var Serializer $serializer */
+        $serializer = $this->get('jms_serializer');
+
+        return $serializer->serialize($data, 'json');
     }
 }
