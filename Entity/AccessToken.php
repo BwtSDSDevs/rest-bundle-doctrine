@@ -5,8 +5,13 @@ namespace Dontdrinkandroot\RestBundle\Entity;
 use Dontdrinkandroot\Entity\GeneratedIntegerIdEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-abstract class AccessToken extends GeneratedIntegerIdEntity
+abstract class AccessToken
 {
+    /**
+     * @var int
+     */
+    private $id;
+
     /**
      * @var string
      */
@@ -16,6 +21,14 @@ abstract class AccessToken extends GeneratedIntegerIdEntity
      * @var \DateTime|null
      */
     private $expiry;
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
 
     /**
      * @return string
