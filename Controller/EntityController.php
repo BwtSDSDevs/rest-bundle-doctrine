@@ -12,6 +12,7 @@ use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Dontdrinkandroot\RestBundle\Service\CrudServiceInterface;
 use Dontdrinkandroot\RestBundle\Service\DoctrineEntityRepositoryCrudService;
 use FOS\RestBundle\View\View;
+use JMS\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,12 +23,13 @@ class EntityController extends DdrRestController
     {
         $this->assertListGranted();
         $result = $this->listEntities($request->query->get('page', 1), $request->query->get('perPage', 50));
+        $entities = iterator_to_array($result);
 
-        return new JsonResponse(iterator_to_array($result));
-        //$view = $this->createViewFromListResult($result);
-        //$view->getContext()->addGroups(['Default', 'ddr.rest.list']);
+        /** @var Serializer $serializer */
+        $serializer = $this->get('jms_serializer');
+        $content = $serializer->serialize($entities, 'json');
 
-        //return $this->handleView($view);
+        return new JsonResponse($content, Response::HTTP_OK, [], true);
     }
 
     public function postAction(Request $request)
