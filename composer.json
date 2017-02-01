@@ -16,6 +16,7 @@
     ],
     "require": {
         "php": ">=7.1",
+        "doctrine/common": "^2.7",
         "symfony/framework-bundle": "^2.8|^3.0",
         "symfony/validator": "^2.8|^3.0",
         "symfony/security": "^2.8|^3.0",
