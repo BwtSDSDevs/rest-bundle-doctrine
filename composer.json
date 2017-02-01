@@ -2,7 +2,10 @@
     "name": "dontdrinkandroot/rest-bundle",
     "description": "Symfony bundle that provides REST utitilies",
     "type": "symfony-bundle",
-    "keywords": ["REST", "Utils"],
+    "keywords": [
+        "REST",
+        "Utils"
+    ],
     "license": "Apache-2.0",
     "authors": [
         {
@@ -16,11 +19,6 @@
         "symfony/framework-bundle": "^2.8|^3.0",
         "symfony/validator": "^2.8|^3.0",
         "symfony/security": "^2.8|^3.0",
-        "friendsofsymfony/rest-bundle": "^2.1",
-        "dontdrinkandroot/utils": "0.5.x-dev",
-        "dontdrinkandroot/utils-bundle": "0.3.x-dev",
-        "dontdrinkandroot/doctrine": "0.1.x-dev",
-        "dontdrinkandroot/doctrine-bundle": "0.2.x-dev",
         "jms/serializer-bundle": "^1.1"
     },
     "require-dev": {
