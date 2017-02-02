@@ -2,7 +2,6 @@
 
 namespace Dontdrinkandroot\RestBundle\Entity;
 
-use Dontdrinkandroot\Entity\GeneratedIntegerIdEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 abstract class AccessToken

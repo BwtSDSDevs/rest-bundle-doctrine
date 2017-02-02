@@ -2,7 +2,6 @@
 
 namespace Dontdrinkandroot\RestBundle\Metadata;
 
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Metadata\MergeableClassMetadata;
 use Metadata\MergeableInterface;

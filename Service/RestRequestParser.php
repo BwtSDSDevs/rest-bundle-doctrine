@@ -37,13 +37,13 @@ class RestRequestParser
     }
 
     /**
-     * @param Request              $request
-     * @param string               $entityClass
-     * @param EntityInterface|null $entity
+     * @param Request     $request
+     * @param string      $entityClass
+     * @param object|null $entity
      *
-     * @return EntityInterface
+     * @return object
      */
-    public function parseEntity(Request $request, $entityClass, EntityInterface $entity = null)
+    public function parseEntity(Request $request, $entityClass, $entity = null)
     {
         $method = $request->getMethod();
         $content = $this->getRequestContent($request);

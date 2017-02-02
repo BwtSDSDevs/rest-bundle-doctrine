@@ -2,18 +2,18 @@
 
 namespace Dontdrinkandroot\RestBundle\Repository;
 
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
-use Dontdrinkandroot\Repository\OrmEntityRepository;
 use Dontdrinkandroot\RestBundle\Entity\AccessToken;
 
-class AccessTokenRepository extends OrmEntityRepository implements AccessTokenRepositoryInterface
+class AccessTokenRepository extends EntityRepository implements AccessTokenRepositoryInterface
 {
     /**
      * {@inheritdoc}
      */
     public function findUserByToken($token)
     {
-        return $this->getTransactionManager()->transactional(
+        return $this->getEntityManager()->transactional(
             function () use ($token) {
                 /** @var AccessToken $accessToken */
                 $accessToken = $this->createFindUserByTokenQuery($token)->getOneOrNullResult();
@@ -22,7 +22,7 @@ class AccessTokenRepository extends OrmEntityRepository implements AccessTokenRe
                 }
 
                 if ($this->isExpired($accessToken)) {
-                    $this->remove($accessToken);
+                    $this->getEntityManager()->remove($accessToken);
 
                     return null;
                 }
