@@ -2,6 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Service;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Dontdrinkandroot\Entity\EntityInterface;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use JMS\Serializer\SerializerInterface;
@@ -14,7 +15,7 @@ class RestRequestParser
     /**
      * @var MetadataFactory
      */
-    private $metadataFactory;
+    private $ddrRestMetadataFactory;
 
     /**
      * @var SerializerInterface
@@ -26,14 +27,20 @@ class RestRequestParser
      */
     private $propertyAccessor;
 
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
     public function __construct(
-        MetadataFactory $metadataFactory,
-        SerializerInterface $serializer,
-        PropertyAccessor $propertyAccessor
+
+        MetadataFactory $ddrRestMetadataFactory,
+        PropertyAccessor $propertyAccessor,
+        EntityManagerInterface $entityManager
     ) {
-        $this->metadataFactory = $metadataFactory;
-        $this->serializer = $serializer;
+        $this->ddrRestMetadataFactory = $ddrRestMetadataFactory;
         $this->propertyAccessor = $propertyAccessor;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -49,17 +56,13 @@ class RestRequestParser
         $content = $this->getRequestContent($request);
         $format = $request->getRequestFormat();
 
-        $parsedEntity = $this->serializer->deserialize(
-            $content,
-            $entityClass,
-            $format
-        );
+        $data = $request->request->all();
 
         if (null === $entity) {
             $entity = new $entityClass;
         }
 
-        $this->updateObject($entity, $method, $parsedEntity);
+        $this->updateObject($entity, $method, $data);
 
         return $entity;
     }
@@ -87,16 +90,20 @@ class RestRequestParser
     /**
      * @param object $object Access by reference.
      * @param string $method
-     * @param mixed  $data
+     * @param array  $data
      */
     protected function updateObject(&$object, $method, $data)
     {
-        $classMetadata = $this->metadataFactory->getMetadataForClass(get_class($object));
-        /** @var PropertyMetadata $propertyMetadata */
-        foreach ($classMetadata->propertyMetadata as $propertyMetadata) {
-            $propertyName = $propertyMetadata->name;
+        $classMetadata = $this->ddrRestMetadataFactory->getMetadataForClass(get_class($object));
+
+        foreach ($data as $key => $value) {
+            if (!array_key_exists($key, $classMetadata->propertyMetadata)) {
+                throw new \RuntimeException(sprintf('No field %s for Class %s', $key, get_class($object)));
+            }
+            /** @var PropertyMetadata $propertyMetadata */
+            $propertyMetadata = $classMetadata->propertyMetadata[$key];
             if ($this->isUpdateable($method, $propertyMetadata)) {
-                $this->updateProperty($object, $method, $data, $propertyName);
+                $this->updateProperty($object, $method, $key, $value);
             }
         }
     }
@@ -104,34 +111,50 @@ class RestRequestParser
     /**
      * @param object $object Access by reference.
      * @param string $method
-     * @param mixed  $data
      * @param string $propertyName
+     * @param mixed  $value
      */
-    protected function updateProperty(&$object, $method, $data, $propertyName)
+    protected function updateProperty(&$object, $method, $propertyName, $value)
     {
-        $dataValue = $this->propertyAccessor->getValue($data, $propertyName);
-        if (is_object($dataValue) && !$this->isAtomicObject($dataValue)) {
-            $this->updatePropertyObject($object, $method, $propertyName, $dataValue);
-        } else {
-            $this->propertyAccessor->setValue($object, $propertyName, $dataValue);
+        $doctrineClassMetadata = $this->entityManager->getClassMetadata(get_class($object));
+
+        if (array_key_exists($propertyName, $doctrineClassMetadata->embeddedClasses)) {
+            $embeddedClass = $doctrineClassMetadata->embeddedClasses[$propertyName]['class'];
+            $this->updatePropertyObject($object, $method, $embeddedClass, $propertyName, $value);
+
+            return;
         }
+
+        if (array_key_exists($propertyName, $doctrineClassMetadata->associationMappings)) {
+            $associatedClass = $doctrineClassMetadata->associationMappings[$propertyName]['targetEntity'];
+            $this->updatePropertyObject($object, $method, $associatedClass, $propertyName, $value);
+
+            return;
+        }
+
+        $doctrineFieldMetadata = $doctrineClassMetadata->fieldMappings[$propertyName];
+        $type = $doctrineFieldMetadata['type'];
+
+        $convertedValue = $this->convert($type, $value);
+
+        $this->propertyAccessor->setValue($object, $propertyName, $convertedValue);
     }
 
     /**
      * @param object $object Access by reference.
      * @param string $method
      * @param string $propertyName
-     * @param object $value
+     * @param [] $value
      */
-    protected function updatePropertyObject(&$object, $method, $propertyName, $value)
+    protected function updatePropertyObject(&$object, $method, $class, $propertyName, $value)
     {
-        $objectValue = $this->propertyAccessor->getValue($object, $propertyName);
-        if (null === $objectValue) {
-            $dataValueClass = get_class($value);
-            $objectValue = new $dataValueClass;
+        $propertyObject = $this->propertyAccessor->getValue($object, $propertyName);
+        if (null === $propertyObject) {
+            $propertyObject = new $class;
         }
-        $this->updateObject($objectValue, $method, $value);
-        $this->propertyAccessor->setValue($object, $propertyName, $objectValue);
+
+        $this->updateObject($propertyObject, $method, $value);
+        $this->propertyAccessor->setValue($object, $propertyName, $propertyObject);
     }
 
     /**
@@ -158,5 +181,26 @@ class RestRequestParser
         $class = get_class($object);
 
         return in_array($class, $atomicClasses);
+    }
+
+    private function convert($type, $value)
+    {
+        if (null === $value) {
+            return $value;
+        }
+
+        switch ($type) {
+            case 'string':
+            case 'text':
+                return $value;
+            case 'boolean':
+                return $value;
+            case 'integer';
+                return $value;
+            case 'datetime':
+                return new \DateTime($value);
+            default:
+                throw new \RuntimeException(sprintf("Unknown type %s", $type));
+        }
     }
 }

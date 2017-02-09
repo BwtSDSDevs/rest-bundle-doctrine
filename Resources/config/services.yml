@@ -50,8 +50,8 @@ services:
         class: Dontdrinkandroot\RestBundle\Service\RestRequestParser
         arguments:
             - '@ddr_rest.metadata.factory'
-            - '@jms_serializer'
             - '@property_accessor'
+            - '@doctrine.orm.entity_manager'
 
     # We do not want serialization into underscored properties
     ddr.serializer.naming_strategy.identical_property_naming:
