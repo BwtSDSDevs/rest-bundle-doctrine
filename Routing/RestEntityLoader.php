@@ -98,6 +98,11 @@ class RestEntityLoader extends Loader
                     $putRoute->setMethods(Request::METHOD_PUT);
                     $putRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':put']));
                     $routes->add($namePrefix . '.put', $putRoute);
+
+                    $patchRoute = new Route($pathPrefix . '/{id}');
+                    $patchRoute->setMethods(Request::METHOD_PATCH);
+                    $patchRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':put']));
+                    $routes->add($namePrefix . '.patch', $patchRoute);
                 }
 
                 if (in_array('DELETE', $methods)) {

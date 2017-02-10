@@ -165,7 +165,7 @@ class RestRequestParser
      */
     protected function isUpdateable($method, PropertyMetadata $propertyMetadata)
     {
-        if (Request::METHOD_PUT === $method) {
+        if (Request::METHOD_PUT === $method || Request::METHOD_PATCH === $method) {
             return $propertyMetadata->isPuttable();
         }
         if (Request:: METHOD_POST === $method) {
@@ -175,14 +175,6 @@ class RestRequestParser
         return false;
     }
 
-    private function isAtomicObject($object)
-    {
-        $atomicClasses = [\DateTime::class];
-        $class = get_class($object);
-
-        return in_array($class, $atomicClasses);
-    }
-
     private function convert($type, $value)
     {
         if (null === $value) {
@@ -190,17 +182,10 @@ class RestRequestParser
         }
 
         switch ($type) {
-            case 'string':
-            case 'text':
-                return $value;
-            case 'boolean':
-                return $value;
-            case 'integer';
-                return $value;
             case 'datetime':
                 return new \DateTime($value);
             default:
-                throw new \RuntimeException(sprintf("Unknown type %s", $type));
+                return $value;
         }
     }
 }
