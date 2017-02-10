@@ -98,7 +98,8 @@ class RestRequestParser
 
         foreach ($data as $key => $value) {
             if (!array_key_exists($key, $classMetadata->propertyMetadata)) {
-                throw new \RuntimeException(sprintf('No field %s for Class %s', $key, get_class($object)));
+                continue;
+                //throw new \RuntimeException(sprintf('No field %s for Class %s', $key, get_class($object)));
             }
             /** @var PropertyMetadata $propertyMetadata */
             $propertyMetadata = $classMetadata->propertyMetadata[$key];
