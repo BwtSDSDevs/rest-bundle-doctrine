@@ -28,40 +28,52 @@ class AnnotationDriver implements DriverInterface
         /** @var RootResource $restResourceAnnotation */
         $restResourceAnnotation = $this->reader->getClassAnnotation($class, RootResource::class);
         if (null !== $restResourceAnnotation) {
+
             $classMetadata->setRestResource(true);
+
             if (null !== $restResourceAnnotation->namePrefix) {
                 $classMetadata->setNamePrefix($restResourceAnnotation->namePrefix);
             }
+
             if (null !== $restResourceAnnotation->pathPrefix) {
                 $classMetadata->setPathPrefix($restResourceAnnotation->pathPrefix);
             }
+
             if (null !== $restResourceAnnotation->service) {
                 $classMetadata->setService($restResourceAnnotation->service);
             }
+
             if (null !== $restResourceAnnotation->controller) {
                 $classMetadata->setController($restResourceAnnotation->controller);
             }
+
             if (null !== $restResourceAnnotation->listRight) {
                 $classMetadata->setListRight($restResourceAnnotation->listRight);
             }
+
             if (null !== $restResourceAnnotation->postRight) {
                 $classMetadata->setPostRight($restResourceAnnotation->postRight);
             }
+
             if (null !== $restResourceAnnotation->getRight) {
                 $classMetadata->setGetRight($restResourceAnnotation->getRight);
             }
+
             if (null !== $restResourceAnnotation->putRight) {
                 $classMetadata->setPutRight($restResourceAnnotation->putRight);
             }
+
             if (null !== $restResourceAnnotation->deleteRight) {
                 $classMetadata->setDeleteRight($restResourceAnnotation->deleteRight);
             }
+
             if (null !== $restResourceAnnotation->methods) {
                 $classMetadata->setMethods($restResourceAnnotation->methods);
             }
         }
 
         foreach ($class->getProperties() as $reflectionProperty) {
+
             $propertyMetadata = new PropertyMetadata($class->getName(), $reflectionProperty->getName());
 
             $puttableAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Puttable::class);
@@ -82,21 +94,21 @@ class AnnotationDriver implements DriverInterface
             /** @var SubResource $subResourceAnnotation */
             $subResourceAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, SubResource::class);
             if (null !== $subResourceAnnotation) {
+
                 $propertyMetadata->setSubResource(true);
+
                 if (null !== $subResourceAnnotation->listRight) {
                     $propertyMetadata->setSubResourceListRight($subResourceAnnotation->listRight);
                 }
+
                 if (null !== $subResourceAnnotation->path) {
                     $propertyMetadata->setSubResourcePath($subResourceAnnotation->path);
-                }
-
-                if (null !== $subResourceAnnotation->postRight && null === $subResourceAnnotation->entityClass) {
-                    throw new \RuntimeException('Must provide entity class for postable sub resource');
                 }
 
                 if (null !== $subResourceAnnotation->postRight) {
                     $propertyMetadata->setSubResourcePostRight($subResourceAnnotation->postRight);
                 }
+
                 if (null !== $subResourceAnnotation->entityClass) {
                     $propertyMetadata->setSubResourceEntityClass($subResourceAnnotation->entityClass);
                 }

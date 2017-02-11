@@ -352,8 +352,14 @@ class EntityController extends DdrRestController
     {
         /** @var PropertyMetadata $propertyMetadata */
         $propertyMetadata = $this->getClassMetadata()->propertyMetadata[$subresource];
+        $entityClass = $propertyMetadata->getSubResourceEntityClass();
+        if (null === $entityClass) {
+            $entityManager = $this->get('doctrine.orm.entity_manager');
+            $doctrineClassMetadata = $entityManager->getClassMetadata($this->getEntityClass());
+            $entityClass = $doctrineClassMetadata->getAssociationMapping($subresource)['targetEntity'];
+        }
 
-        return $propertyMetadata->getSubResourceEntityClass();
+        return $entityClass;
     }
 
     protected function resolveSubject(EntityInterface $entity, $propertyPath)
@@ -446,17 +452,8 @@ class EntityController extends DdrRestController
     private function convert($value, $type)
     {
         switch ($type) {
-            case 'bigint':
-            case 'guid':
-            case 'integer':
-            case 'string':
-            case
-                'text':
-            case 'boolean':
-            case 'smallint':
-                return $value;
             default:
-                throw new \RuntimeException(sprintf('Unknown type: %s', $type));
+                return $value;
         }
     }
 }
