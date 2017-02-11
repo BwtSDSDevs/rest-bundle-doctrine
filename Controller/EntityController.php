@@ -193,7 +193,7 @@ class EntityController extends DdrRestController
     {
         $service = $this->getService();
 
-        return $service->listPaginated(1, 10);
+        return $service->listPaginated($page, $perPage);
     }
 
     protected function createEntity(EntityInterface $entity)
@@ -406,5 +406,57 @@ class EntityController extends DdrRestController
     protected function getSubresource()
     {
         return $this->getCurrentRequest()->attributes->get('_subresource');
+    }
+
+    private function toArray($entity, $includes = [], $path = [])
+    {
+        $data = [];
+
+        $propertyAccessor = $this->get('property_accessor');
+
+        $entityManager = $this->get('doctrine.orm.entity_manager');
+        $doctrineClassMetadata = $entityManager->getClassMetadata(get_class($entity));
+
+        $metaDataFactory = $this->get('ddr_rest.metadata.factory');
+        /** @var ClassMetadata $classMetadata */
+        $classMetadata = $metaDataFactory->getMetadataForClass(get_class($entity));
+        foreach ($classMetadata->propertyMetadata as $propertyMetadata) {
+            /** @var PropertyMetadata $propertyMetadata */
+            $propertyName = $propertyMetadata->name;
+
+            if ($doctrineClassMetadata->hasField($propertyName)) {
+                $type = $doctrineClassMetadata->getFieldMapping($propertyName)['type'];
+                $data[$propertyName] = $this->convert($propertyAccessor->getValue($entity, $propertyName), $type);
+            }
+        }
+
+        return $data;
+    }
+
+    private function parseIncludes(Request $request)
+    {
+        $includeString = $request->query->get('include');
+        if (empty($includeString)) {
+            return [];
+        }
+
+        return explode(',', $includeString);
+    }
+
+    private function convert($value, $type)
+    {
+        switch ($type) {
+            case 'bigint':
+            case 'guid':
+            case 'integer':
+            case 'string':
+            case
+                'text':
+            case 'boolean':
+            case 'smallint':
+                return $value;
+            default:
+                throw new \RuntimeException(sprintf('Unknown type: %s', $type));
+        }
     }
 }
