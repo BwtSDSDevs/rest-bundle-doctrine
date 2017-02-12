@@ -124,9 +124,9 @@ class EntityController extends DdrRestController
             }
             $repository = $this->get('doctrine')->getRepository($entityClass);
             if ($repository instanceof UuidEntityRepositoryInterface) {
-                return new EntityService($repository);
-            } else {
                 return new UuidEntityService($repository);
+            } else {
+                return new EntityService($repository);
             }
         } else {
             /** @var EntityServiceInterface|UuidEntityServiceInterface $service */
