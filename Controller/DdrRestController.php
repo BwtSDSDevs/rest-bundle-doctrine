@@ -2,7 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Controller;
 
-use Dontdrinkandroot\Pagination\Pagination;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Dontdrinkandroot\RestBundle\Form\DateTimeSubscriber;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
@@ -63,16 +63,16 @@ class DdrRestController extends FOSRestController
     }
 
     /**
-     * @param Pagination $pagination
-     * @param View       $view
+     * @param Paginator $paginator
+     * @param View      $view
      */
-    protected function addPaginationHeaders(Pagination $pagination, View $view)
+    protected function addPaginationHeaders(Paginator $paginator, View $view, $page, $perPage)
     {
-        $view->setHeader('X-Pagination-Current-Page', $pagination->getCurrentPage());
-        $view->setHeader('X-Pagination-Per-Page', $pagination->getPerPage());
-        $view->setHeader('X-Pagination-Total-Pages', $pagination->getTotalPages());
-        $view->setHeader('X-Pagination-Total', $pagination->getTotal());
-        $view->setHeader('X-Pagination', $pagination);
+        $total = $paginator->count();
+        $view->setHeader('X-Pagination-Current-Page', $page);
+        $view->setHeader('X-Pagination-Per-Page', $perPage);
+        $view->setHeader('X-Pagination-Total-Pages', (int)(($total - 1) / $perPage + 1));
+        $view->setHeader('X-Pagination-Total', $total);
     }
 
     protected function createAndHandleForm(Request $request, $type, $data = null, array $options = [])

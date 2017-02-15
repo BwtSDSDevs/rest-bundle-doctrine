@@ -3,9 +3,9 @@
 namespace Dontdrinkandroot\RestBundle\Controller;
 
 use Doctrine\Common\Util\Inflector;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Dontdrinkandroot\Entity\EntityInterface;
 use Dontdrinkandroot\Entity\UuidEntityInterface;
-use Dontdrinkandroot\Pagination\PaginatedResult;
 use Dontdrinkandroot\Repository\UuidEntityRepositoryInterface;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
@@ -23,8 +23,10 @@ class EntityController extends DdrRestController
     public function listAction(Request $request)
     {
         $this->assertListGranted();
-        $result = $this->listEntities($request->query->get('page', 1), $request->query->get('perPage', 50));
-        $view = $this->createViewFromListResult($result);
+        $page = $request->query->get('page', 1);
+        $perPage = $request->query->get('perPage', 50);
+        $result = $this->listEntities($page, $perPage);
+        $view = $this->createViewFromListResult($result, $page, $perPage);
         $view->getContext()->addGroups(['Default', 'ddr.rest.list']);
 
         return $this->handleView($view);
@@ -83,13 +85,15 @@ class EntityController extends DdrRestController
         $subresource = $this->getSubresource();
         $entity = $this->fetchEntity($id);
         $this->assertSubresourceListGranted($entity, $subresource);
+        $page = $request->query->get('page', 1);
+        $perPage = $request->query->get('perPage', 50);
         $result = $this->listSubresource(
             $entity,
             $subresource,
-            $request->query->get('page', 1),
-            $request->query->get('perPage', 50)
+            $page,
+            $perPage
         );
-        $view = $this->createViewFromListResult($result);
+        $view = $this->createViewFromListResult($result, $page, $perPage);
         $view->getContext()->addGroups($this->getSubresourceSerializationGroups($subresource));
 
         return $this->handleView($view);
@@ -320,15 +324,15 @@ class EntityController extends DdrRestController
     }
 
     /**
-     * @param array|PaginatedResult $result
+     * @param array|Paginator $result
      *
      * @return View
      */
-    protected function createViewFromListResult($result)
+    protected function createViewFromListResult($result, $page, $perPage)
     {
-        if ($result instanceof PaginatedResult) {
-            $view = $this->view($result->getResults());
-            $this->addPaginationHeaders($result->getPagination(), $view);
+        if ($result instanceof Paginator) {
+            $view = $this->view($result->getIterator()->getArrayCopy());
+            $this->addPaginationHeaders($result, $view, $page, $perPage);
 
             return $view;
         }
