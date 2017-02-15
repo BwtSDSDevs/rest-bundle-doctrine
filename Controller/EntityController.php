@@ -22,9 +22,12 @@ class EntityController extends DdrRestController
 {
     public function listAction(Request $request)
     {
+        $page = $request->query->get('page', 1);
+        $perPage = $request->query->get('perPage', 50);
+
         $this->assertListGranted();
-        $result = $this->listEntities($request->query->get('page', 1), $request->query->get('perPage', 50));
-        $entities = iterator_to_array($result);
+        $result = $this->listEntities($page, $perPage);
+        $entities = $result->getIterator()->getArrayCopy();
         $content = $this->serialize($entities);
 
         return new JsonResponse($content, Response::HTTP_OK, [], true);

@@ -69,3 +69,8 @@ services:
         arguments:
             - '@request_stack'
             - '@ddr_rest.metadata.factory'
+
+    ddr_rest.listener.kernel_exception:
+        class: Dontdrinkandroot\RestBundle\Listener\KernelExceptionListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
