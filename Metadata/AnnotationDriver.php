@@ -2,6 +2,8 @@
 namespace Dontdrinkandroot\RestBundle\Metadata;
 
 use Doctrine\Common\Annotations\Reader;
+use Doctrine\ORM\EntityManagerInterface;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Excluded;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Includable;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Postable;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Puttable;
@@ -13,9 +15,15 @@ class AnnotationDriver implements DriverInterface
 {
     private $reader;
 
-    public function __construct(Reader $reader)
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    public function __construct(Reader $reader, EntityManagerInterface $entityManager)
     {
         $this->reader = $reader;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -23,45 +31,58 @@ class AnnotationDriver implements DriverInterface
      */
     public function loadMetadataForClass(\ReflectionClass $class)
     {
-        $classMetadata = new ClassMetadata($class->getName());
+        $doctrineClassMetadata = $this->entityManager->getClassMetadata($class->getName());
+        $ddrRestClassMetadata = new ClassMetadata($class->getName());
 
         /** @var RootResource $restResourceAnnotation */
         $restResourceAnnotation = $this->reader->getClassAnnotation($class, RootResource::class);
         if (null !== $restResourceAnnotation) {
-            $classMetadata->setRestResource(true);
+
+            $ddrRestClassMetadata->setRestResource(true);
+
             if (null !== $restResourceAnnotation->namePrefix) {
-                $classMetadata->setNamePrefix($restResourceAnnotation->namePrefix);
+                $ddrRestClassMetadata->setNamePrefix($restResourceAnnotation->namePrefix);
             }
+
             if (null !== $restResourceAnnotation->pathPrefix) {
-                $classMetadata->setPathPrefix($restResourceAnnotation->pathPrefix);
+                $ddrRestClassMetadata->setPathPrefix($restResourceAnnotation->pathPrefix);
             }
+
             if (null !== $restResourceAnnotation->service) {
-                $classMetadata->setService($restResourceAnnotation->service);
+                $ddrRestClassMetadata->setService($restResourceAnnotation->service);
             }
+
             if (null !== $restResourceAnnotation->controller) {
-                $classMetadata->setController($restResourceAnnotation->controller);
+                $ddrRestClassMetadata->setController($restResourceAnnotation->controller);
             }
+
             if (null !== $restResourceAnnotation->listRight) {
-                $classMetadata->setListRight($restResourceAnnotation->listRight);
+                $ddrRestClassMetadata->setListRight($restResourceAnnotation->listRight);
             }
+
             if (null !== $restResourceAnnotation->postRight) {
-                $classMetadata->setPostRight($restResourceAnnotation->postRight);
+                $ddrRestClassMetadata->setPostRight($restResourceAnnotation->postRight);
             }
+
             if (null !== $restResourceAnnotation->getRight) {
-                $classMetadata->setGetRight($restResourceAnnotation->getRight);
+                $ddrRestClassMetadata->setGetRight($restResourceAnnotation->getRight);
             }
+
             if (null !== $restResourceAnnotation->putRight) {
-                $classMetadata->setPutRight($restResourceAnnotation->putRight);
+                $ddrRestClassMetadata->setPutRight($restResourceAnnotation->putRight);
             }
+
             if (null !== $restResourceAnnotation->deleteRight) {
-                $classMetadata->setDeleteRight($restResourceAnnotation->deleteRight);
+                $ddrRestClassMetadata->setDeleteRight($restResourceAnnotation->deleteRight);
             }
+
             if (null !== $restResourceAnnotation->methods) {
-                $classMetadata->setMethods($restResourceAnnotation->methods);
+                $ddrRestClassMetadata->setMethods($restResourceAnnotation->methods);
             }
         }
 
         foreach ($class->getProperties() as $reflectionProperty) {
+
             $propertyMetadata = new PropertyMetadata($class->getName(), $reflectionProperty->getName());
 
             $puttableAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Puttable::class);
@@ -79,13 +100,20 @@ class AnnotationDriver implements DriverInterface
                 $propertyMetadata->setIncludable(true);
             }
 
+            $excludedAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Excluded::class);
+            if (null !== $excludedAnnotation || $doctrineClassMetadata->hasAssociation($propertyMetadata->name)) {
+                $propertyMetadata->setExcluded(true);
+            }
+
             /** @var SubResource $subResourceAnnotation */
             $subResourceAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, SubResource::class);
             if (null !== $subResourceAnnotation) {
+
                 $propertyMetadata->setSubResource(true);
                 if (null !== $subResourceAnnotation->listRight) {
                     $propertyMetadata->setSubResourceListRight($subResourceAnnotation->listRight);
                 }
+
                 if (null !== $subResourceAnnotation->path) {
                     $propertyMetadata->setSubResourcePath($subResourceAnnotation->path);
                 }
@@ -97,14 +125,15 @@ class AnnotationDriver implements DriverInterface
                 if (null !== $subResourceAnnotation->postRight) {
                     $propertyMetadata->setSubResourcePostRight($subResourceAnnotation->postRight);
                 }
+
                 if (null !== $subResourceAnnotation->entityClass) {
                     $propertyMetadata->setSubResourceEntityClass($subResourceAnnotation->entityClass);
                 }
             }
 
-            $classMetadata->addPropertyMetadata($propertyMetadata);
+            $ddrRestClassMetadata->addPropertyMetadata($propertyMetadata);
         }
 
-        return $classMetadata;
+        return $ddrRestClassMetadata;
     }
 }

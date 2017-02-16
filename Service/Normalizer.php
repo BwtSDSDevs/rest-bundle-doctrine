@@ -5,7 +5,6 @@ namespace Dontdrinkandroot\RestBundle\Service;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\MetadataFactoryInterface;
-use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class Normalizer
 {
@@ -13,11 +12,6 @@ class Normalizer
      * @var MetadataFactoryInterface
      */
     private $metadataFactory;
-
-    /**
-     * @var PropertyAccessor
-     */
-    private $propertyAccessor;
 
     function __construct(MetadataFactoryInterface $metadataFactory)
     {
@@ -51,8 +45,10 @@ class Normalizer
 
             /** @var PropertyMetadata $propertyMetadatum */
             foreach ($classMetadata->propertyMetadata as $propertyMetadatum) {
-                $value = $propertyMetadatum->getValue($data);
-                $normalizedData[$propertyMetadatum->name] = $value;
+                if (!$propertyMetadatum->isExcluded()) {
+                    $value = $propertyMetadatum->getValue($data);
+                    $normalizedData[$propertyMetadatum->name] = $value;
+                }
             }
 
             return $normalizedData;

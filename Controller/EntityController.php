@@ -56,9 +56,11 @@ class EntityController extends DdrRestController
             throw new NotFoundHttpException();
         }
         $this->assertGetGranted($entity);
-        $content = $this->serialize($entity);
 
-        return new JsonResponse($content, Response::HTTP_OK, [], true);
+        $normalizer = $this->get('ddr_rest.normalizer');
+        $content = $normalizer->normalize($entity);
+
+        return new JsonResponse($content);
     }
 
     public function putAction(Request $request, $id)

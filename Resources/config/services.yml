@@ -26,6 +26,7 @@ services:
         class: Dontdrinkandroot\RestBundle\Metadata\AnnotationDriver
         arguments:
             - '@annotation_reader'
+            - '@doctrine.orm.entity_manager'
 
     ddr_rest.metadata.factory:
         class: Metadata\MetadataFactory

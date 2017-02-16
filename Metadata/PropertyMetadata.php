@@ -15,6 +15,11 @@ class PropertyMetadata extends BasePropertyMetadata
     /**
      * @var bool
      */
+    private $excluded = false;
+
+    /**
+     * @var bool
+     */
     private $postable = false;
 
     /**
@@ -173,5 +178,21 @@ class PropertyMetadata extends BasePropertyMetadata
     public function setSubResourcePath($subResourcePath)
     {
         $this->subResourcePath = $subResourcePath;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isExcluded(): bool
+    {
+        return $this->excluded;
+    }
+
+    /**
+     * @param bool $excluded
+     */
+    public function setExcluded(bool $excluded)
+    {
+        $this->excluded = $excluded;
     }
 }
