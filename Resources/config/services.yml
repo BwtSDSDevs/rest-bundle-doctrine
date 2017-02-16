@@ -56,5 +56,12 @@ services:
         class: Dontdrinkandroot\RestBundle\Listener\KernelExceptionListener
         arguments:
             - '%ddr.rest.paths%'
+        calls:
+            - ['setDebug', ['%kernel.debug%']]
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
+
+    ddr_rest.normalizer:
+        class: Dontdrinkandroot\RestBundle\Service\Normalizer
+        arguments:
+            - '@ddr_rest.metadata.factory'

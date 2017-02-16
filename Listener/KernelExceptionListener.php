@@ -15,6 +15,11 @@ class KernelExceptionListener
      */
     private $paths;
 
+    /**
+     * @var bool
+     */
+    private $debug = false;
+
     function __construct(array $paths)
     {
         $this->paths = $paths;
@@ -28,12 +33,16 @@ class KernelExceptionListener
             return;
         }
 
-        $data = [
-            'message' => $exception->getMessage()
-        ];
+        $data = null;
+        if ($this->debug) {
+            $data = [
+                'message' => $exception->getMessage(),
+                'trace'   => $exception->getTrace()
+            ];
+        }
 
         $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
-        $response = new JsonResponse();
+        $response = new JsonResponse($data);
 
         if ($exception instanceof HttpExceptionInterface) {
             $statusCode = $exception->getStatusCode();
@@ -59,5 +68,21 @@ class KernelExceptionListener
         }
 
         return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDebug(): bool
+    {
+        return $this->debug;
+    }
+
+    /**
+     * @param bool $debug
+     */
+    public function setDebug(bool $debug)
+    {
+        $this->debug = $debug;
     }
 }

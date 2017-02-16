@@ -28,9 +28,11 @@ class EntityController extends DdrRestController
         $this->assertListGranted();
         $result = $this->listEntities($page, $perPage);
         $entities = $result->getIterator()->getArrayCopy();
-        $content = $this->serialize($entities);
 
-        return new JsonResponse($content, Response::HTTP_OK, [], true);
+        $normalizer = $this->get('ddr_rest.normalizer');
+        $content = $normalizer->normalize($entities);
+
+        return new JsonResponse($content, Response::HTTP_OK);
     }
 
     public function postAction(Request $request)
@@ -403,18 +405,5 @@ class EntityController extends DdrRestController
     protected function getSubresource()
     {
         return $this->getCurrentRequest()->attributes->get('_subresource');
-    }
-
-    /**
-     * @param $data
-     *
-     * @return mixed|string
-     */
-    protected function serialize($data)
-    {
-        /** @var Serializer $serializer */
-        $serializer = $this->get('jms_serializer');
-
-        return $serializer->serialize($data, 'json');
     }
 }

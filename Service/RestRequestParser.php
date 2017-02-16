@@ -5,14 +5,14 @@ namespace Dontdrinkandroot\RestBundle\Service;
 use Dontdrinkandroot\Entity\EntityInterface;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use JMS\Serializer\SerializerInterface;
-use Metadata\MetadataFactory;
+use Metadata\MetadataFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class RestRequestParser
 {
     /**
-     * @var MetadataFactory
+     * @var MetadataFactoryInterface
      */
     private $metadataFactory;
 
@@ -22,7 +22,7 @@ class RestRequestParser
     private $propertyAccessor;
 
     public function __construct(
-        MetadataFactory $metadataFactory,
+        MetadataFactoryInterface $metadataFactory,
         PropertyAccessor $propertyAccessor
     ) {
         $this->metadataFactory = $metadataFactory;
