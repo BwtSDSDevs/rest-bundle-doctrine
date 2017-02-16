@@ -17,22 +17,15 @@ class RestRequestParser
     private $metadataFactory;
 
     /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
      * @var PropertyAccessor
      */
     private $propertyAccessor;
 
     public function __construct(
         MetadataFactory $metadataFactory,
-        SerializerInterface $serializer,
         PropertyAccessor $propertyAccessor
     ) {
         $this->metadataFactory = $metadataFactory;
-        $this->serializer = $serializer;
         $this->propertyAccessor = $propertyAccessor;
     }
 

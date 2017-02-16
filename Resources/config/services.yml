@@ -36,19 +36,7 @@ services:
         class: Dontdrinkandroot\RestBundle\Service\RestRequestParser
         arguments:
             - '@ddr_rest.metadata.factory'
-            - '@jms_serializer'
             - '@property_accessor'
-
-    # We do not want serialization into underscored properties
-    ddr.serializer.naming_strategy.identical_property_naming:
-        class: 'JMS\Serializer\Naming\IdenticalPropertyNamingStrategy'
-        public: false
-
-    # Wrapping naming strategy into cached naming strategy for speed
-    jms_serializer.naming_strategy:
-        class: 'JMS\Serializer\Naming\CacheNamingStrategy'
-        arguments:
-            - '@ddr.serializer.naming_strategy.identical_property_naming'
 
     ddr_rest.routing.rest_entity_loader:
         class: Dontdrinkandroot\RestBundle\Routing\RestEntityLoader
@@ -57,12 +45,6 @@ services:
             - '@ddr_rest.metadata.factory'
         tags:
             - { name: routing.loader }
-
-    fos_rest.serializer.jms:
-        class: Dontdrinkandroot\RestBundle\Serialization\JMSSerializerAdapter
-        arguments:
-            - '@jms_serializer.serializer'
-            - '@ddr_rest.serialization.exclusion_strategy.includes'
 
     ddr_rest.serialization.exclusion_strategy.includes:
         class: Dontdrinkandroot\RestBundle\Serialization\IncludesExclusionStrategy
