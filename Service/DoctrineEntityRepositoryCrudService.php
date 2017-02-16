@@ -3,18 +3,14 @@
 namespace Dontdrinkandroot\RestBundle\Service;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
-class DoctrineEntityRepositoryCrudService implements CrudServiceInterface
+class DoctrineEntityRepositoryCrudService extends EntityRepository implements CrudServiceInterface
 {
-    /**
-     * @var EntityRepository
-     */
-    private $repository;
-
-    public function __construct(EntityRepository $repository)
+    public function __construct($entityManager, ClassMetadata $classMetaData)
     {
-        $this->repository = $repository;
+        parent::__construct($entityManager, $classMetaData);
     }
 
     /**
@@ -23,10 +19,10 @@ class DoctrineEntityRepositoryCrudService implements CrudServiceInterface
     public function findById($id)
     {
         if ($this->isUuid($id)) {
-            return $this->repository->findOneBy(['uuid' => $id]);
+            return $this->findOneBy(['uuid' => $id]);
         }
 
-        return $this->repository->find($id);
+        return $this->find($id);
     }
 
     /**
@@ -34,7 +30,7 @@ class DoctrineEntityRepositoryCrudService implements CrudServiceInterface
      */
     public function listPaginated(int $page, int $perPage = 50): Paginator
     {
-        $queryBuilder = $this->repository->createQueryBuilder('entity');
+        $queryBuilder = $this->createQueryBuilder('entity');
         $queryBuilder->setFirstResult(($page - 1) * $perPage);
         $queryBuilder->setMaxResults($perPage);
 
@@ -44,5 +40,15 @@ class DoctrineEntityRepositoryCrudService implements CrudServiceInterface
     protected function isUuid($id)
     {
         return 1 === preg_match('/^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$/', $id);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function create($entity)
+    {
+        $this->getEntityManager()->persist($entity);
+
+        return $entity;
     }
 }

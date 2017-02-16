@@ -48,7 +48,6 @@ services:
         class: Dontdrinkandroot\RestBundle\Service\RestRequestParser
         arguments:
             - '@ddr_rest.metadata.factory'
-            - '@property_accessor'
 
     ddr_rest.routing.rest_entity_loader:
         class: Dontdrinkandroot\RestBundle\Routing\RestEntityLoader

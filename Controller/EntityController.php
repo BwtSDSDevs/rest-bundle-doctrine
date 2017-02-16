@@ -17,6 +17,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Validator\ConstraintViolationInterface;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class EntityController extends DdrRestController
 {
@@ -38,15 +40,18 @@ class EntityController extends DdrRestController
     public function postAction(Request $request)
     {
         $this->assertPostGranted();
-        $entity = $this->parseRequest($request);
+        $entity = $this->parseRequest($request, null, $this->getEntityClass());
         $entity = $this->postProcessPostedEntity($entity);
         $errors = $this->validate($entity);
         if ($errors->count() > 0) {
-            return $this->handleView($this->view($errors, Response::HTTP_BAD_REQUEST));
+            return new JsonResponse($this->parseConstraintViolations($errors), Response::HTTP_BAD_REQUEST);
         }
         $entity = $this->createEntity($entity);
 
-        return $this->handleView($this->view($entity, Response::HTTP_CREATED));
+        $normalizer = $this->get('ddr_rest.normalizer');
+        $content = $normalizer->normalize($entity);
+
+        return new JsonResponse($content, Response::HTTP_OK);
     }
 
     public function getAction(Request $request, $id)
@@ -131,9 +136,12 @@ class EntityController extends DdrRestController
             if (null === $entityClass) {
                 throw new \RuntimeException('No service or entity class given');
             }
-            $repository = $this->get('doctrine')->getRepository($entityClass);
+            $entityManager = $this->get('doctrine.orm.entity_manager');
 
-            return new DoctrineEntityRepositoryCrudService($repository);
+            return new DoctrineEntityRepositoryCrudService(
+                $entityManager,
+                $entityManager->getClassMetadata($entityClass)
+            );
         } else {
             /** @var CrudServiceInterface $service */
             $service = $this->get($serviceId);
@@ -142,21 +150,17 @@ class EntityController extends DdrRestController
         }
     }
 
-    protected function parseRequest(Request $request, EntityInterface $entity = null, $entityClass = null)
+    protected function parseRequest(Request $request, $entity = null, $entityClass = null)
     {
-        if (null === $entityClass) {
-            $entityClass = $this->getService()->getEntityClass();
-        }
-
         return $this->get('ddr.rest.parser.request')->parseEntity($request, $entityClass, $entity);
     }
 
     /**
-     * @param EntityInterface $entity
+     * @param object $entity
      *
-     * @return EntityInterface
+     * @return object
      */
-    protected function postProcessPostedEntity(EntityInterface $entity)
+    protected function postProcessPostedEntity($entity)
     {
         return $entity;
     }
@@ -202,9 +206,9 @@ class EntityController extends DdrRestController
         return $service->listPaginated($page, $perPage);
     }
 
-    protected function createEntity(EntityInterface $entity)
+    protected function createEntity($entity)
     {
-        return $this->getService()->save($entity);
+        return $this->getService()->create($entity);
     }
 
     protected function updateEntity(EntityInterface $entity)
@@ -417,5 +421,20 @@ class EntityController extends DdrRestController
         }
 
         return explode(',', $includeString);
+    }
+
+    private function parseConstraintViolations(ConstraintViolationListInterface $errors)
+    {
+        $data = [];
+        /** @var ConstraintViolationInterface $error */
+        foreach ($errors as $error) {
+            $data[] = [
+                'propertyPath' => $error->getPropertyPath(),
+                'message'      => $error->getMessage(),
+                'value'        => $error->getInvalidValue()
+            ];
+        }
+
+        return $data;
     }
 }
