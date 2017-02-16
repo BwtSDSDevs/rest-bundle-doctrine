@@ -9,4 +9,8 @@ use Doctrine\ORM\Mapping\Annotation;
  */
 class Includable
 {
+    /**
+     * @var array<string>
+     */
+    public $paths;
 }

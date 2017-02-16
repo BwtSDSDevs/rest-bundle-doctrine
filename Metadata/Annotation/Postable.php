@@ -10,5 +10,4 @@ use Doctrine\ORM\Mapping\Annotation;
  */
 class Postable
 {
-
 }

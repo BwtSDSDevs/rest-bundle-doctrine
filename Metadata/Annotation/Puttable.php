@@ -8,5 +8,4 @@ namespace Dontdrinkandroot\RestBundle\Metadata\Annotation;
  */
 class Puttable
 {
-
 }

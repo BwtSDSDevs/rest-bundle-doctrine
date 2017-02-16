@@ -30,7 +30,7 @@ class EntityController extends DdrRestController
         $entities = $result->getIterator()->getArrayCopy();
 
         $normalizer = $this->get('ddr_rest.normalizer');
-        $content = $normalizer->normalize($entities);
+        $content = $normalizer->normalize($entities, $this->parseIncludes($request));
 
         return new JsonResponse($content, Response::HTTP_OK);
     }
@@ -58,7 +58,7 @@ class EntityController extends DdrRestController
         $this->assertGetGranted($entity);
 
         $normalizer = $this->get('ddr_rest.normalizer');
-        $content = $normalizer->normalize($entity);
+        $content = $normalizer->normalize($entity, $this->parseIncludes($request));
 
         return new JsonResponse($content);
     }
@@ -354,7 +354,7 @@ class EntityController extends DdrRestController
         /** @var PropertyMetadata $propertyMetadata */
         $propertyMetadata = $this->getClassMetadata()->propertyMetadata[$subresource];
 
-        return $propertyMetadata->getSubResourceEntityClass();
+        return $propertyMetadata->getTargetClass();
     }
 
     protected function resolveSubject(EntityInterface $entity, $propertyPath)
@@ -407,5 +407,15 @@ class EntityController extends DdrRestController
     protected function getSubresource()
     {
         return $this->getCurrentRequest()->attributes->get('_subresource');
+    }
+
+    protected function parseIncludes(Request $request)
+    {
+        $includeString = $request->query->get('include');
+        if (empty($includeString)) {
+            return [];
+        }
+
+        return explode(',', $includeString);
     }
 }

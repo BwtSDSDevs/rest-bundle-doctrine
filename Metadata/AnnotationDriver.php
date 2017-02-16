@@ -85,6 +85,15 @@ class AnnotationDriver implements DriverInterface
 
             $propertyMetadata = new PropertyMetadata($class->getName(), $reflectionProperty->getName());
 
+            if ($doctrineClassMetadata->hasAssociation($propertyMetadata->name)) {
+                $propertyMetadata->setAssociation(true);
+                $propertyMetadata->setTargetClass(
+                    $doctrineClassMetadata->getAssociationTargetClass($propertyMetadata->name)
+                );
+                $isCollection = $doctrineClassMetadata->isCollectionValuedAssociation($propertyMetadata->name);
+                $propertyMetadata->setCollection($isCollection);
+            }
+
             $puttableAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Puttable::class);
             if (null !== $puttableAnnotation) {
                 $propertyMetadata->setPuttable(true);
@@ -97,11 +106,16 @@ class AnnotationDriver implements DriverInterface
 
             $includableAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Includable::class);
             if (null !== $includableAnnotation) {
+                $paths = $includableAnnotation->paths;
+                if (null === $paths) {
+                    $paths = [$reflectionProperty->name];
+                }
                 $propertyMetadata->setIncludable(true);
+                $propertyMetadata->setIncludablePaths($paths);
             }
 
             $excludedAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Excluded::class);
-            if (null !== $excludedAnnotation || $doctrineClassMetadata->hasAssociation($propertyMetadata->name)) {
+            if (null !== $excludedAnnotation) {
                 $propertyMetadata->setExcluded(true);
             }
 
@@ -127,7 +141,7 @@ class AnnotationDriver implements DriverInterface
                 }
 
                 if (null !== $subResourceAnnotation->entityClass) {
-                    $propertyMetadata->setSubResourceEntityClass($subResourceAnnotation->entityClass);
+                    $propertyMetadata->setTargetClass($subResourceAnnotation->entityClass);
                 }
             }
 

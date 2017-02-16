@@ -28,9 +28,24 @@ class PropertyMetadata extends BasePropertyMetadata
     private $includable = false;
 
     /**
+     * @var string[]|null
+     */
+    private $includablePaths;
+
+    /**
      * @var bool
      */
     private $subResource = false;
+
+    /**
+     * @var bool
+     */
+    private $association = false;
+
+    /**
+     * @var bool
+     */
+    private $collection = false;
 
     /**
      * @var string|null
@@ -50,7 +65,7 @@ class PropertyMetadata extends BasePropertyMetadata
     /**
      * @var string|null
      */
-    private $subResourceEntityClass;
+    private $targetClass;
 
     /**
      * @return boolean
@@ -151,17 +166,17 @@ class PropertyMetadata extends BasePropertyMetadata
     /**
      * @return null|string
      */
-    public function getSubResourceEntityClass()
+    public function getTargetClass()
     {
-        return $this->subResourceEntityClass;
+        return $this->targetClass;
     }
 
     /**
-     * @param null|string $subResourceEntityClass
+     * @param null|string $targetClass
      */
-    public function setSubResourceEntityClass($subResourceEntityClass)
+    public function setTargetClass($targetClass)
     {
-        $this->subResourceEntityClass = $subResourceEntityClass;
+        $this->targetClass = $targetClass;
     }
 
     /**
@@ -194,5 +209,53 @@ class PropertyMetadata extends BasePropertyMetadata
     public function setExcluded(bool $excluded)
     {
         $this->excluded = $excluded;
+    }
+
+    /**
+     * @return null|\string[]
+     */
+    public function getIncludablePaths(): ?array
+    {
+        return $this->includablePaths;
+    }
+
+    /**
+     * @param null|\string[] $includablePaths
+     */
+    public function setIncludablePaths(?array $includablePaths)
+    {
+        $this->includablePaths = $includablePaths;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAssociation(): bool
+    {
+        return $this->association;
+    }
+
+    /**
+     * @param bool $association
+     */
+    public function setAssociation(bool $association)
+    {
+        $this->association = $association;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCollection(): bool
+    {
+        return $this->collection;
+    }
+
+    /**
+     * @param bool $collection
+     */
+    public function setCollection(bool $collection)
+    {
+        $this->collection = $collection;
     }
 }
