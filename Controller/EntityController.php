@@ -51,15 +51,12 @@ class EntityController extends DdrRestController
         $normalizer = $this->get('ddr_rest.normalizer');
         $content = $normalizer->normalize($entity);
 
-        return new JsonResponse($content, Response::HTTP_OK);
+        return new JsonResponse($content, Response::HTTP_CREATED);
     }
 
     public function getAction(Request $request, $id)
     {
-        $entity = $this->getService()->findById($id);
-        if (null === $entity) {
-            throw new NotFoundHttpException();
-        }
+        $entity = $this->fetchEntity($id);
         $this->assertGetGranted($entity);
 
         $normalizer = $this->get('ddr_rest.normalizer');
@@ -72,15 +69,18 @@ class EntityController extends DdrRestController
     {
         $entity = $this->fetchEntity($id);
         $this->assertPutGranted($entity);
-        $entity = $this->parseRequest($request, $entity);
+        $entity = $this->parseRequest($request, $entity, $this->getEntityClass());
         $entity = $this->postProcessPuttedEntity($entity);
         $errors = $this->validate($entity);
         if ($errors->count() > 0) {
-            return $this->handleView($this->view($errors, Response::HTTP_BAD_REQUEST));
+            return new JsonResponse($this->parseConstraintViolations($errors), Response::HTTP_BAD_REQUEST);
         }
         $entity = $this->updateEntity($entity);
 
-        return $this->handleView($this->view($entity));
+        $normalizer = $this->get('ddr_rest.normalizer');
+        $content = $normalizer->normalize($entity);
+
+        return new JsonResponse($content);
     }
 
     public function deleteAction(Request $request, $id)
@@ -140,7 +140,7 @@ class EntityController extends DdrRestController
 
             return new DoctrineEntityRepositoryCrudService(
                 $entityManager,
-                $entityManager->getClassMetadata($entityClass)
+                $entityClass
             );
         } else {
             /** @var CrudServiceInterface $service */
@@ -166,11 +166,11 @@ class EntityController extends DdrRestController
     }
 
     /**
-     * @param EntityInterface $entity
+     * @param object $entity
      *
-     * @return EntityInterface
+     * @return object
      */
-    protected function postProcessPuttedEntity(EntityInterface $entity)
+    protected function postProcessPuttedEntity($entity)
     {
         return $entity;
     }
@@ -192,11 +192,12 @@ class EntityController extends DdrRestController
 
     protected function fetchEntity($id)
     {
-        if (is_a($this->getEntityClass(), UuidEntityInterface::class, true)) {
-            return $this->getService()->fetchByUuid($id);
-        } else {
-            return $this->getService()->fetchById($id);
+        $entity = $this->getService()->findById($id);
+        if (null === $entity) {
+            throw new NotFoundHttpException();
         }
+
+        return $entity;
     }
 
     protected function listEntities($page = 1, $perPage = 50)
@@ -211,9 +212,9 @@ class EntityController extends DdrRestController
         return $this->getService()->create($entity);
     }
 
-    protected function updateEntity(EntityInterface $entity)
+    protected function updateEntity($entity)
     {
-        return $this->getService()->save($entity);
+        return $this->getService()->update($entity);
     }
 
     protected function listSubresource(EntityInterface $entity, $subresource, $page = 1, $perPage = 50)
@@ -276,7 +277,7 @@ class EntityController extends DdrRestController
         $this->assertRightGranted($entity, $right);
     }
 
-    protected function assertPutGranted(EntityInterface $entity)
+    protected function assertPutGranted($entity)
     {
         $classMetadata = $this->getClassMetadata();
         $right = $classMetadata->getPutRight();
@@ -372,10 +373,10 @@ class EntityController extends DdrRestController
     }
 
     /**
-     * @param EntityInterface $entity
-     * @param Right           $right
+     * @param object $entity
+     * @param Right  $right
      */
-    protected function assertRightGranted(EntityInterface $entity, Right $right)
+    protected function assertRightGranted($entity, Right $right)
     {
         $propertyPath = $right->propertyPath;
         if (null === $propertyPath) {

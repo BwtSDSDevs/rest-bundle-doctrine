@@ -29,14 +29,20 @@ class DoctrineDriver implements DriverInterface
 
         foreach ($doctrineClassMetadata->fieldMappings as $fieldMapping) {
             if (!array_key_exists('declared', $fieldMapping)) {
-                $ddrRestPropertyMetadata = new PropertyMetadata($class->getName(), $fieldMapping['fieldName']);
+                $ddrRestPropertyMetadata = new PropertyMetadata(
+                    $doctrineClassMetadata->getName(),
+                    $fieldMapping['fieldName']
+                );
                 $ddrRestPropertyMetadata->setType($fieldMapping['type']);
                 $ddrRestClassMetadata->addPropertyMetadata($ddrRestPropertyMetadata);
             }
         }
 
         foreach ($doctrineClassMetadata->associationMappings as $associationMapping) {
-            $ddrRestPropertyMetadata = new PropertyMetadata($class->getName(), $associationMapping['fieldName']);
+            $ddrRestPropertyMetadata = new PropertyMetadata(
+                $doctrineClassMetadata->getName(),
+                $associationMapping['fieldName']
+            );
             $ddrRestPropertyMetadata->setAssociation(true);
             $ddrRestPropertyMetadata->setTargetClass($associationMapping['targetEntity']);
             $ddrRestPropertyMetadata->setCollection(

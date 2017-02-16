@@ -3,14 +3,13 @@
 namespace Dontdrinkandroot\RestBundle\Service;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class DoctrineEntityRepositoryCrudService extends EntityRepository implements CrudServiceInterface
 {
-    public function __construct($entityManager, ClassMetadata $classMetaData)
+    public function __construct($entityManager, $entityClass)
     {
-        parent::__construct($entityManager, $classMetaData);
+        parent::__construct($entityManager, $entityManager->getClassMetadata($entityClass));
     }
 
     /**
@@ -48,6 +47,17 @@ class DoctrineEntityRepositoryCrudService extends EntityRepository implements Cr
     public function create($entity)
     {
         $this->getEntityManager()->persist($entity);
+        $this->getEntityManager()->flush($entity);
+
+        return $entity;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function update($entity)
+    {
+        $this->getEntityManager()->flush($entity);
 
         return $entity;
     }

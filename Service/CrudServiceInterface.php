@@ -21,4 +21,11 @@ interface CrudServiceInterface
      * @return object
      */
     public function create($entity);
+
+    /**
+     * @param object $entity
+     *
+     * @return object
+     */
+    public function update($entity);
 }

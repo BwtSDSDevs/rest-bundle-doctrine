@@ -3,6 +3,7 @@
 namespace Dontdrinkandroot\RestBundle\Service;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Util\ClassUtils;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\MetadataFactoryInterface;
@@ -43,7 +44,7 @@ class Normalizer
             $normalizedData = [];
 
             /** @var ClassMetadata $classMetadata */
-            $classMetadata = $this->metadataFactory->getMetadataForClass(get_class($data));
+            $classMetadata = $this->metadataFactory->getMetadataForClass(ClassUtils::getClass($data));
 
             /** @var PropertyMetadata $propertyMetadatum */
             foreach ($classMetadata->propertyMetadata as $propertyMetadatum) {

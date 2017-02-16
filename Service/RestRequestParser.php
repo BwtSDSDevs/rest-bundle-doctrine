@@ -2,9 +2,8 @@
 
 namespace Dontdrinkandroot\RestBundle\Service;
 
-use Dontdrinkandroot\Entity\EntityInterface;
+use Doctrine\Common\Util\ClassUtils;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
-use JMS\Serializer\SerializerInterface;
 use Metadata\MetadataFactory;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -72,7 +71,8 @@ class RestRequestParser
         $method,
         $data
     ) {
-        $classMetadata = $this->ddrRestMetadataFactory->getMetadataForClass(get_class($object));
+
+        $classMetadata = $this->ddrRestMetadataFactory->getMetadataForClass(ClassUtils::getClass($object));
 
         foreach ($data as $key => $value) {
             if (!array_key_exists($key, $classMetadata->propertyMetadata)) {
