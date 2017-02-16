@@ -81,7 +81,7 @@ class Normalizer
                         )
                     ) {
                         $value = $propertyMetadatum->getValue($data);
-                        $normalizedData[$propertyMetadatum->name] = $value;
+                        $normalizedData[$propertyMetadatum->name] = $this->normalizeField($value, $propertyMetadatum);
                     }
                 }
             }
@@ -114,5 +114,20 @@ class Normalizer
         }
 
         return $path . '.' . $name;
+    }
+
+    private function normalizeField($value, PropertyMetadata $propertyMetadata)
+    {
+        switch ($propertyMetadata->getType()) {
+            case'date':
+                if (null === $value) {
+                    return null;
+                }
+
+                return $value->format('Y-m-d');
+
+            default:
+                return $value;
+        }
     }
 }

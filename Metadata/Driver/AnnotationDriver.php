@@ -1,14 +1,15 @@
 <?php
-namespace Dontdrinkandroot\RestBundle\Metadata;
+namespace Dontdrinkandroot\RestBundle\Metadata\Driver;
 
 use Doctrine\Common\Annotations\Reader;
-use Doctrine\ORM\EntityManagerInterface;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Excluded;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Includable;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Postable;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Puttable;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\RootResource;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\SubResource;
+use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
+use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\Driver\DriverInterface;
 
 class AnnotationDriver implements DriverInterface
@@ -16,14 +17,14 @@ class AnnotationDriver implements DriverInterface
     private $reader;
 
     /**
-     * @var EntityManagerInterface
+     * @var DriverInterface
      */
-    private $entityManager;
+    private $doctrineDriver;
 
-    public function __construct(Reader $reader, EntityManagerInterface $entityManager)
+    public function __construct(Reader $reader, DriverInterface $doctrineDriver)
     {
         $this->reader = $reader;
-        $this->entityManager = $entityManager;
+        $this->doctrineDriver = $doctrineDriver;
     }
 
     /**
@@ -31,8 +32,11 @@ class AnnotationDriver implements DriverInterface
      */
     public function loadMetadataForClass(\ReflectionClass $class)
     {
-        $doctrineClassMetadata = $this->entityManager->getClassMetadata($class->getName());
-        $ddrRestClassMetadata = new ClassMetadata($class->getName());
+        /** @var ClassMetadata $ddrRestClassMetadata */
+        $ddrRestClassMetadata = $this->doctrineDriver->loadMetadataForClass($class);
+        if (null === $ddrRestClassMetadata) {
+            $ddrRestClassMetadata = new ClassMetadata($class->getName());
+        }
 
         /** @var RootResource $restResourceAnnotation */
         $restResourceAnnotation = $this->reader->getClassAnnotation($class, RootResource::class);
@@ -83,15 +87,9 @@ class AnnotationDriver implements DriverInterface
 
         foreach ($class->getProperties() as $reflectionProperty) {
 
-            $propertyMetadata = new PropertyMetadata($class->getName(), $reflectionProperty->getName());
-
-            if ($doctrineClassMetadata->hasAssociation($propertyMetadata->name)) {
-                $propertyMetadata->setAssociation(true);
-                $propertyMetadata->setTargetClass(
-                    $doctrineClassMetadata->getAssociationTargetClass($propertyMetadata->name)
-                );
-                $isCollection = $doctrineClassMetadata->isCollectionValuedAssociation($propertyMetadata->name);
-                $propertyMetadata->setCollection($isCollection);
+            $propertyMetadata = $ddrRestClassMetadata->propertyMetadata[$reflectionProperty->getName()];
+            if (null === $propertyMetadata) {
+                $propertyMetadata = new PropertyMetadata($class->getName(), $reflectionProperty->getName());
             }
 
             $puttableAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Puttable::class);
@@ -132,16 +130,8 @@ class AnnotationDriver implements DriverInterface
                     $propertyMetadata->setSubResourcePath($subResourceAnnotation->path);
                 }
 
-                if (null !== $subResourceAnnotation->postRight && null === $subResourceAnnotation->entityClass) {
-                    throw new \RuntimeException('Must provide entity class for postable sub resource');
-                }
-
                 if (null !== $subResourceAnnotation->postRight) {
                     $propertyMetadata->setSubResourcePostRight($subResourceAnnotation->postRight);
-                }
-
-                if (null !== $subResourceAnnotation->entityClass) {
-                    $propertyMetadata->setTargetClass($subResourceAnnotation->entityClass);
                 }
             }
 

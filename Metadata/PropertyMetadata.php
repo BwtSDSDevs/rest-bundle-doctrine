@@ -8,6 +8,11 @@ use Metadata\PropertyMetadata as BasePropertyMetadata;
 class PropertyMetadata extends BasePropertyMetadata
 {
     /**
+     * @var string
+     */
+    private $type;
+
+    /**
      * @var bool
      */
     private $puttable = false;
@@ -257,5 +262,21 @@ class PropertyMetadata extends BasePropertyMetadata
     public function setCollection(bool $collection)
     {
         $this->collection = $collection;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType(string $type)
+    {
+        $this->type = $type;
     }
 }

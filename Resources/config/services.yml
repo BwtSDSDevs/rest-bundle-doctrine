@@ -22,16 +22,27 @@ services:
         calls:
             - ['setTokenRequired', [false]]
 
+    ddr_rest.metadata.driver.doctrine:
+        class: Dontdrinkandroot\RestBundle\Metadata\Driver\DoctrineDriver
+        arguments:
+            - '@doctrine.orm.entity_manager'
+
     ddr_rest.metadata.driver.annotation:
-        class: Dontdrinkandroot\RestBundle\Metadata\AnnotationDriver
+        class: Dontdrinkandroot\RestBundle\Metadata\Driver\AnnotationDriver
         arguments:
             - '@annotation_reader'
-            - '@doctrine.orm.entity_manager'
+            - '@ddr_rest.metadata.driver.doctrine'
+
+    ddr_rest.metadata.driver.chain:
+        class: Metadata\Driver\DriverChain
+        arguments:
+            - ['@ddr_rest.metadata.driver.annotation']
+
 
     ddr_rest.metadata.factory:
         class: Metadata\MetadataFactory
         arguments:
-            - '@ddr_rest.metadata.driver.annotation'
+            - '@ddr_rest.metadata.driver.chain'
 
     ddr.rest.parser.request:
         class: Dontdrinkandroot\RestBundle\Service\RestRequestParser
