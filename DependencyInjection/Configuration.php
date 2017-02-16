@@ -19,6 +19,7 @@ class Configuration implements ConfigurationInterface
         $rootNode->children()
             ->scalarNode('access_token_class')->defaultNull()->end()
             ->scalarNode('authentication_provider_key')->defaultNull()->end()
+            ->arrayNode('paths')->prototype('scalar')->end()
         ->end();
         // @formatter:on
 

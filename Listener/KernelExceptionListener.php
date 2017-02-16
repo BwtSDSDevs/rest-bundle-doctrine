@@ -3,24 +3,37 @@
 namespace Dontdrinkandroot\RestBundle\Listener;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class KernelExceptionListener
 {
+    /**
+     * @var string[]
+     */
+    private $paths;
+
+    function __construct(array $paths)
+    {
+        $this->paths = $paths;
+    }
+
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         $exception = $event->getException();
-        $message = sprintf(
-            'My Error says: %s with code: %s',
-            $exception->getMessage(),
-            $exception->getCode()
-        );
+        $request = $event->getRequest();
+        if (!$this->isInterceptionPath($request)) {
+            return;
+        }
 
-        $response = new JsonResponse();
-        $response->setContent($message);
+        $data = [
+            'message' => $exception->getMessage()
+        ];
+
         $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
+        $response = new JsonResponse();
 
         if ($exception instanceof HttpExceptionInterface) {
             $statusCode = $exception->getStatusCode();
@@ -31,5 +44,20 @@ class KernelExceptionListener
         $response->setStatusCode($statusCode);
 
         $event->setResponse($response);
+    }
+
+    private function isInterceptionPath(?Request $request): bool
+    {
+        if (null === $request) {
+            return false;
+        }
+
+        foreach ($this->paths as $path) {
+            if (0 === strpos($request->getPathInfo(), $path)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

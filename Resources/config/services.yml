@@ -72,5 +72,7 @@ services:
 
     ddr_rest.listener.kernel_exception:
         class: Dontdrinkandroot\RestBundle\Listener\KernelExceptionListener
+        arguments:
+            - '%ddr.rest.paths%'
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
