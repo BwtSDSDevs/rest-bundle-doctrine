@@ -56,6 +56,7 @@ class Normalizer
 
                     /* Inlude if includable AND it is on include path */
                     if ($propertyMetadatum->isIncludable() && $this->isIncluded(
+                            $path,
                             $propertyMetadatum->getIncludablePaths(),
                             $includes
                         )
@@ -76,6 +77,7 @@ class Normalizer
 
                     /* Inlude if includable is missing OR it is on include path */
                     if (!$propertyMetadatum->isIncludable() || $this->isIncluded(
+                            $path,
                             $propertyMetadatum->getIncludablePaths(),
                             $includes
                         )
@@ -92,14 +94,14 @@ class Normalizer
         return null;
     }
 
-    private function isIncluded(array $paths, ?array $includes): bool
+    private function isIncluded($currentPath, array $paths, ?array $includes): bool
     {
         if (null === $includes) {
             return false;
         }
 
         foreach ($paths as $path) {
-            if (in_array($path, $includes)) {
+            if (in_array($this->appendPath($currentPath, $path), $includes)) {
                 return true;
             }
         }
