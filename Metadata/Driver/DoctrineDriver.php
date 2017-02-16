@@ -28,9 +28,11 @@ class DoctrineDriver implements DriverInterface
         $ddrRestClassMetadata = new ClassMetadata($class->getName());
 
         foreach ($doctrineClassMetadata->fieldMappings as $fieldMapping) {
-            $ddrRestPropertyMetadata = new PropertyMetadata($class->getName(), $fieldMapping['fieldName']);
-            $ddrRestPropertyMetadata->setType($fieldMapping['type']);
-            $ddrRestClassMetadata->addPropertyMetadata($ddrRestPropertyMetadata);
+            if (!array_key_exists('declared', $fieldMapping)) {
+                $ddrRestPropertyMetadata = new PropertyMetadata($class->getName(), $fieldMapping['fieldName']);
+                $ddrRestPropertyMetadata->setType($fieldMapping['type']);
+                $ddrRestClassMetadata->addPropertyMetadata($ddrRestPropertyMetadata);
+            }
         }
 
         foreach ($doctrineClassMetadata->associationMappings as $associationMapping) {
