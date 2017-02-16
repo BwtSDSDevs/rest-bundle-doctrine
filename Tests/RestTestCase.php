@@ -93,6 +93,21 @@ abstract class RestTestCase extends WebTestCase
     }
 
     /**
+     * @param array $expected
+     * @param array $actual
+     * @param bool  $linksExpected
+     */
+    protected function assertContentEquals(array $expected, array $actual, $linksExpected = true)
+    {
+        if ($linksExpected) {
+            $this->assertLinksAndUnset($actual);
+        }
+        ksort($expected);
+        ksort($actual);
+        $this->assertEquals($expected, $actual, 'The content does not match');
+    }
+
+    /**
      * @param string $url
      * @param array  $parameters
      * @param array  $headers
