@@ -122,27 +122,27 @@ class RestRequestParser
         $propertyMetadata->setValue($object, $convertedValue);
     }
 
-    /**
-     * @param object $object Access by reference.
-     * @param string $method
-     * @param string $propertyName
-     * @param [] $value
-     */
-    protected function updatePropertyObject(
-        &$object,
-        $method,
-        $class,
-        $propertyName,
-        $value
-    ) {
-        $propertyObject = $this->propertyAccessor->getValue($object, $propertyName);
-        if (null === $propertyObject) {
-            $propertyObject = new $class;
-        }
-
-        $this->updateObject($propertyObject, $method, $value);
-        $this->propertyAccessor->setValue($object, $propertyName, $propertyObject);
-    }
+//    /**
+//     * @param object $object Access by reference.
+//     * @param string $method
+//     * @param string $propertyName
+//     * @param [] $value
+//     */
+//    protected function updatePropertyObject(
+//        &$object,
+//        $method,
+//        $class,
+//        $propertyName,
+//        $value
+//    ) {
+//        $propertyObject = $this->propertyAccessor->getValue($object, $propertyName);
+//        if (null === $propertyObject) {
+//            $propertyObject = new $class;
+//        }
+//
+//        $this->updateObject($propertyObject, $method, $value);
+//        $this->propertyAccessor->setValue($object, $propertyName, $propertyObject);
+//    }
 
     /**
      * @param string           $method

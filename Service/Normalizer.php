@@ -122,11 +122,12 @@ class Normalizer
     private function normalizeField($value, PropertyMetadata $propertyMetadata)
     {
         switch ($propertyMetadata->getType()) {
-            case'date':
+            case 'date':
                 if (null === $value) {
                     return null;
                 }
 
+                /** @var $value \DateTime */
                 return $value->format('Y-m-d');
 
             default:

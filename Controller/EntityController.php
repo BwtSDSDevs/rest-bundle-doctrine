@@ -3,24 +3,21 @@
 namespace Dontdrinkandroot\RestBundle\Controller;
 
 use Doctrine\Common\Util\Inflector;
-use Dontdrinkandroot\Entity\EntityInterface;
-use Dontdrinkandroot\Entity\UuidEntityInterface;
-use Dontdrinkandroot\Pagination\PaginatedResult;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Dontdrinkandroot\RestBundle\Service\CrudServiceInterface;
 use Dontdrinkandroot\RestBundle\Service\DoctrineEntityRepositoryCrudService;
-use FOS\RestBundle\View\View;
-use JMS\Serializer\Serializer;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class EntityController extends DdrRestController
+class EntityController extends Controller
 {
     public function listAction(Request $request)
     {
@@ -44,10 +41,14 @@ class EntityController extends DdrRestController
         $this->assertPostGranted();
         $entity = $this->parseRequest($request, null, $this->getEntityClass());
         $entity = $this->postProcessPostedEntity($entity);
-        $errors = $this->validate($entity);
+
+        /** @var ValidatorInterface $validator */
+        $validator = $this->get('validator');
+        $errors = $validator->validate($entity);
         if ($errors->count() > 0) {
             return new JsonResponse($this->parseConstraintViolations($errors), Response::HTTP_BAD_REQUEST);
         }
+
         $entity = $this->createEntity($entity);
 
         $normalizer = $this->get('ddr_rest.normalizer');
@@ -73,10 +74,14 @@ class EntityController extends DdrRestController
         $this->assertPutGranted($entity);
         $entity = $this->parseRequest($request, $entity, $this->getEntityClass());
         $entity = $this->postProcessPuttedEntity($entity);
-        $errors = $this->validate($entity);
+
+        /** @var ValidatorInterface $validator */
+        $validator = $this->get('validator');
+        $errors = $validator->validate($entity);
         if ($errors->count() > 0) {
             return new JsonResponse($this->parseConstraintViolations($errors), Response::HTTP_BAD_REQUEST);
         }
+
         $entity = $this->updateEntity($entity);
 
         $normalizer = $this->get('ddr_rest.normalizer');
@@ -178,17 +183,14 @@ class EntityController extends DdrRestController
     }
 
     /**
-     * @param string          $subresource
-     * @param EntityInterface $parent
-     * @param EntityInterface $entity
+     * @param string $subresource
+     * @param object $parent
+     * @param object $entity
      *
-     * @return EntityInterface
+     * @return object
      */
-    protected function postProcessSubResourcePostedEntity(
-        $subresource,
-        EntityInterface $entity,
-        EntityInterface $parent
-    ) {
+    protected function postProcessSubResourcePostedEntity($subresource, $entity, $parent)
+    {
         return $entity;
     }
 
@@ -219,7 +221,7 @@ class EntityController extends DdrRestController
         return $this->getService()->update($entity);
     }
 
-    protected function listSubresource(EntityInterface $entity, $subresource, $page = 1, $perPage = 50)
+    protected function listSubresource($entity, $subresource, $page = 1, $perPage = 50)
     {
         $propertyAccessor = $this->container->get('property_accessor');
 
@@ -301,7 +303,7 @@ class EntityController extends DdrRestController
         $this->assertRightGranted($entity, $right);
     }
 
-    protected function assertSubresourceListGranted(EntityInterface $entity, $subresource)
+    protected function assertSubresourceListGranted($entity, $subresource)
     {
         $classMetadata = $this->getClassMetadata();
         /** @var PropertyMetadata $propertyMetadata */
@@ -314,7 +316,7 @@ class EntityController extends DdrRestController
         $this->assertRightGranted($entity, $right);
     }
 
-    protected function assertSubresourcePostGranted(EntityInterface $entity, $subresource)
+    protected function assertSubresourcePostGranted($entity, $subresource)
     {
         $classMetadata = $this->getClassMetadata();
         /** @var PropertyMetadata $propertyMetadata */
@@ -325,23 +327,6 @@ class EntityController extends DdrRestController
         }
 
         $this->assertRightGranted($entity, $right);
-    }
-
-    /**
-     * @param array|PaginatedResult $result
-     *
-     * @return View
-     */
-    protected function createViewFromListResult($result)
-    {
-        if ($result instanceof PaginatedResult) {
-            $view = $this->view($result->getResults());
-            $this->addPaginationHeaders($result->getPagination(), $view);
-
-            return $view;
-        }
-
-        return $this->view($result);
     }
 
     /**
@@ -398,12 +383,12 @@ class EntityController extends DdrRestController
     }
 
     /**
-     * @param string          $subresource
-     * @param EntityInterface $entity
+     * @param string $subresource
+     * @param object $entity
      *
-     * @return EntityInterface
+     * @return
      */
-    protected function saveSubResource($subresource, EntityInterface $entity)
+    protected function saveSubResource($subresource, $entity)
     {
         return $this->getService()->save($entity);
     }

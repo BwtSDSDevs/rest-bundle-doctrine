@@ -57,12 +57,6 @@ services:
         tags:
             - { name: routing.loader }
 
-    ddr_rest.serialization.exclusion_strategy.includes:
-        class: Dontdrinkandroot\RestBundle\Serialization\IncludesExclusionStrategy
-        arguments:
-            - '@request_stack'
-            - '@ddr_rest.metadata.factory'
-
     ddr_rest.listener.kernel_exception:
         class: Dontdrinkandroot\RestBundle\Listener\KernelExceptionListener
         arguments:
