@@ -28,6 +28,8 @@ class EntityController extends DdrRestController
         $perPage = $request->query->get('perPage', 50);
 
         $this->assertListGranted();
+
+        //TODO: Add pagination headers
         $result = $this->listEntities($page, $perPage);
         $entities = $result->getIterator()->getArrayCopy();
 
@@ -89,7 +91,7 @@ class EntityController extends DdrRestController
         $this->assertDeleteGranted($entity);
         $this->getService()->remove($entity);
 
-        return $this->handleView($this->view(null, Response::HTTP_NO_CONTENT));
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
     public function listSubresourceAction(Request $request, $id)
@@ -288,7 +290,7 @@ class EntityController extends DdrRestController
         $this->assertRightGranted($entity, $right);
     }
 
-    protected function assertDeleteGranted(EntityInterface $entity)
+    protected function assertDeleteGranted($entity)
     {
         $classMetadata = $this->getClassMetadata();
         $right = $classMetadata->getDeleteRight();
@@ -362,7 +364,7 @@ class EntityController extends DdrRestController
         return $propertyMetadata->getTargetClass();
     }
 
-    protected function resolveSubject(EntityInterface $entity, $propertyPath)
+    protected function resolveSubject($entity, $propertyPath)
     {
         if ('this' === $propertyPath) {
             return $entity;

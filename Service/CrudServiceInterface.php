@@ -28,4 +28,11 @@ interface CrudServiceInterface
      * @return object
      */
     public function update($entity);
+
+    /**
+     * @param object $entity
+     *
+     * @return object mixed
+     */
+    public function remove($entity);
 }

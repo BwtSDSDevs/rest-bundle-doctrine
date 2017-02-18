@@ -61,4 +61,13 @@ class DoctrineEntityRepositoryCrudService extends EntityRepository implements Cr
 
         return $entity;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove($entity)
+    {
+        $this->getEntityManager()->remove($entity);
+        $this->getEntityManager()->flush($entity);
+    }
 }
