@@ -38,12 +38,6 @@ abstract class RestTestCase extends WebTestCase
      */
     protected function assertJsonResponse(Response $response, $statusCode = 200)
     {
-        $content = $response->getContent();
-        $this->assertEquals(
-            $statusCode,
-            $response->getStatusCode(),
-            $content
-        );
         if (Response::HTTP_NO_CONTENT !== $statusCode) {
             $this->assertTrue(
                 $response->headers->contains('Content-Type', 'application/json'),
@@ -51,7 +45,19 @@ abstract class RestTestCase extends WebTestCase
             );
         }
 
-        return json_decode($content, true);
+        $content = $response->getContent();
+
+        $decodedContent = json_decode($content, true);
+        if ($statusCode !== $response->getStatusCode()) {
+            var_dump($decodedContent);
+        }
+
+        $this->assertEquals(
+            $statusCode,
+            $response->getStatusCode(),
+        );
+
+        return $decodedContent;
     }
 
     /**
