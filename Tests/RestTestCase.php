@@ -26,8 +26,6 @@ abstract class RestTestCase extends WebTestCase
         /** @var ORMExecutor $executor */
         $executor = $this->loadFixtures($this->getFixtureClasses());
         $this->referenceRepository = $executor->getReferenceRepository();
-
-        $this->client = static::createClient();
     }
 
     /**
@@ -52,10 +50,7 @@ abstract class RestTestCase extends WebTestCase
             var_dump($decodedContent);
         }
 
-        $this->assertEquals(
-            $statusCode,
-            $response->getStatusCode(),
-        );
+        $this->assertEquals($statusCode, $response->getStatusCode());
 
         return $decodedContent;
     }

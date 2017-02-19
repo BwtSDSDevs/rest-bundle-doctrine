@@ -1,0 +1,13 @@
+framework:
+    secret: 'test'
+    test: ~
+
+doctrine:
+    dbal:
+        driver:   pdo_sqlite
+        path:     '/tmp/ddrrestbundle/test.db3'
+        charset:  UTF8
+
+    orm:
+        auto_generate_proxy_classes: "%kernel.debug%"
+        auto_mapping: true
