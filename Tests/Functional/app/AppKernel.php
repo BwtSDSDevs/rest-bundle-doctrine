@@ -23,7 +23,7 @@ class AppKernel extends Kernel
      */
     public function registerBundles()
     {
-        $bundlesFile = $this->getRootDir() . '/config/' . $this->getEnvironment() . '_bundles.php';
+        $bundlesFile = $this->getRootDir() . '/config/' . $this->getEnvironment() . '/bundles.php';
         if (!file_exists($bundlesFile)) {
             throw new \RuntimeException($bundlesFile . ' is missing');
         }
@@ -46,7 +46,7 @@ class AppKernel extends Kernel
      */
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $resource = $this->getRootDir() . '/config/' . $this->getEnvironment() . '_config.yml';
+        $resource = $this->getRootDir() . '/config/' . $this->getEnvironment() . '/config.yml';
         $loader->load($resource);
     }
 }

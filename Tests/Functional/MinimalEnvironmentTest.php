@@ -10,6 +10,21 @@ class MinimalEnvironmentTest extends FunctionalTestCase
 {
     protected $environment = 'minimal';
 
+    public function testList()
+    {
+        $client = $this->makeClient();
+
+        $client->request(
+            Request::METHOD_GET,
+            '/rest/minimalentities',
+            [],
+            [],
+            []
+        );
+        $content = $this->assertJsonResponse($client->getResponse());
+        $this->assertCount(0, $content);
+    }
+
     public function testBla()
     {
         $client = $this->makeClient();
