@@ -14,14 +14,8 @@
         bootstrap="./vendor/autoload.php">
 
     <testsuites>
-        <testsuite name="Unit Tests">
-            <directory>./Tests/Unit</directory>
-        </testsuite>
-        <testsuite name="Integration Tests">
-            <directory>./Tests/Integration</directory>
-        </testsuite>
-        <testsuite name="Acceptance Tests">
-            <directory>./Tests/Acceptance</directory>
+        <testsuite name="Project Test Suite">
+            <directory>Tests</directory>
         </testsuite>
     </testsuites>
 
