@@ -4,19 +4,23 @@ namespace Dontdrinkandroot\RestBundle\Tests\Functional;
 
 use Dontdrinkandroot\RestBundle\Tests\Functional\app\AppKernel;
 use Dontdrinkandroot\RestBundle\Tests\RestTestCase;
+use Symfony\Component\Filesystem\Filesystem;
 
 abstract class FunctionalTestCase extends RestTestCase
 {
-    protected static function getKernelClass()
+    public static function setUpBeforeClass()
     {
-        return 'Dontdrinkandroot\RestBundle\Tests\Functional\app\AppKernel';
+        parent::setUpBeforeClass();
+
+        $fileSystem = new Filesystem();
+        $fileSystem->remove('/tmp/ddrrestbundle');
     }
 
-    protected static function createKernel(array $options = array())
+    /**
+     * {@inheritdoc}
+     */
+    protected static function getKernelClass()
     {
-        return new AppKernel(
-            isset($options['environment']) ? $options['environment'] : 'test',
-            isset($options['debug']) ? $options['debug'] : true
-        );
+        return AppKernel::class;
     }
 }

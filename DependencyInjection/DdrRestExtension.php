@@ -17,11 +17,16 @@ class DdrRestExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $container->setParameter('ddr.rest.access_token_class', $config['access_token_class']);
-        $container->setParameter('ddr.rest.authentication_provider_key', $config['authentication_provider_key']);
         $container->setParameter('ddr.rest.paths', $config['paths']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
+
+        if (null !== $config['access_token_class']) {
+            $container->setParameter('ddr.rest.access_token_class', $config['access_token_class']);
+            $container->setParameter('ddr.rest.authentication_provider_key', $config['authentication_provider_key']);
+
+            $loader->load('services_security.yml');
+        }
     }
 }

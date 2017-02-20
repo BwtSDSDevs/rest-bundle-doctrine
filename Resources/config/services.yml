@@ -2,26 +2,6 @@ parameters:
 
 services:
 
-    ddr.rest.repository.access_token:
-        class: Dontdrinkandroot\RestBundle\Repository\AccessTokenRepository
-        factory: ['@doctrine.orm.entity_manager', getRepository]
-        arguments: [ '%ddr.rest.access_token_class%' ]
-
-    ddr.rest.service.access_token:
-        class: Dontdrinkandroot\RestBundle\Service\AccessTokenService
-        arguments:
-            - '@ddr.rest.repository.access_token'
-            - '%ddr.rest.access_token_class%'
-            - '@security.authentication.manager'
-            - '%ddr.rest.authentication_provider_key%'
-
-    ddr.rest.security.access_token_authenticator:
-        class: Dontdrinkandroot\RestBundle\Security\DefaultAccessTokenAuthenticator
-        arguments:
-            - '@ddr.rest.repository.access_token'
-        calls:
-            - ['setTokenRequired', [false]]
-
     ddr_rest.metadata.driver.doctrine:
         class: Dontdrinkandroot\RestBundle\Metadata\Driver\DoctrineDriver
         arguments:
