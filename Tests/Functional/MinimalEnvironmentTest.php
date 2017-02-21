@@ -7,6 +7,7 @@ use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\Minimal
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class MinimalEnvironmentTest extends FunctionalTestCase
 {
@@ -45,6 +46,49 @@ class MinimalEnvironmentTest extends FunctionalTestCase
         $content = $this->assertJsonResponse($client->getResponse());
         $this->assertEquals($entity->getId(), $content['id']);
         $this->assertEquals(10, $content['integerValue']);
+    }
+
+    public function testPost()
+    {
+        $client = $this->makeClient();
+
+        $this->expectException(AccessDeniedException::class);
+        $client->request(
+            Request::METHOD_POST,
+            '/rest/minimalentities',
+            [],
+            [],
+            [json_encode(['integerValue' => 33])]
+        );
+    }
+
+    public function testPut()
+    {
+        $client = $this->makeClient();
+        /** @var MinimalEntity $entity */
+        $entity = $this->referenceRepository->getReference('minimal-entity-10');
+
+        $this->expectException(AccessDeniedException::class);
+        $client->request(
+            Request::METHOD_PUT,
+            sprintf('/rest/minimalentities/%s', $entity->getId()),
+            [],
+            [],
+            [json_encode(['integerValue' => 33])]
+        );
+    }
+
+    public function testDelete()
+    {
+        $client = $this->makeClient();
+        /** @var MinimalEntity $entity */
+        $entity = $this->referenceRepository->getReference('minimal-entity-10');
+
+        $this->expectException(AccessDeniedException::class);
+        $client->request(
+            Request::METHOD_DELETE,
+            sprintf('/rest/minimalentities/%s', $entity->getId())
+        );
     }
 
     public function testUnmappedPath()
