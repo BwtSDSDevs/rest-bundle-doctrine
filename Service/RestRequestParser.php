@@ -164,16 +164,16 @@ class RestRequestParser
         return false;
     }
 
-    private function convert(
-        $type,
-        $value
-    ) {
+    private function convert(?string $type, $value)
+    {
         if (null === $value) {
             return $value;
         }
 
         switch ($type) {
             case 'datetime':
+            case 'date':
+            case 'time':
                 return new \DateTime($value);
             default:
                 return $value;

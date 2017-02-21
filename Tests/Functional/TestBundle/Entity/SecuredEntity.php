@@ -13,7 +13,8 @@ use Ramsey\Uuid\Uuid;
  * @REST\RootResource(
  *     pathPrefix="secured",
  *     listRight=@REST\Right(attributes={"ROLE_USER"}),
- *     getRight=@REST\Right(attributes={"ROLE_USER"})
+ *     getRight=@REST\Right(attributes={"ROLE_USER"}),
+ *     putRight=@REST\Right(attributes={"ROLE_ADMIN"})
  * )
  */
 class SecuredEntity
@@ -36,6 +37,7 @@ class SecuredEntity
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @REST\Puttable()
      *
      * @var \DateTime|null
      */
@@ -43,6 +45,7 @@ class SecuredEntity
 
     /**
      * @ORM\Column(type="date", nullable=true)
+     * @REST\Puttable()
      *
      * @var \DateTime|null
      */
@@ -50,6 +53,7 @@ class SecuredEntity
 
     /**
      * @ORM\Column(type="time", nullable=true)
+     * @REST\Puttable()
      *
      * @var \DateTime|null
      */

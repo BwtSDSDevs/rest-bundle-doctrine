@@ -19,6 +19,7 @@ security:
 
 framework:
     router: { resource: "%kernel.root_dir%/config/secured/routing.yml" }
+    validation: { enable_annotations: true }
 
 ddr_rest:
     access_token_class: 'Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\AccessToken'
