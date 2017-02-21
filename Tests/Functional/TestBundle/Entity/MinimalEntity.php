@@ -21,10 +21,24 @@ class MinimalEntity
     private $id;
 
     /**
-     * @return mixed
+     * @ORM\Column(type="integer", nullable=true)
+     *
+     * @var int|null
      */
+    private $integerValue;
+
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getIntegerValue(): ?int
+    {
+        return $this->integerValue;
+    }
+
+    public function setIntegerValue(?int $integerValue)
+    {
+        $this->integerValue = $integerValue;
     }
 }

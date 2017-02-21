@@ -19,12 +19,20 @@ class MinimalEnvironmentTest extends FunctionalTestCase
         $client->request(
             Request::METHOD_GET,
             '/rest/minimalentities',
-            [],
+            ['page' => 2, 'perPage' => 10],
             [],
             []
         );
-        $content = $this->assertJsonResponse($client->getResponse());
-        $this->assertCount(50, $content);
+        $response = $client->getResponse();
+        $content = $this->assertJsonResponse($response);
+        $this->assertCount(10, $content);
+        $this->assertEquals(10, $content[0]['integerValue']);
+
+        $headers = $response->headers;
+        $this->assertEquals(2, $headers->get('x-pagination-current-page'));
+        $this->assertEquals(10, $headers->get('x-pagination-per-page'));
+        $this->assertEquals(5, $headers->get('x-pagination-total-pages'));
+        $this->assertEquals(49, $headers->get('x-pagination-total'));
     }
 
     public function testGet()
@@ -36,9 +44,10 @@ class MinimalEnvironmentTest extends FunctionalTestCase
         $client->request(Request::METHOD_GET, sprintf('/rest/minimalentities/%s', $entity->getId()));
         $content = $this->assertJsonResponse($client->getResponse());
         $this->assertEquals($entity->getId(), $content['id']);
+        $this->assertEquals(10, $content['integerValue']);
     }
 
-    public function testBla()
+    public function testUnmappedPath()
     {
         $client = $this->makeClient();
 

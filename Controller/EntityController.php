@@ -3,6 +3,7 @@
 namespace Dontdrinkandroot\RestBundle\Controller;
 
 use Doctrine\Common\Util\Inflector;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
@@ -26,14 +27,17 @@ class EntityController extends Controller
 
         $this->assertListGranted();
 
-        //TODO: Add pagination headers
-        $result = $this->listEntities($page, $perPage);
-        $entities = $result->getIterator()->getArrayCopy();
+        $paginator = $this->listEntities($page, $perPage);
+        $total = $paginator->count();
+        $entities = $paginator->getIterator()->getArrayCopy();
 
         $normalizer = $this->get('ddr_rest.normalizer');
         $content = $normalizer->normalize($entities, $this->parseIncludes($request));
 
-        return new JsonResponse($content, Response::HTTP_OK);
+        $response = new JsonResponse($content, Response::HTTP_OK);
+        $this->addPaginationHeaders($response, $page, $perPage, $total);
+
+        return $response;
     }
 
     public function postAction(Request $request)
@@ -204,7 +208,7 @@ class EntityController extends Controller
         return $entity;
     }
 
-    protected function listEntities($page = 1, $perPage = 50)
+    protected function listEntities(int $page = 1, int $perPage = 50): Paginator
     {
         $service = $this->getService();
 
@@ -424,5 +428,17 @@ class EntityController extends Controller
         }
 
         return $data;
+    }
+
+    private function addPaginationHeaders(Response $response, int $page, int $perPage, int $total)
+    {
+        $response->headers->add(
+            [
+                'x-pagination-current-page' => $page,
+                'x-pagination-per-page'     => $perPage,
+                'x-pagination-total'        => $total,
+                'x-pagination-total-pages'  => (int)(($total - 1) / $perPage + 1)
+            ]
+        );
     }
 }
