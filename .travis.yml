@@ -24,4 +24,4 @@ script:
     - (export SYMFONY_DEPRECATIONS_HELPER="weak" && vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover)
 
 after_script:
-    - if [ "$dependencies" = "highest" ]; then php bin/ocular code-coverage:upload --format=php-clover coverage.clover; fi
+    - php bin/ocular code-coverage:upload --format=php-clover coverage.clover
