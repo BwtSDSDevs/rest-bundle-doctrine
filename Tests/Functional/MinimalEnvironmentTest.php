@@ -2,6 +2,8 @@
 
 namespace Dontdrinkandroot\RestBundle\Tests\Functional;
 
+use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\MinimalEntity;
+use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\MinimalEntities;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -22,7 +24,18 @@ class MinimalEnvironmentTest extends FunctionalTestCase
             []
         );
         $content = $this->assertJsonResponse($client->getResponse());
-        $this->assertCount(0, $content);
+        $this->assertCount(50, $content);
+    }
+
+    public function testGet()
+    {
+        $client = $this->makeClient();
+        /** @var MinimalEntity $entity */
+        $entity = $this->referenceRepository->getReference('minimal-entity-10');
+
+        $client->request(Request::METHOD_GET, sprintf('/rest/minimalentities/%s', $entity->getId()));
+        $content = $this->assertJsonResponse($client->getResponse());
+        $this->assertEquals($entity->getId(), $content['id']);
     }
 
     public function testBla()
@@ -45,7 +58,7 @@ class MinimalEnvironmentTest extends FunctionalTestCase
      */
     protected function getFixtureClasses()
     {
-        return [];
+        return [MinimalEntities::class];
     }
 
     /**
