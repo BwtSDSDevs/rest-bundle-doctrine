@@ -4,7 +4,6 @@ namespace Dontdrinkandroot\RestBundle\Tests\Functional;
 
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\MinimalEntity;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\MinimalEntities;
-use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -112,15 +111,5 @@ class MinimalEnvironmentTest extends FunctionalTestCase
     protected function getFixtureClasses()
     {
         return [MinimalEntities::class];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected static function getBundleClasses()
-    {
-        return [
-            FrameworkBundle::class
-        ];
     }
 }

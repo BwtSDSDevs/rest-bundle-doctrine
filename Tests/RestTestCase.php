@@ -16,11 +16,6 @@ abstract class RestTestCase extends WebTestCase
      */
     protected $referenceRepository;
 
-    /**
-     * @var Client
-     */
-    protected $client;
-
     protected function setUp()
     {
         /** @var ORMExecutor $executor */
@@ -65,35 +60,6 @@ abstract class RestTestCase extends WebTestCase
     }
 
     /**
-     * @deprecated
-     *
-     * @param string $url
-     * @param string $method
-     * @param array  $parameters
-     * @param array  $headers
-     * @param array  $files
-     *
-     * @return Response
-     */
-    protected function requestJson(
-        $url,
-        $method = 'GET',
-        array $parameters = [],
-        array $headers = [],
-        array $files = []
-    ) {
-        $mergedHeaders = [
-            'HTTP_ACCEPT' => 'application/json',
-        ];
-        foreach ($headers as $key => $value) {
-            $mergedHeaders['HTTP_' . $key] = $value;
-        }
-        $this->client->request($method, $url, $parameters, $files, $mergedHeaders);
-
-        return $this->client->getResponse();
-    }
-
-    /**
      * @param array $expected
      * @param array $actual
      * @param bool  $linksExpected
@@ -115,9 +81,9 @@ abstract class RestTestCase extends WebTestCase
      *
      * @return null|Response
      */
-    protected function doGetCall($url, array $parameters = [], array $headers = [])
+    protected function doGetCall(Client $client, $url, array $parameters = [], array $headers = [])
     {
-        $this->client->request(
+        $client->request(
             Request::METHOD_GET,
             $url,
             $parameters,
@@ -125,7 +91,7 @@ abstract class RestTestCase extends WebTestCase
             $this->transformHeaders($headers)
         );
 
-        return $this->client->getResponse();
+        return $client->getResponse();
     }
 
     /**
@@ -138,13 +104,14 @@ abstract class RestTestCase extends WebTestCase
      * @return null|Response
      */
     protected function doPostCall(
+        Client $client,
         $url,
         array $parameters = [],
         array $headers = [],
         array $content = [],
         array $files = []
     ) {
-        $this->client->request(
+        $client->request(
             Request::METHOD_POST,
             $url,
             $parameters,
@@ -153,20 +120,20 @@ abstract class RestTestCase extends WebTestCase
             json_encode($content)
         );
 
-        return $this->client->getResponse();
+        return $client->getResponse();
     }
 
     /**
-     * @param string      $url
-     * @param array       $parameters
-     * @param array       $headers
-     * @param string|null $content
+     * @param string $url
+     * @param array  $parameters
+     * @param array  $headers
+     * @param array  $content
      *
      * @return null|Response
      */
-    protected function doPutCall($url, array $parameters = [], array $headers = [], array $content = [])
+    protected function doPutCall(Client $client, $url, array $parameters = [], array $headers = [], array $content = [])
     {
-        $this->client->request(
+        $client->request(
             Request::METHOD_PUT,
             $url,
             $parameters,
@@ -175,7 +142,7 @@ abstract class RestTestCase extends WebTestCase
             json_encode($content)
         );
 
-        return $this->client->getResponse();
+        return $client->getResponse();
     }
 
     /**
@@ -185,9 +152,9 @@ abstract class RestTestCase extends WebTestCase
      *
      * @return null|Response
      */
-    protected function doDeleteCall($url, array $parameters = [], array $headers = [])
+    protected function doDeleteCall(Client $client, $url, array $parameters = [], array $headers = [])
     {
-        $this->client->request(
+        $client->request(
             Request::METHOD_DELETE,
             $url,
             $parameters,
@@ -195,7 +162,7 @@ abstract class RestTestCase extends WebTestCase
             $this->transformHeaders($headers)
         );
 
-        return $this->client->getResponse();
+        return $client->getResponse();
     }
 
     /**

@@ -259,6 +259,15 @@ class ClassMetadata extends MergeableClassMetadata
         $this->methods = $methods;
     }
 
+    public function getPropertyMetadata(string $property): ?PropertyMetadata
+    {
+        if (array_key_exists($property, $this->propertyMetadata)) {
+            return $this->propertyMetadata[$property];
+        }
+
+        return null;
+    }
+
     private function mergeMethods($thisMethods, $otherMethods)
     {
         $mergedMethods = [];

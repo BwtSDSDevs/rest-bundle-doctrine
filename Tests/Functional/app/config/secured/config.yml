@@ -1,0 +1,26 @@
+imports:
+    - { resource: ../config.yml }
+
+security:
+
+    providers:
+        doctrine_provider:
+            entity:
+                class: TestBundle:User
+                property: username
+
+    firewalls:
+        rest:
+             pattern: ^/rest
+             simple_preauth:
+                authenticator: ddr.rest.security.access_token_authenticator
+             anonymous: true
+             stateless: true
+
+framework:
+    router: { resource: "%kernel.root_dir%/config/secured/routing.yml" }
+
+ddr_rest:
+    access_token_class: 'Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\AccessToken'
+    paths:
+        - '/rest'

@@ -8,7 +8,7 @@ use Metadata\PropertyMetadata as BasePropertyMetadata;
 class PropertyMetadata extends BasePropertyMetadata
 {
     /**
-     * @var string
+     * @var string|null
      */
     private $type;
 
@@ -264,18 +264,12 @@ class PropertyMetadata extends BasePropertyMetadata
         $this->collection = $collection;
     }
 
-    /**
-     * @return string
-     */
-    public function getType(): string
+    public function getType(): ?string
     {
         return $this->type;
     }
 
-    /**
-     * @param string $type
-     */
-    public function setType(string $type)
+    public function setType(?string $type)
     {
         $this->type = $type;
     }

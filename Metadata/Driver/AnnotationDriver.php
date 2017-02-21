@@ -87,7 +87,7 @@ class AnnotationDriver implements DriverInterface
 
         foreach ($class->getProperties() as $reflectionProperty) {
 
-            $propertyMetadata = $ddrRestClassMetadata->propertyMetadata[$reflectionProperty->getName()];
+            $propertyMetadata = $ddrRestClassMetadata->getPropertyMetadata($reflectionProperty->getName());
             if (null === $propertyMetadata) {
                 $propertyMetadata = new PropertyMetadata($class->getName(), $reflectionProperty->getName());
             }

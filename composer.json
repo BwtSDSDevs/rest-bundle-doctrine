@@ -31,7 +31,9 @@
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/doctrine-cache-bundle": "^1.2",
         "doctrine/doctrine-fixtures-bundle": "^2.3",
-        "scrutinizer/ocular": "^1.1"
+        "scrutinizer/ocular": "^1.1",
+        "fzaninotto/faker": "^1.6",
+        "ramsey/uuid": "^3.5"
     },
     "autoload": {
         "psr-4": {
