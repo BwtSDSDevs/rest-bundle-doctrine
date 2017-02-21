@@ -122,6 +122,14 @@ class Normalizer
     private function normalizeField($value, PropertyMetadata $propertyMetadata)
     {
         switch ($propertyMetadata->getType()) {
+            case 'datetime':
+                if (null === $value) {
+                    return null;
+                }
+
+                /** @var $value \DateTime */
+                return $value->format('Y-m-d H:i:s');
+
             case 'date':
                 if (null === $value) {
                     return null;
@@ -129,6 +137,14 @@ class Normalizer
 
                 /** @var $value \DateTime */
                 return $value->format('Y-m-d');
+
+            case 'time':
+                if (null === $value) {
+                    return null;
+                }
+
+                /** @var $value \DateTime */
+                return $value->format('H:i:s');
 
             default:
                 return $value;

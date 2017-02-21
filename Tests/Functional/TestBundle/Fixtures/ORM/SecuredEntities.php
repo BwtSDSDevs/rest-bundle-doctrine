@@ -14,7 +14,11 @@ class SecuredEntities extends AbstractFixture
     public function load(ObjectManager $manager)
     {
         $securedEntity = new SecuredEntity();
+        $securedEntity->setDateTimeField(new \DateTime('2015-03-04 13:12:11'));
+        $securedEntity->setDateField(new \DateTime('2016-01-02'));
+        $securedEntity->setTimeField(new \DateTime('2014-06-09 03:13:37'));
         $manager->persist($securedEntity);
+        $this->referenceRepository->addReference('secured-entity-0', $securedEntity);
 
         $manager->flush();
     }

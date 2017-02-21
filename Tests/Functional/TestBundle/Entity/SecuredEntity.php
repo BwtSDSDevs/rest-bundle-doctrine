@@ -12,7 +12,8 @@ use Ramsey\Uuid\Uuid;
  * @ORM\Entity()
  * @REST\RootResource(
  *     pathPrefix="secured",
- *     listRight=@REST\Right(attributes={"ROLE_USER"})
+ *     listRight=@REST\Right(attributes={"ROLE_USER"}),
+ *     getRight=@REST\Right(attributes={"ROLE_USER"})
  * )
  */
 class SecuredEntity
@@ -33,6 +34,32 @@ class SecuredEntity
      */
     private $uuid;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     *
+     * @var \DateTime|null
+     */
+    private $dateTimeField;
+
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     *
+     * @var \DateTime|null
+     */
+    private $dateField;
+
+    /**
+     * @ORM\Column(type="time", nullable=true)
+     *
+     * @var \DateTime|null
+     */
+    private $timeField;
+
+    /**
+     * @REST\Excluded()
+     *
+     * @var mixed
+     */
     private $unmappedField;
 
     public function __construct()
@@ -56,5 +83,35 @@ class SecuredEntity
     public function getUuid(): string
     {
         return $this->uuid;
+    }
+
+    public function getDateTimeField(): ?\DateTime
+    {
+        return $this->dateTimeField;
+    }
+
+    public function setDateTimeField(?\DateTime $dateTimeField)
+    {
+        $this->dateTimeField = $dateTimeField;
+    }
+
+    public function getDateField(): ?\DateTime
+    {
+        return $this->dateField;
+    }
+
+    public function setDateField(?\DateTime $dateField)
+    {
+        $this->dateField = $dateField;
+    }
+
+    public function getTimeField(): ?\DateTime
+    {
+        return $this->timeField;
+    }
+
+    public function setTimeField(?\DateTime $timeField)
+    {
+        $this->timeField = $timeField;
     }
 }
