@@ -155,7 +155,6 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $content = $this->assertJsonResponse($response);
 
         $this->assertCount(5, $content['subResources']);
-        $this->assertPagination($response, 1, 3, 1, 5);
     }
 
     public function testListSubResources()
@@ -172,6 +171,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         );
         $content = $this->assertJsonResponse($response);
         $this->assertCount(3, $content);
+        $this->assertPagination($response, 1, 3, 2, 5);
     }
 
     /**
