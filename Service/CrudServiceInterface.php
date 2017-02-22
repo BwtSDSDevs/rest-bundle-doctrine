@@ -35,4 +35,6 @@ interface CrudServiceInterface
      * @return object mixed
      */
     public function remove($entity);
+
+    public function listAssociationPaginated($entity, string $relation, int $page = 1, $perPage = 50);
 }

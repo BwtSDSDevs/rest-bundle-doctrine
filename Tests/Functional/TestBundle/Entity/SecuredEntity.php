@@ -62,8 +62,9 @@ class SecuredEntity
     private $timeField;
 
     /**
-     * @ORM\ManyToMany(targetEntity="SubResourceEntity")
+     * @ORM\ManyToMany(targetEntity="SubResourceEntity", inversedBy="securedEntities")
      * @REST\Includable()
+     * @REST\SubResource()
      *
      * @var SubResourceEntity[]|Collection
      */
@@ -128,6 +129,11 @@ class SecuredEntity
     public function setTimeField(?\DateTime $timeField)
     {
         $this->timeField = $timeField;
+    }
+
+    public function getSubResources()
+    {
+        return $this->subResources;
     }
 
     public function addSubResource(SubResourceEntity $subResourceEntity)

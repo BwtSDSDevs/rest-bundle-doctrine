@@ -70,4 +70,35 @@ class DoctrineEntityRepositoryCrudService extends EntityRepository implements Cr
         $this->getEntityManager()->remove($entity);
         $this->getEntityManager()->flush($entity);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function listAssociationPaginated($entity, string $fieldName, int $page = 1, $perPage = 50)
+    {
+        $classMetadata = $this->getEntityManager()->getClassMetadata(get_class($entity));
+        $association = $classMetadata->getAssociationMapping($fieldName);
+        $targetClass = $classMetadata->getAssociationTargetClass($fieldName);
+
+        $inverseFieldName = null;
+        if ($classMetadata->isAssociationInverseSide($fieldName)) {
+            $inverseFieldName = $association['mappedBy'];
+        } else {
+            $inverseFieldName = $association['inversedBy'];
+        }
+
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
+        $queryBuilder->select('association');
+        $queryBuilder->from($targetClass, 'association');
+        $queryBuilder->join('association.' . $inverseFieldName, 'entity');
+        $queryBuilder->where('entity = :entity');
+        $queryBuilder->setParameter('entity', $entity);
+
+        $queryBuilder->setFirstResult(($page - 1) * $perPage);
+        $queryBuilder->setMaxResults($perPage);
+
+        $queryBuilder->getQuery();
+
+        return new Paginator($queryBuilder);
+    }
 }

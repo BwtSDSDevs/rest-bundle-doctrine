@@ -110,7 +110,7 @@ class RestEntityLoader extends Loader
                 /** @var PropertyMetadata $propertyMetadata */
                 foreach ($classMetadata->propertyMetadata as $propertyMetadata) {
                     if ($propertyMetadata->isSubResource()) {
-                        $subResourcePath = $propertyMetadata->name;
+                        $subResourcePath = strtolower($propertyMetadata->name);
                         if (null !== $propertyMetadata->getSubResourcePath()) {
                             $subResourcePath = $propertyMetadata->getSubResourcePath();
                         }

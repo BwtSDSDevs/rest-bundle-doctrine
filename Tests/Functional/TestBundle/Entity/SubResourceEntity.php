@@ -2,6 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -19,6 +20,13 @@ class SubResourceEntity
      * @var int
      */
     private $id;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="SecuredEntity", mappedBy="subResources")
+     *
+     * @var Collection|SecuredEntity[]
+     */
+    private $securedEntities;
 
     /**
      * @return int

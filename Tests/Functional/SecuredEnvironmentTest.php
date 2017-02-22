@@ -155,6 +155,23 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $content = $this->assertJsonResponse($response);
 
         $this->assertCount(5, $content['subResources']);
+        $this->assertPagination($response, 1, 3, 1, 5);
+    }
+
+    public function testListSubResources()
+    {
+        $client = $this->makeClient();
+
+        /** @var SecuredEntity $entity */
+        $entity = $this->referenceRepository->getReference('secured-entity-0');
+
+        $response = $this->doGetCall(
+            $client,
+            sprintf('/rest/secured/%s/subresources', $entity->getId()),
+            ['page' => 1, 'perPage' => 3]
+        );
+        $content = $this->assertJsonResponse($response);
+        $this->assertCount(3, $content);
     }
 
     /**

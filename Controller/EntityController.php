@@ -105,19 +105,29 @@ class EntityController extends Controller
 
     public function listSubresourceAction(Request $request, $id)
     {
+        $page = $request->query->get('page', 1);
+        $perPage = $request->query->get('perPage', 50);
+
         $subresource = $this->getSubresource();
         $entity = $this->fetchEntity($id);
         $this->assertSubresourceListGranted($entity, $subresource);
-        $result = $this->listSubresource(
+
+        $paginator = $this->listSubresource(
             $entity,
             $subresource,
-            $request->query->get('page', 1),
-            $request->query->get('perPage', 50)
+            $page,
+            $perPage
         );
-        $view = $this->createViewFromListResult($result);
-        $view->getContext()->addGroups($this->getSubresourceSerializationGroups($subresource));
+        $total = $paginator->count();
+        $entities = $paginator->getIterator()->getArrayCopy();
 
-        return $this->handleView($view);
+        $normalizer = $this->get('ddr_rest.normalizer');
+        $content = $normalizer->normalize($entities, $this->parseIncludes($request));
+
+        $response = new JsonResponse($content, Response::HTTP_OK);
+        $this->addPaginationHeaders($response, $page, $perPage, $total);
+
+        return $response;
     }
 
     public function postSubresourceAction(Request $request, $id)
@@ -225,11 +235,11 @@ class EntityController extends Controller
         return $this->getService()->update($entity);
     }
 
-    protected function listSubresource($entity, $subresource, $page = 1, $perPage = 50)
+    protected function listSubresource($entity, $property, $page = 1, $perPage = 50): Paginator
     {
-        $propertyAccessor = $this->container->get('property_accessor');
+        $service = $this->getService();
 
-        return $propertyAccessor->getValue($entity, $subresource);
+        return $service->listAssociationPaginated($entity, $property, $page, $perPage);
     }
 
     protected function getEntityClass()
