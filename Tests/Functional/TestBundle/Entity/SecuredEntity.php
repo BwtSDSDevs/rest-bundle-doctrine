@@ -2,6 +2,8 @@
 
 namespace Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
 use Ramsey\Uuid\Uuid;
@@ -60,6 +62,14 @@ class SecuredEntity
     private $timeField;
 
     /**
+     * @ORM\ManyToMany(targetEntity="SubResourceEntity")
+     * @REST\Includable()
+     *
+     * @var SubResourceEntity[]|Collection
+     */
+    private $subResources;
+
+    /**
      * @REST\Excluded()
      *
      * @var mixed
@@ -69,6 +79,7 @@ class SecuredEntity
     public function __construct()
     {
         $this->uuid = Uuid::uuid4();
+        $this->subResources = new ArrayCollection();
     }
 
     /**
@@ -117,5 +128,15 @@ class SecuredEntity
     public function setTimeField(?\DateTime $timeField)
     {
         $this->timeField = $timeField;
+    }
+
+    public function addSubResource(SubResourceEntity $subResourceEntity)
+    {
+        $this->subResources->add($subResourceEntity);
+    }
+
+    public function removeSubResource(SubResourceEntity $subResourceEntity)
+    {
+        $this->subResources->removeElement($subResourceEntity);
     }
 }
