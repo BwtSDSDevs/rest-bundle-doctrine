@@ -18,7 +18,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
     {
         $client = $this->makeClient();
 
-        $response = $this->doGetCall($client, '/rest/secured');
+        $response = $this->performGet($client, '/rest/secured');
         $this->assertJsonResponse($response, Response::HTTP_UNAUTHORIZED);
     }
 
@@ -29,7 +29,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         /** @var AccessToken $accessToken */
         $accessToken = $this->referenceRepository->getReference('token-user-user');
 
-        $response = $this->doGetCall(
+        $response = $this->performGet(
             $client,
             '/rest/secured',
             [],
@@ -46,7 +46,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
         $entity = $this->referenceRepository->getReference('secured-entity-0');
 
-        $response = $this->doGetCall(
+        $response = $this->performGet(
             $client,
             sprintf('/rest/secured/%s', $entity->getId())
         );
@@ -62,7 +62,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         /** @var SecuredEntity $entity */
         $entity = $this->referenceRepository->getReference('secured-entity-0');
 
-        $response = $this->doGetCall(
+        $response = $this->performGet(
             $client,
             sprintf('/rest/secured/%s', $entity->getId()),
             [],
@@ -89,7 +89,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
         /* No User */
 
-        $response = $this->doPutCall(
+        $response = $this->performPut(
             $client,
             sprintf('/rest/secured/%s', $entity->getId())
         );
@@ -99,7 +99,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
         /** @var AccessToken $accessToken */
         $accessToken = $this->referenceRepository->getReference('token-user-user');
-        $response = $this->doPutCall(
+        $response = $this->performPut(
             $client,
             sprintf('/rest/secured/%s', $entity->getId()),
             [],
@@ -122,7 +122,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
         /** @var AccessToken $accessToken */
         $accessToken = $this->referenceRepository->getReference('token-user-admin');
-        $response = $this->doPutCall(
+        $response = $this->performPut(
             $client,
             sprintf('/rest/secured/%s', $entity->getId()),
             [],
@@ -147,7 +147,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         /** @var SecuredEntity $entity */
         $entity = $this->referenceRepository->getReference('secured-entity-0');
 
-        $response = $this->doGetCall(
+        $response = $this->performGet(
             $client,
             sprintf('/rest/secured/%s', $entity->getId()),
             ['include' => 'subResources'],
@@ -165,7 +165,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         /** @var SecuredEntity $entity */
         $entity = $this->referenceRepository->getReference('secured-entity-0');
 
-        $response = $this->doGetCall(
+        $response = $this->performGet(
             $client,
             sprintf('/rest/secured/%s/subresources', $entity->getId()),
             ['page' => 1, 'perPage' => 3]
@@ -188,7 +188,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
         $client = $this->makeClient();
 
-        $response = $this->doPutCall(
+        $response = $this->performPut(
             $client,
             sprintf('/rest/secured/%s/subresources/%s', $entity->getId(), $subResourceEntity->getId()),
             [],
@@ -196,7 +196,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         );
         $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT);
 
-        $response = $this->doGetCall(
+        $response = $this->performGet(
             $client,
             sprintf('/rest/secured/%s/subresources', $entity->getId())
         );
@@ -217,7 +217,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
         $client = $this->makeClient();
 
-        $response = $this->doDeleteCall(
+        $response = $this->performDelete(
             $client,
             sprintf('/rest/secured/%s/subresources/%s', $entity->getId(), $subResourceEntity->getId()),
             [],
@@ -225,7 +225,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         );
         $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT);
 
-        $response = $this->doGetCall(
+        $response = $this->performGet(
             $client,
             sprintf('/rest/secured/%s/subresources', $entity->getId())
         );
@@ -236,7 +236,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
     public function testSubResourcesList()
     {
         $client = $this->makeClient();
-        $response = $this->doGetCall($client, '/rest/subresourceentities');
+        $response = $this->performGet($client, '/rest/subresourceentities');
         $content = $this->assertJsonResponse($response);
         $this->assertCount(33, $content);
     }

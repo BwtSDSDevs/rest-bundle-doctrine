@@ -81,7 +81,7 @@ abstract class RestTestCase extends WebTestCase
      *
      * @return null|Response
      */
-    protected function doGetCall(Client $client, $url, array $parameters = [], array $headers = [])
+    protected function performGet(Client $client, $url, array $parameters = [], array $headers = [])
     {
         $client->request(
             Request::METHOD_GET,
@@ -103,7 +103,7 @@ abstract class RestTestCase extends WebTestCase
      *
      * @return null|Response
      */
-    protected function doPostCall(
+    protected function performPost(
         Client $client,
         $url,
         array $parameters = [],
@@ -131,7 +131,13 @@ abstract class RestTestCase extends WebTestCase
      *
      * @return null|Response
      */
-    protected function doPutCall(Client $client, $url, array $parameters = [], array $headers = [], array $content = [])
+    protected function performPut(
+        Client $client,
+        $url,
+        array $parameters = [],
+        array $headers = [],
+        array $content = []
+    )
     {
         $client->request(
             Request::METHOD_PUT,
@@ -152,7 +158,7 @@ abstract class RestTestCase extends WebTestCase
      *
      * @return null|Response
      */
-    protected function doDeleteCall(Client $client, $url, array $parameters = [], array $headers = [])
+    protected function performDelete(Client $client, $url, array $parameters = [], array $headers = [])
     {
         $client->request(
             Request::METHOD_DELETE,
