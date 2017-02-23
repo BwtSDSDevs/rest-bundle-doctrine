@@ -3,6 +3,7 @@
 namespace Dontdrinkandroot\RestBundle\Metadata\Driver;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\MappingException;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\Driver\DriverInterface;
@@ -25,7 +26,11 @@ class DoctrineDriver implements DriverInterface
     public function loadMetadataForClass(\ReflectionClass $class)
     {
         $ddrRestClassMetadata = new ClassMetadata($class->getName());
-        $doctrineClassMetadata = $this->entityManager->getClassMetadata($class->getName());
+        try {
+            $doctrineClassMetadata = $this->entityManager->getClassMetadata($class->getName());
+        } catch (MappingException $e) {
+            return $ddrRestClassMetadata;
+        }
 
         //TODO: Handle Embedded Entities
 
