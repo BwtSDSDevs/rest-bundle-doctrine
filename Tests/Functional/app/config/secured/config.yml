@@ -25,3 +25,8 @@ ddr_rest:
     access_token_class: 'Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\AccessToken'
     paths:
         - '/rest'
+    metadata:
+        directories:
+            annotationbundle:
+                namespace_prefix: 'Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity'
+                path: '%kernel.root_dir%/config/secured/metadata'

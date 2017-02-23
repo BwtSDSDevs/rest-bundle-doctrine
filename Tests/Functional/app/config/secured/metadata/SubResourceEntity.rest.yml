@@ -1,0 +1,2 @@
+Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\SubResourceEntity:
+    rootResource: true

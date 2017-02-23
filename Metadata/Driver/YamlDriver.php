@@ -29,25 +29,36 @@ class YamlDriver extends AbstractFileDriver
     {
         /** @var ClassMetadata $ddrRestClassMetadata */
         $classMetadata = $this->doctrineDriver->loadMetadataForClass($class);
-        if (null === $ddrRestClassMetadata) {
+        if (null === $classMetadata) {
             $classMetadata = new ClassMetadata($class->getName());
         }
 
         $config = Yaml::parse(file_get_contents($file));
+        $className = key($config);
 
-        if (key($config) !== $class->name) {
+        if ($className !== $class->name) {
             throw new \RuntimeException(
                 sprintf('Class definition mismatch for "%s" in "%s": %s', $class->getName(), $file, key($config))
             );
         }
 
-        $propertyConfigs = [];
-        if (array_key_exists('properties', $config[key($config)])) {
-            $propertyConfigs = $config[key($config)]['properties'];
+        $config = $config[$className];
+        if (!is_array($config)) {
+            $config = [];
         }
+
+        if (array_key_exists('rootResource', $config) && true === $config['rootResource']) {
+            $classMetadata->setRestResource(true);
+        }
+
+        $propertyConfigs = [];
+        if (array_key_exists('properties', $config)) {
+            $propertyConfigs = $config['properties'];
+        }
+
         foreach ($class->getProperties() as $reflectionProperty) {
 
-            $propertyMetadata = $ddrRestClassMetadata->getPropertyMetadata($reflectionProperty->getName());
+            $propertyMetadata = $classMetadata->getPropertyMetadata($reflectionProperty->getName());
             if (null === $propertyMetadata) {
                 $propertyMetadata = new PropertyMetadata($class->getName(), $reflectionProperty->getName());
             }
@@ -72,6 +83,6 @@ class YamlDriver extends AbstractFileDriver
      */
     protected function getExtension()
     {
-        return 'yml';
+        return 'rest.yml';
     }
 }
