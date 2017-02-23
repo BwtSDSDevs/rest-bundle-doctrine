@@ -24,11 +24,13 @@ class DoctrineDriver implements DriverInterface
      */
     public function loadMetadataForClass(\ReflectionClass $class)
     {
-        $doctrineClassMetadata = $this->entityManager->getClassMetadata($class->getName());
         $ddrRestClassMetadata = new ClassMetadata($class->getName());
+        $doctrineClassMetadata = $this->entityManager->getClassMetadata($class->getName());
+
+        //TODO: Handle Embedded Entities
 
         foreach ($doctrineClassMetadata->fieldMappings as $fieldMapping) {
-            if (!array_key_exists('declared', $fieldMapping)) {
+            if (!array_key_exists('declared', $fieldMapping) && !array_key_exists('declaredField', $fieldMapping)) {
                 $ddrRestPropertyMetadata = new PropertyMetadata(
                     $doctrineClassMetadata->getName(),
                     $fieldMapping['fieldName']
