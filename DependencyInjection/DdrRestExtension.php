@@ -22,6 +22,17 @@ class DdrRestExtension extends Extension
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
 
+        $directories = [];
+        if (array_key_exists('metadata', $config) && array_key_exists('directories', $config['metadata'])) {
+            foreach ($config['metadata']['directories'] as $directory) {
+                $directories[$directory['namespace_prefix']] = $directory['path'];
+            }
+        }
+
+        $container
+            ->getDefinition('ddr_rest.metadata.file_locator')
+            ->setArguments([$directories]);
+
         if (null !== $config['access_token_class']) {
             $container->setParameter('ddr.rest.access_token_class', $config['access_token_class']);
             $container->setParameter('ddr.rest.authentication_provider_key', $config['authentication_provider_key']);

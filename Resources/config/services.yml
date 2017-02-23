@@ -2,6 +2,10 @@ parameters:
 
 services:
 
+    ddr_rest.metadata.file_locator:
+        class: Metadata\Driver\FileLocator
+        arguments:
+
     ddr_rest.metadata.driver.doctrine:
         class: Dontdrinkandroot\RestBundle\Metadata\Driver\DoctrineDriver
         arguments:
@@ -13,11 +17,16 @@ services:
             - '@annotation_reader'
             - '@ddr_rest.metadata.driver.doctrine'
 
+    ddr_rest.metadata.driver.yaml:
+        class: Dontdrinkandroot\RestBundle\Metadata\Driver\YamlDriver
+        arguments:
+            - '@ddr_rest.metadata.file_locator'
+            - '@ddr_rest.metadata.driver.doctrine'
+
     ddr_rest.metadata.driver.chain:
         class: Metadata\Driver\DriverChain
         arguments:
-            - ['@ddr_rest.metadata.driver.annotation']
-
+            - ['@ddr_rest.metadata.driver.yaml', '@ddr_rest.metadata.driver.annotation']
 
     ddr_rest.metadata.factory:
         class: Metadata\MetadataFactory
