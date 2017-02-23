@@ -19,6 +19,16 @@ class SubResource
     public $postRight;
 
     /**
+     * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Right
+     */
+    public $putRight;
+
+    /**
+     * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Right
+     */
+    public $deleteRight;
+
+    /**
      * @var string
      */
     public $path;

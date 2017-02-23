@@ -5,6 +5,7 @@ namespace Dontdrinkandroot\RestBundle\Tests\Functional;
 use Dontdrinkandroot\RestBundle\Security\AbstractAccessTokenAuthenticator;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\AccessToken;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\SecuredEntity;
+use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\SubResourceEntity;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\SecuredEntities;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\Users;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,7 +37,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         );
         $content = $this->assertJsonResponse($response);
 
-        $this->assertCount(1, $content);
+        $this->assertCount(2, $content);
     }
 
     public function testGetUnauthorized()
@@ -172,6 +173,72 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $content = $this->assertJsonResponse($response);
         $this->assertCount(3, $content);
         $this->assertPagination($response, 1, 3, 2, 5);
+    }
+
+    public function testAddSubResource()
+    {
+        /** @var AccessToken $accessToken */
+        $accessToken = $this->referenceRepository->getReference('token-user-admin');
+
+        /** @var SecuredEntity $entity */
+        $entity = $this->referenceRepository->getReference('secured-entity-1');
+
+        /** @var SubResourceEntity $subResourceEntity */
+        $subResourceEntity = $this->referenceRepository->getReference('subresource-entity-11');
+
+        $client = $this->makeClient();
+
+        $response = $this->doPutCall(
+            $client,
+            sprintf('/rest/secured/%s/subresources/%s', $entity->getId(), $subResourceEntity->getId()),
+            [],
+            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
+        );
+        $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT);
+
+        $response = $this->doGetCall(
+            $client,
+            sprintf('/rest/secured/%s/subresources', $entity->getId())
+        );
+        $content = $this->assertJsonResponse($response);
+        $this->assertCount(1, $content);
+    }
+
+    public function testRemoveSubResource()
+    {
+        /** @var AccessToken $accessToken */
+        $accessToken = $this->referenceRepository->getReference('token-user-admin');
+
+        /** @var SecuredEntity $entity */
+        $entity = $this->referenceRepository->getReference('secured-entity-0');
+
+        /** @var SubResourceEntity $subResourceEntity */
+        $subResourceEntity = $this->referenceRepository->getReference('subresource-entity-2');
+
+        $client = $this->makeClient();
+
+        $response = $this->doDeleteCall(
+            $client,
+            sprintf('/rest/secured/%s/subresources/%s', $entity->getId(), $subResourceEntity->getId()),
+            [],
+            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
+        );
+        $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT);
+
+        $response = $this->doGetCall(
+            $client,
+            sprintf('/rest/secured/%s/subresources', $entity->getId())
+        );
+        $content = $this->assertJsonResponse($response);
+        $this->assertCount(4, $content);
+    }
+
+    public function testSubResourcesList()
+    {
+        $client = $this->makeClient();
+        $response = $this->doGetCall($client, '/rest/subresourceentities');
+        $content = $this->assertJsonResponse($response);
+        $this->assertCount(33, $content);
     }
 
     /**

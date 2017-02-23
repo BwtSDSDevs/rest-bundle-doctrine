@@ -26,7 +26,12 @@ class SecuredEntities extends AbstractFixture implements DependentFixtureInterfa
         $securedEntity->addSubResource($this->getReference('subresource-entity-11'));
 
         $manager->persist($securedEntity);
+
         $this->referenceRepository->addReference('secured-entity-0', $securedEntity);
+
+        $securedEntity = new SecuredEntity();
+        $manager->persist($securedEntity);
+        $this->referenceRepository->addReference('secured-entity-1', $securedEntity);
 
         $manager->flush();
     }

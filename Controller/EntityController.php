@@ -146,6 +146,26 @@ class EntityController extends Controller
         return $this->handleView($this->view($entity, Response::HTTP_CREATED));
     }
 
+    public function putSubresourceAction(Request $request, $id, $subId)
+    {
+        $subresource = $this->getSubresource();
+        $parent = $this->fetchEntity($id);
+        $this->assertSubresourcePutGranted($parent, $subresource);
+        $this->getService()->addToCollection($parent, $subresource, $subId);
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
+
+    public function deleteSubresourceAction(Request $request, $id, $subId)
+    {
+        $subresource = $this->getSubresource();
+        $parent = $this->fetchEntity($id);
+        $this->assertSubresourceDeleteGranted($parent, $subresource);
+        $this->getService()->removeFromCollection($parent, $subresource, $subId);
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
+
     /**
      * @return CrudServiceInterface
      */
@@ -336,6 +356,32 @@ class EntityController extends Controller
         /** @var PropertyMetadata $propertyMetadata */
         $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
         $right = $propertyMetadata->getSubResourcePostRight();
+        if (null === $right) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $this->assertRightGranted($entity, $right);
+    }
+
+    protected function assertSubresourcePutGranted($entity, $subresource)
+    {
+        $classMetadata = $this->getClassMetadata();
+        /** @var PropertyMetadata $propertyMetadata */
+        $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
+        $right = $propertyMetadata->getSubResourcePutRight();
+        if (null === $right) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $this->assertRightGranted($entity, $right);
+    }
+
+    protected function assertSubresourceDeleteGranted($entity, $subresource)
+    {
+        $classMetadata = $this->getClassMetadata();
+        /** @var PropertyMetadata $propertyMetadata */
+        $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
+        $right = $propertyMetadata->getSubResourceDeleteRight();
         if (null === $right) {
             throw $this->createAccessDeniedException();
         }

@@ -68,6 +68,16 @@ class PropertyMetadata extends BasePropertyMetadata
     private $subResourcePostRight;
 
     /**
+     * @var Right|null
+     */
+    private $subResourcePutRight;
+
+    /**
+     * @var Right|null
+     */
+    private $subResourceDeleteRight;
+
+    /**
      * @var string|null
      */
     private $targetClass;
@@ -166,6 +176,38 @@ class PropertyMetadata extends BasePropertyMetadata
     public function setSubResourcePostRight($subResourcePostRight)
     {
         $this->subResourcePostRight = $subResourcePostRight;
+    }
+
+    /**
+     * @param Right|null $subResourcePutRight
+     */
+    public function setSubResourcePutRight($subResourcePutRight)
+    {
+        $this->subResourcePutRight = $subResourcePutRight;
+    }
+
+    /**
+     * @return Right|null
+     */
+    public function getSubResourcePutRight()
+    {
+        return $this->subResourcePutRight;
+    }
+
+    /**
+     * @param Right|null $subResourceDeleteRight
+     */
+    public function setSubResourceDeleteRight($subResourceDeleteRight)
+    {
+        $this->subResourceDeleteRight = $subResourceDeleteRight;
+    }
+
+    /**
+     * @return Right|null
+     */
+    public function getSubResourceDeleteRight()
+    {
+        return $this->subResourceDeleteRight;
     }
 
     /**

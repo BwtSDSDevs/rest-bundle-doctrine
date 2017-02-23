@@ -2,13 +2,14 @@
 
 namespace Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity;
 
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
 
 /**
  * @author Philip Washington Sorst <philip@sorst.net>
  *
  * @ORM\Entity()
+ * @REST\RootResource()
  */
 class SubResourceEntity
 {
@@ -22,11 +23,11 @@ class SubResourceEntity
     private $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="SecuredEntity", mappedBy="subResources")
+     * @ORM\ManyToOne(targetEntity="SecuredEntity", inversedBy="subResources")
      *
-     * @var Collection|SecuredEntity[]
+     * @var SecuredEntity
      */
-    private $securedEntities;
+    private $parentEntity;
 
     /**
      * @return int
@@ -34,5 +35,15 @@ class SubResourceEntity
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function setParentEntity(?SecuredEntity $parentEntity)
+    {
+        $this->parentEntity = $parentEntity;
+    }
+
+    public function getParentEntity(): ?SecuredEntity
+    {
+        return $this->parentEntity;
     }
 }

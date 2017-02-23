@@ -133,6 +133,14 @@ class AnnotationDriver implements DriverInterface
                 if (null !== $subResourceAnnotation->postRight) {
                     $propertyMetadata->setSubResourcePostRight($subResourceAnnotation->postRight);
                 }
+
+                if (null !== $subResourceAnnotation->putRight) {
+                    $propertyMetadata->setSubResourcePutRight($subResourceAnnotation->putRight);
+                }
+
+                if (null !== $subResourceAnnotation->deleteRight) {
+                    $propertyMetadata->setSubResourceDeleteRight($subResourceAnnotation->deleteRight);
+                }
             }
 
             $ddrRestClassMetadata->addPropertyMetadata($propertyMetadata);

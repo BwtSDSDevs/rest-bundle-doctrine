@@ -62,9 +62,12 @@ class SecuredEntity
     private $timeField;
 
     /**
-     * @ORM\ManyToMany(targetEntity="SubResourceEntity", inversedBy="securedEntities")
+     * @ORM\OneToMany(targetEntity="SubResourceEntity", mappedBy="parentEntity")
      * @REST\Includable()
-     * @REST\SubResource()
+     * @REST\SubResource(
+     *     putRight=@REST\Right(attributes={"ROLE_ADMIN"}),
+     *     deleteRight=@REST\Right(attributes={"ROLE_ADMIN"})
+     * )
      *
      * @var SubResourceEntity[]|Collection
      */
@@ -138,11 +141,13 @@ class SecuredEntity
 
     public function addSubResource(SubResourceEntity $subResourceEntity)
     {
+        $subResourceEntity->setParentEntity($this);
         $this->subResources->add($subResourceEntity);
     }
 
     public function removeSubResource(SubResourceEntity $subResourceEntity)
     {
+        $subResourceEntity->setParentEntity(null);
         $this->subResources->removeElement($subResourceEntity);
     }
 }

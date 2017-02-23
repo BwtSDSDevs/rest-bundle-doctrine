@@ -36,5 +36,25 @@ interface CrudServiceInterface
      */
     public function remove($entity);
 
+    /**
+     * @param object $entity
+     * @param string $relation
+     * @param int    $page
+     * @param int    $perPage
+     */
     public function listAssociationPaginated($entity, string $relation, int $page = 1, $perPage = 50);
+
+    /**
+     * @param object     $entity
+     * @param string     $fieldName
+     * @param string|int $id
+     */
+    public function addToCollection($entity, string $fieldName, $id);
+
+    /**
+     * @param object     $entity
+     * @param string     $fieldName
+     * @param string|int $id
+     */
+    public function removeFromCollection($entity, string $fieldName, $id);
 }

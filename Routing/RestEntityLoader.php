@@ -144,6 +144,40 @@ class RestEntityLoader extends Loader
                             );
                             $routes->add($namePrefix . '.' . $propertyMetadata->name . '.post', $subResourceRoute);
                         }
+
+                        $putRight = $propertyMetadata->getSubResourcePutRight();
+                        if (null !== $putRight) {
+                            $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath . '/{subId}';
+                            $subResourceRoute = new Route($subResourceFullPath);
+                            $subResourceRoute->setMethods(Request::METHOD_PUT);
+                            $subResourceRoute->setDefaults(
+                                array_merge(
+                                    $defaults,
+                                    [
+                                        '_controller'  => $controller . ':putSubresource',
+                                        '_subresource' => $propertyMetadata->name,
+                                    ]
+                                )
+                            );
+                            $routes->add($namePrefix . '.' . $propertyMetadata->name . '.put', $subResourceRoute);
+                        }
+
+                        $deleteRight = $propertyMetadata->getSubResourceDeleteRight();
+                        if (null !== $deleteRight) {
+                            $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath . '/{subId}';
+                            $subResourceRoute = new Route($subResourceFullPath);
+                            $subResourceRoute->setMethods(Request::METHOD_DELETE);
+                            $subResourceRoute->setDefaults(
+                                array_merge(
+                                    $defaults,
+                                    [
+                                        '_controller'  => $controller . ':deleteSubresource',
+                                        '_subresource' => $propertyMetadata->name,
+                                    ]
+                                )
+                            );
+                            $routes->add($namePrefix . '.' . $propertyMetadata->name . '.delete', $subResourceRoute);
+                        }
                     }
                 }
             }
