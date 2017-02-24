@@ -28,6 +28,7 @@ class EntityController extends Controller
         $this->assertListGranted();
 
         $paginator = $this->listEntities($page, $perPage);
+
         $total = $paginator->count();
         $entities = $paginator->getIterator()->getArrayCopy();
 
