@@ -8,7 +8,9 @@ use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
 /**
  * @author Philip Washington Sorst <philip@sorst.net>
  *
- * @ORM\Entity()
+ * @ORM\Entity(
+ *     repositoryClass="Dontdrinkandroot\Service\DoctrineCrudService"
+ * )
  */
 class SubResourceEntity
 {

@@ -11,7 +11,9 @@ use Ramsey\Uuid\Uuid;
 /**
  * @author Philip Washington Sorst <philip@sorst.net>
  *
- * @ORM\Entity()
+ * @ORM\Entity(
+ *     repositoryClass="Dontdrinkandroot\Service\DoctrineCrudService"
+ * )
  * @REST\RootResource(
  *     pathPrefix="secured",
  *     listRight=@REST\Right(attributes={"ROLE_USER"}),

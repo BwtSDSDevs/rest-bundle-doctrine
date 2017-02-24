@@ -8,7 +8,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * @author Philip Washington Sorst <philip@sorst.net>
  *
- * @ORM\Entity()
+ * @ORM\Entity(
+ *     repositoryClass="Dontdrinkandroot\Service\DoctrineCrudService"
+ * )
  */
 class User implements UserInterface
 {

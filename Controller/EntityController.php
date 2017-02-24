@@ -3,12 +3,12 @@
 namespace Dontdrinkandroot\RestBundle\Controller;
 
 use Doctrine\Common\Util\Inflector;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Dontdrinkandroot\Service\CrudServiceInterface;
-use Dontdrinkandroot\Service\DoctrineEntityRepositoryCrudService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -170,7 +170,7 @@ class EntityController extends Controller
     /**
      * @return CrudServiceInterface
      */
-    protected function getService()
+    protected function getService(): CrudServiceInterface
     {
         $serviceId = $this->getServiceId();
         if (null === $serviceId) {
@@ -178,12 +178,16 @@ class EntityController extends Controller
             if (null === $entityClass) {
                 throw new \RuntimeException('No service or entity class given');
             }
+            /** @var EntityManagerInterface $entityManager */
             $entityManager = $this->get('doctrine.orm.entity_manager');
+            $repository = $entityManager->getRepository($entityClass);
+            if (!$repository instanceof CrudServiceInterface) {
+                throw new \RuntimeException(
+                    'Your Entity Repository needs to be an instance of ' . CrudServiceInterface::class . '.'
+                );
+            }
 
-            return new DoctrineEntityRepositoryCrudService(
-                $entityManager,
-                $entityClass
-            );
+            return $repository;
         } else {
             /** @var CrudServiceInterface $service */
             $service = $this->get($serviceId);
@@ -231,7 +235,7 @@ class EntityController extends Controller
 
     protected function fetchEntity($id)
     {
-        $entity = $this->getService()->findById($id);
+        $entity = $this->getService()->find($id);
         if (null === $entity) {
             throw new NotFoundHttpException();
         }
@@ -243,7 +247,7 @@ class EntityController extends Controller
     {
         $service = $this->getService();
 
-        return $service->listPaginated($page, $perPage);
+        return $service->findAllPaginated($page, $perPage);
     }
 
     protected function createEntity($entity)
@@ -260,7 +264,7 @@ class EntityController extends Controller
     {
         $service = $this->getService();
 
-        return $service->listAssociationPaginated($entity, $property, $page, $perPage);
+        return $service->findAssociationPaginated($entity, $property, $page, $perPage);
     }
 
     protected function getEntityClass()

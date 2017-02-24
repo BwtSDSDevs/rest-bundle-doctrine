@@ -6,7 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(
+ *     repositoryClass="Dontdrinkandroot\Service\DoctrineCrudService"
+ * )
  * @REST\RootResource()
  */
 class MinimalEntity
