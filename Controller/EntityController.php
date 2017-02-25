@@ -27,16 +27,22 @@ class EntityController extends Controller
 
         $this->assertListGranted();
 
-        $paginator = $this->listEntities($page, $perPage);
+        $listResult = $this->listEntities($page, $perPage);
 
-        $total = $paginator->count();
-        $entities = $paginator->getIterator()->getArrayCopy();
+        $response = new JsonResponse();
+
+        if ($listResult instanceof Paginator) {
+            $entities = $listResult->getIterator()->getArrayCopy();
+            $total = $listResult->count();
+            $this->addPaginationHeaders($response, $page, $perPage, $total);
+        } else {
+            $entities = $listResult;
+        }
 
         $normalizer = $this->get('ddr_rest.normalizer');
         $content = $normalizer->normalize($entities, $this->parseIncludes($request));
 
-        $response = new JsonResponse($content, Response::HTTP_OK);
-        $this->addPaginationHeaders($response, $page, $perPage, $total);
+        $response->setData($content);
 
         return $response;
     }
@@ -68,7 +74,7 @@ class EntityController extends Controller
         $this->assertGetGranted($entity);
 
         $normalizer = $this->get('ddr_rest.normalizer');
-        $content = $normalizer->normalize($entity, $this->parseIncludes($request));
+        $content = $normalizer->normalize($entity, $this->parseIncludes($request, ['detail']));
 
         return new JsonResponse($content);
     }
@@ -113,20 +119,27 @@ class EntityController extends Controller
         $entity = $this->fetchEntity($id);
         $this->assertSubresourceListGranted($entity, $subresource);
 
-        $paginator = $this->listSubresource(
+        $listResult = $this->listSubresource(
             $entity,
             $subresource,
             $page,
             $perPage
         );
-        $total = $paginator->count();
-        $entities = $paginator->getIterator()->getArrayCopy();
+
+        $response = new JsonResponse();
+
+        if ($listResult instanceof Paginator) {
+            $entities = $listResult->getIterator()->getArrayCopy();
+            $total = $listResult->count();
+            $this->addPaginationHeaders($response, $page, $perPage, $total);
+        } else {
+            $entities = $listResult;
+        }
 
         $normalizer = $this->get('ddr_rest.normalizer');
         $content = $normalizer->normalize($entities, $this->parseIncludes($request));
 
-        $response = new JsonResponse($content, Response::HTTP_OK);
-        $this->addPaginationHeaders($response, $page, $perPage, $total);
+        $response->setData($content);
 
         return $response;
     }
@@ -138,13 +151,21 @@ class EntityController extends Controller
         $this->assertSubresourcePostGranted($parent, $subresource);
         $entity = $this->parseRequest($request, null, $this->getSubResourceEntityClass($subresource));
         $entity = $this->postProcessSubResourcePostedEntity($subresource, $entity, $parent);
-        $errors = $this->validate($entity);
+
+        /** @var ValidatorInterface $validator */
+        $validator = $this->get('validator');
+        $errors = $validator->validate($entity);
+
         if ($errors->count() > 0) {
-            return $this->handleView($this->view($errors, Response::HTTP_BAD_REQUEST));
+            return new JsonResponse($this->parseConstraintViolations($errors), Response::HTTP_BAD_REQUEST);
         }
+
         $entity = $this->saveSubResource($subresource, $entity);
 
-        return $this->handleView($this->view($entity, Response::HTTP_CREATED));
+        $normalizer = $this->get('ddr_rest.normalizer');
+        $content = $normalizer->normalize($entity);
+
+        return new JsonResponse($content, Response::HTTP_CREATED);
     }
 
     public function putSubresourceAction(Request $request, $id, $subId)
@@ -243,11 +264,15 @@ class EntityController extends Controller
         return $entity;
     }
 
-    protected function listEntities(int $page = 1, int $perPage = 50): Paginator
+    /**
+     * @param int $page
+     * @param int $perPage
+     *
+     * @return Paginator|array
+     */
+    protected function listEntities(int $page = 1, int $perPage = 50)
     {
-        $service = $this->getService();
-
-        return $service->findAllPaginated($page, $perPage);
+        return $this->getService()->findAllPaginated($page, $perPage);
     }
 
     protected function createEntity($entity)
@@ -260,11 +285,17 @@ class EntityController extends Controller
         return $this->getService()->update($entity);
     }
 
-    protected function listSubresource($entity, $property, $page = 1, $perPage = 50): Paginator
+    /**
+     * @param object $entity
+     * @param string $property
+     * @param int    $page
+     * @param int    $perPage
+     *
+     * @return Paginator|array
+     */
+    protected function listSubresource($entity, string $property, int $page = 1, int $perPage = 50)
     {
-        $service = $this->getService();
-
-        return $service->findAssociationPaginated($entity, $property, $page, $perPage);
+        return $this->getService()->findAssociationPaginated($entity, $property, $page, $perPage);
     }
 
     protected function getEntityClass()
@@ -466,11 +497,11 @@ class EntityController extends Controller
         return $this->getCurrentRequest()->attributes->get('_subresource');
     }
 
-    protected function parseIncludes(Request $request)
+    protected function parseIncludes(Request $request, array $defaultIncludes = [])
     {
         $includeString = $request->query->get('include');
         if (empty($includeString)) {
-            return [];
+            return $defaultIncludes;
         }
 
         return explode(',', $includeString);

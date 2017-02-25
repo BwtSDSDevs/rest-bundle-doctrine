@@ -69,6 +69,7 @@ class ClassMetadata extends MergeableClassMetadata
     public function merge(MergeableInterface $object)
     {
         parent::merge($object);
+
         /** @var ClassMetadata $object */
         $this->restResource = $object->restResource;
         $this->namePrefix = $object->namePrefix;
@@ -80,7 +81,8 @@ class ClassMetadata extends MergeableClassMetadata
         $this->postRight = $object->postRight;
         $this->putRight = $object->putRight;
         $this->deleteRight = $object->deleteRight;
-        $this->methods = $this->mergeMethods($this->methods, $object->methods);
+        $this->methodMetadata = array_merge($this->methodMetadata, $object->methodMetadata);
+        $this->propertyMetadata = array_merge($this->propertyMetadata, $object->propertyMetadata);
     }
 
     /**
@@ -266,17 +268,5 @@ class ClassMetadata extends MergeableClassMetadata
         }
 
         return null;
-    }
-
-    private function mergeMethods($thisMethods, $otherMethods)
-    {
-        $mergedMethods = [];
-        foreach ($thisMethods as $thisMethod) {
-            if (in_array($thisMethod, $otherMethods)) {
-                $mergedMethods[] = $thisMethod;
-            }
-        }
-
-        return $mergedMethods;
     }
 }

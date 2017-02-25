@@ -52,8 +52,8 @@ class YamlDriver extends AbstractFileDriver
         }
 
         $propertyConfigs = [];
-        if (array_key_exists('properties', $config)) {
-            $propertyConfigs = $config['properties'];
+        if (array_key_exists('fields', $config)) {
+            $propertyConfigs = $config['fields'];
         }
 
         foreach ($class->getProperties() as $reflectionProperty) {
@@ -64,10 +64,17 @@ class YamlDriver extends AbstractFileDriver
             }
 
             if (array_key_exists($reflectionProperty->getName(), $propertyConfigs)) {
+
                 $propertyConfig = $propertyConfigs[$reflectionProperty->getName()];
+
                 if (array_key_exists('puttable', $propertyConfig) && true === $propertyConfig['puttable']) {
                     $propertyMetadata->setPuttable(true);
                 }
+
+                if (array_key_exists('excluded', $propertyConfig) && true === $propertyConfig['excluded']) {
+                    $propertyMetadata->setExcluded(true);
+                }
+
                 if (array_key_exists('postable', $propertyConfig) && true === $propertyConfig['postable']) {
                     $propertyMetadata->setPostable(true);
                 }
