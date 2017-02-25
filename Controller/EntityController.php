@@ -74,7 +74,7 @@ class EntityController extends Controller
         $this->assertGetGranted($entity);
 
         $normalizer = $this->get('ddr_rest.normalizer');
-        $content = $normalizer->normalize($entity, $this->parseIncludes($request, ['detail']));
+        $content = $normalizer->normalize($entity, $this->parseIncludes($request, ['details']));
 
         return new JsonResponse($content);
     }
