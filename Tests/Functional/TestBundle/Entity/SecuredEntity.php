@@ -67,6 +67,7 @@ class SecuredEntity
      * @ORM\OneToMany(targetEntity="SubResourceEntity", mappedBy="parentEntity")
      * @REST\Includable()
      * @REST\SubResource(
+     *     postRight=@REST\Right(attributes={"ROLE_ADMIN"}),
      *     putRight=@REST\Right(attributes={"ROLE_ADMIN"}),
      *     deleteRight=@REST\Right(attributes={"ROLE_ADMIN"})
      * )

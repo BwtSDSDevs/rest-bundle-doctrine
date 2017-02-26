@@ -329,7 +329,10 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
 
     public function merge(MergeableInterface $other)
     {
-        /** @var PropertyMetadata $other */
+        if (!$other instanceof PropertyMetadata) {
+            throw new \InvalidArgumentException('$object must be an instance of PropertyMetadata.');
+        }
+
         $this->reflection = $this->mergeField($other->reflection, $this->reflection);
         $this->type = $this->mergeField($other->type, $this->type);
         $this->puttable = $this->mergeField($other->puttable, $this->puttable);

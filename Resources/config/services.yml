@@ -23,6 +23,12 @@ services:
             - '@ddr_rest.metadata.file_locator'
             - '@ddr_rest.metadata.driver.doctrine'
 
+    ddr_rest.metadata.cache:
+        class: Metadata\Cache\DoctrineCacheAdapter
+        arguments:
+            - 'ddr_rest'
+            - '@doctrine.orm.default_metadata_cache'
+
     ddr_rest.metadata.driver.chain:
         class: Metadata\Driver\DriverChain
         arguments:
@@ -32,6 +38,8 @@ services:
         class: Metadata\MetadataFactory
         arguments:
             - '@ddr_rest.metadata.driver.chain'
+        calls:
+            - ['setCache',['@ddr_rest.metadata.cache']]
 
     ddr.rest.parser.request:
         class: Dontdrinkandroot\RestBundle\Service\RestRequestParser
