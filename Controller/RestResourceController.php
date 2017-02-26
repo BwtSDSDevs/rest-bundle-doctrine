@@ -18,7 +18,7 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class EntityController extends Controller
+class RestResourceController extends Controller
 {
     public function listAction(Request $request)
     {

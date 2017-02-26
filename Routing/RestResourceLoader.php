@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
-class RestEntityLoader extends Loader
+class RestResourceLoader extends Loader
 {
     /**
      * @var FileLocatorInterface
@@ -273,7 +273,7 @@ class RestEntityLoader extends Loader
      */
     protected function getController(ClassMetadata $classMetadata)
     {
-        $controller = 'DdrRestBundle:Entity';
+        $controller = 'DdrRestBundle:RestResource';
         if (null !== $classMetadata->getController()) {
             $controller = $classMetadata->getController();
         }

@@ -39,7 +39,7 @@ services:
             - '@ddr_rest.metadata.factory'
 
     ddr_rest.routing.rest_entity_loader:
-        class: Dontdrinkandroot\RestBundle\Routing\RestEntityLoader
+        class: Dontdrinkandroot\RestBundle\Routing\RestResourceLoader
         arguments:
             - '@file_locator'
             - '@ddr_rest.metadata.factory'
