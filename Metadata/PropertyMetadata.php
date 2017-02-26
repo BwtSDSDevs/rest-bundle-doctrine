@@ -3,10 +3,21 @@
 namespace Dontdrinkandroot\RestBundle\Metadata;
 
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
+use Metadata\MergeableInterface;
 use Metadata\PropertyMetadata as BasePropertyMetadata;
 
-class PropertyMetadata extends BasePropertyMetadata
+class PropertyMetadata extends BasePropertyMetadata implements MergeableInterface
 {
+    public function __construct($class, $name)
+    {
+        try {
+            parent::__construct($class, $name);
+        } catch (\ReflectionException $e) {
+            /* Ignore missing property definition as they might just be overridden and therefore only exist in the
+              parent class. They will be accessible after merging. */
+        }
+    }
+
     /**
      * @var string|null
      */
@@ -15,7 +26,7 @@ class PropertyMetadata extends BasePropertyMetadata
     /**
      * @var bool
      */
-    private $puttable = false;
+    private $puttable;
 
     /**
      * @var bool
@@ -25,12 +36,12 @@ class PropertyMetadata extends BasePropertyMetadata
     /**
      * @var bool
      */
-    private $postable = false;
+    private $postable;
 
     /**
      * @var bool
      */
-    private $includable = false;
+    private $includable;
 
     /**
      * @var string[]|null
@@ -40,7 +51,7 @@ class PropertyMetadata extends BasePropertyMetadata
     /**
      * @var bool
      */
-    private $subResource = false;
+    private $subResource;
 
     /**
      * @var bool
@@ -87,7 +98,7 @@ class PropertyMetadata extends BasePropertyMetadata
      */
     public function isPuttable()
     {
-        return $this->puttable;
+        return $this->getBool($this->puttable, false);
     }
 
     /**
@@ -103,7 +114,7 @@ class PropertyMetadata extends BasePropertyMetadata
      */
     public function isPostable()
     {
-        return $this->postable;
+        return $this->getBool($this->postable, false);
     }
 
     /**
@@ -119,7 +130,7 @@ class PropertyMetadata extends BasePropertyMetadata
      */
     public function isIncludable()
     {
-        return $this->includable;
+        return $this->getBool($this->includable, false);
     }
 
     /**
@@ -135,7 +146,7 @@ class PropertyMetadata extends BasePropertyMetadata
      */
     public function isSubResource()
     {
-        return $this->subResource;
+        return $this->getBool($this->subResource, false);
     }
 
     /**
@@ -247,7 +258,7 @@ class PropertyMetadata extends BasePropertyMetadata
      */
     public function isExcluded(): bool
     {
-        return $this->excluded;
+        return $this->getBool($this->excluded, false);
     }
 
     /**
@@ -279,7 +290,7 @@ class PropertyMetadata extends BasePropertyMetadata
      */
     public function isAssociation(): bool
     {
-        return $this->association;
+        return $this->getBool($this->association, false);
     }
 
     /**
@@ -295,7 +306,7 @@ class PropertyMetadata extends BasePropertyMetadata
      */
     public function isCollection(): bool
     {
-        return $this->collection;
+        return $this->getBool($this->collection, false);
     }
 
     /**
@@ -314,5 +325,50 @@ class PropertyMetadata extends BasePropertyMetadata
     public function setType(?string $type)
     {
         $this->type = $type;
+    }
+
+    public function merge(MergeableInterface $other)
+    {
+        /** @var PropertyMetadata $other */
+        $this->reflection = $this->mergeField($other->reflection, $this->reflection);
+        $this->type = $this->mergeField($other->type, $this->type);
+        $this->puttable = $this->mergeField($other->puttable, $this->puttable);
+        $this->postable = $this->mergeField($other->postable, $this->postable);
+        $this->type = $this->mergeField($other->type, $other->type);
+        $this->excluded = $this->mergeField($other->excluded, $this->excluded);
+        $this->includable = $this->mergeField($other->includable, $this->includable);
+        $this->subResource = $this->mergeField($other->subResource, $this->subResource);
+        $this->includablePaths = $this->mergeField($other->includablePaths, $this->includablePaths);
+        $this->association = $this->mergeField($other->association, $this->association);
+        $this->collection = $this->mergeField($other->collection, $this->collection);
+        $this->subResourcePath = $this->mergeField($other->subResourcePath, $this->subResourcePath);
+        $this->subResourceListRight = $this->mergeField($other->subResourceListRight, $this->subResourceListRight);
+        $this->subResourcePostRight = $this->mergeField($other->subResourcePostRight, $this->subResourcePostRight);
+        $this->subResourcePutRight = $this->mergeField($other->subResourcePutRight, $this->subResourcePutRight);
+        $this->subResourceDeleteRight = $this->mergeField(
+            $other->subResourceDeleteRight,
+            $this->subResourceDeleteRight
+        );
+        $this->targetClass = $this->mergeField($other->targetClass, $this->targetClass);
+
+        return $this;
+    }
+
+    protected function getBool(?bool $value, bool $default)
+    {
+        if (null === $value) {
+            return $default;
+        }
+
+        return $value;
+    }
+
+    private function mergeField($thisValue, $otherValue)
+    {
+        if (null !== $thisValue) {
+            return $thisValue;
+        }
+
+        return $otherValue;
     }
 }

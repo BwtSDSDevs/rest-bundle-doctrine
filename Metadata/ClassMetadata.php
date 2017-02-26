@@ -68,7 +68,19 @@ class ClassMetadata extends MergeableClassMetadata
      */
     public function merge(MergeableInterface $object)
     {
-        parent::merge($object);
+        if (!$object instanceof MergeableClassMetadata) {
+            throw new \InvalidArgumentException('$object must be an instance of MergeableClassMetadata.');
+        }
+
+        $this->name = $object->name;
+        $this->reflection = $object->reflection;
+        $this->methodMetadata = array_merge($this->methodMetadata, $object->methodMetadata);
+        $this->propertyMetadata = $this->mergePropertyMetadata($object);
+        $this->fileResources = array_merge($this->fileResources, $object->fileResources);
+
+        if ($object->createdAt < $this->createdAt) {
+            $this->createdAt = $object->createdAt;
+        }
 
         /** @var ClassMetadata $object */
         $this->restResource = $object->restResource;
@@ -81,8 +93,7 @@ class ClassMetadata extends MergeableClassMetadata
         $this->postRight = $object->postRight;
         $this->putRight = $object->putRight;
         $this->deleteRight = $object->deleteRight;
-        $this->methodMetadata = array_merge($this->methodMetadata, $object->methodMetadata);
-        $this->propertyMetadata = array_merge($this->propertyMetadata, $object->propertyMetadata);
+
     }
 
     /**
@@ -268,5 +279,28 @@ class ClassMetadata extends MergeableClassMetadata
         }
 
         return null;
+    }
+
+    /**
+     * @param MergeableInterface $object
+     *
+     * @return array
+     */
+    protected function mergePropertyMetadata(MergeableInterface $object): array
+    {
+        /** @var ClassMetadata $object */
+        /** @var PropertyMetadata[] $mergedMetadata */
+        $mergedMetadata = $this->propertyMetadata;
+
+        foreach ($object->propertyMetadata as $otherMetadata) {
+            /** @var PropertyMetadata $otherMetadata */
+            if (array_key_exists($otherMetadata->name, $mergedMetadata)) {
+                $mergedMetadata[$otherMetadata->name] = $mergedMetadata[$otherMetadata->name]->merge($otherMetadata);
+            } else {
+                $mergedMetadata[$otherMetadata->name] = $otherMetadata;
+            }
+        }
+
+        return $mergedMetadata;
     }
 }

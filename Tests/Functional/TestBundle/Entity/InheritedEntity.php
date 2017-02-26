@@ -11,4 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class InheritedEntity extends SuperEntity
 {
+    /**
+     * @var string
+     */
+    private $subClassField;
 }

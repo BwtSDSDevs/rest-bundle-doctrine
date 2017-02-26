@@ -55,38 +55,48 @@ class YamlDriver extends AbstractFileDriver
             $classMetadata->setService($config['service']);
         }
 
-        $propertyConfigs = [];
+        $fieldConfigs = [];
         if (array_key_exists('fields', $config)) {
-            $propertyConfigs = $config['fields'];
+            $fieldConfigs = $config['fields'];
         }
 
         foreach ($class->getProperties() as $reflectionProperty) {
 
-            $propertyMetadata = $classMetadata->getPropertyMetadata($reflectionProperty->getName());
-            if (null === $propertyMetadata) {
-                $propertyMetadata = new PropertyMetadata($class->getName(), $reflectionProperty->getName());
+            $propertyName = $reflectionProperty->getName();
+            $propertyMetadata = $this->getOrCreatePropertymetadata($classMetadata, $propertyName);
+
+            if (array_key_exists($propertyName, $fieldConfigs)) {
+                $fieldConfig = $fieldConfigs[$propertyName];
+                $this->parseFieldConfig($fieldConfig, $propertyMetadata);
+                unset($fieldConfigs[$propertyName]);
             }
 
-            if (array_key_exists($reflectionProperty->getName(), $propertyConfigs)) {
+            $classMetadata->addPropertyMetadata($propertyMetadata);
+        }
 
-                $propertyConfig = $propertyConfigs[$reflectionProperty->getName()];
-
-                if (array_key_exists('puttable', $propertyConfig) && true === $propertyConfig['puttable']) {
-                    $propertyMetadata->setPuttable(true);
-                }
-
-                if (array_key_exists('excluded', $propertyConfig) && true === $propertyConfig['excluded']) {
-                    $propertyMetadata->setExcluded(true);
-                }
-
-                if (array_key_exists('postable', $propertyConfig) && true === $propertyConfig['postable']) {
-                    $propertyMetadata->setPostable(true);
-                }
-            }
+        /* Parse unbacked field definitions */
+        foreach ($fieldConfigs as $name => $fieldConfig) {
+            $propertyMetadata = $this->getOrCreatePropertymetadata($classMetadata, $name);
+            $this->parseFieldConfig($fieldConfig, $propertyMetadata);
             $classMetadata->addPropertyMetadata($propertyMetadata);
         }
 
         return $classMetadata;
+    }
+
+    protected function parseFieldConfig(array $fieldConfig, PropertyMetadata $propertyMetadata): void
+    {
+        if (array_key_exists('puttable', $fieldConfig) && true === $fieldConfig['puttable']) {
+            $propertyMetadata->setPuttable(true);
+        }
+
+        if (array_key_exists('excluded', $fieldConfig) && true === $fieldConfig['excluded']) {
+            $propertyMetadata->setExcluded(true);
+        }
+
+        if (array_key_exists('postable', $fieldConfig) && true === $fieldConfig['postable']) {
+            $propertyMetadata->setPostable(true);
+        }
     }
 
     /**
@@ -95,5 +105,17 @@ class YamlDriver extends AbstractFileDriver
     protected function getExtension()
     {
         return 'rest.yml';
+    }
+
+    protected function getOrCreatePropertymetadata(ClassMetadata $classMetadata, $propertyName): PropertyMetadata
+    {
+        $propertyMetadata = $classMetadata->getPropertyMetadata($propertyName);
+        if (null === $propertyMetadata) {
+            $propertyMetadata = new PropertyMetadata($classMetadata->name, $propertyName);
+
+            return $propertyMetadata;
+        }
+
+        return $propertyMetadata;
     }
 }

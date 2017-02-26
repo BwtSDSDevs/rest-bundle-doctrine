@@ -252,7 +252,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $response = $this->performGet($client, sprintf('/rest/inheritedentities/%s', $entity->getId()));
 
         $content = $this->assertJsonResponse($response);
-        $this->assertContentEquals(['id' => $entity->getId()], $content, false);
+        $this->assertContentEquals(['id' => $entity->getId(), 'excludedFieldTwo' => 'two'], $content, false);
     }
 
     /**
