@@ -243,6 +243,39 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $this->assertCount(33, $content);
     }
 
+    public function testPostSubresourceUnauthorized()
+    {
+        $client = $this->makeClient();
+
+        /** @var SecuredEntity $entity */
+        $entity = $this->referenceRepository->getReference('secured-entity-1');
+
+        $response = $this->performPost($client, sprintf('/rest/secured/%s/subresources', $entity->getId()));
+        $this->assertJsonResponse($response, Response::HTTP_UNAUTHORIZED);
+    }
+
+    public function testPostSubresource()
+    {
+        $client = $this->makeClient();
+
+        /** @var AccessToken $accessToken */
+        $accessToken = $this->referenceRepository->getReference('token-user-admin');
+
+        /** @var SecuredEntity $entity */
+        $entity = $this->referenceRepository->getReference('secured-entity-1');
+
+        $response = $this->performPost(
+            $client,
+            sprintf('/rest/secured/%s/subresources', $entity->getId()),
+            [],
+            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
+        );
+        $content = $this->assertJsonResponse($response, Response::HTTP_CREATED);
+        $this->assertNotNull($content['id']);
+        $this->assertNotNull($content['parentEntity']);
+        $this->assertEquals($entity->getId(), $content['parentEntity']['id']);
+    }
+
     public function testGetInheritedEntity()
     {
         $client = $this->makeClient();

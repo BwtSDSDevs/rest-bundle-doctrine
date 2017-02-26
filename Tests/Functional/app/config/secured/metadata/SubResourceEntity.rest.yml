@@ -1,2 +1,5 @@
 Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\SubResourceEntity:
     rootResource: true
+    fields:
+        parentEntity:
+            includable: ['details']

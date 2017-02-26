@@ -67,7 +67,7 @@ class YamlDriver extends AbstractFileDriver
 
             if (array_key_exists($propertyName, $fieldConfigs)) {
                 $fieldConfig = $fieldConfigs[$propertyName];
-                $this->parseFieldConfig($fieldConfig, $propertyMetadata);
+                $this->parseFieldConfig($propertyName, $fieldConfig, $propertyMetadata);
                 unset($fieldConfigs[$propertyName]);
             }
 
@@ -77,14 +77,14 @@ class YamlDriver extends AbstractFileDriver
         /* Parse unbacked field definitions */
         foreach ($fieldConfigs as $name => $fieldConfig) {
             $propertyMetadata = $this->getOrCreatePropertymetadata($classMetadata, $name);
-            $this->parseFieldConfig($fieldConfig, $propertyMetadata);
+            $this->parseFieldConfig($propertyName, $fieldConfig, $propertyMetadata);
             $classMetadata->addPropertyMetadata($propertyMetadata);
         }
 
         return $classMetadata;
     }
 
-    protected function parseFieldConfig(array $fieldConfig, PropertyMetadata $propertyMetadata): void
+    protected function parseFieldConfig(string $name, array $fieldConfig, PropertyMetadata $propertyMetadata): void
     {
         if (array_key_exists('puttable', $fieldConfig) && true === $fieldConfig['puttable']) {
             $propertyMetadata->setPuttable(true);
@@ -96,6 +96,17 @@ class YamlDriver extends AbstractFileDriver
 
         if (array_key_exists('postable', $fieldConfig) && true === $fieldConfig['postable']) {
             $propertyMetadata->setPostable(true);
+        }
+
+        if (array_key_exists('includable', $fieldConfig)) {
+            $value = $fieldConfig['includable'];
+            if (is_array($value)) {
+                $propertyMetadata->setIncludable(true);
+                $propertyMetadata->setIncludablePaths($value);
+            } elseif (true === $value) {
+                $propertyMetadata->setIncludable(true);
+                $propertyMetadata->setIncludablePaths([$name]);
+            }
         }
     }
 

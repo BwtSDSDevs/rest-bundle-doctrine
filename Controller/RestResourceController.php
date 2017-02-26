@@ -160,10 +160,10 @@ class RestResourceController extends Controller
             return new JsonResponse($this->parseConstraintViolations($errors), Response::HTTP_BAD_REQUEST);
         }
 
-        $entity = $this->saveSubResource($subresource, $entity);
+        $entity = $this->createSubResource($parent, $subresource, $entity);
 
         $normalizer = $this->get('ddr_rest.normalizer');
-        $content = $normalizer->normalize($entity);
+        $content = $normalizer->normalize($entity, ['details']);
 
         return new JsonResponse($content, Response::HTTP_CREATED);
     }
@@ -479,14 +479,15 @@ class RestResourceController extends Controller
     }
 
     /**
+     * @param object $parent
      * @param string $subresource
      * @param object $entity
      *
      * @return
      */
-    protected function saveSubResource($subresource, $entity)
+    protected function createSubResource($parent, $subresource, $entity)
     {
-        return $this->getService()->save($entity);
+        return $this->getService()->createAssociation($parent, $subresource, $entity);
     }
 
     /**
