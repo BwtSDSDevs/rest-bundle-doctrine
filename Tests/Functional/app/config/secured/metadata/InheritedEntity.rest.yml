@@ -1,0 +1,3 @@
+Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\InheritedEntity:
+    rootResource: true
+    service: 'ddr_rest.test.service.inherited_entity'

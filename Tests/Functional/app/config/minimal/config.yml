@@ -3,3 +3,10 @@ imports:
 
 framework:
     router: { resource: "%kernel.root_dir%/config/minimal/routing.yml" }
+
+ddr_rest:
+    metadata:
+        directories:
+            minimal:
+                namespace_prefix: 'Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity'
+                path: '%kernel.root_dir%/config/minimal/metadata'

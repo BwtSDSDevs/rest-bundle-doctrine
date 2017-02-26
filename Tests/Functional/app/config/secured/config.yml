@@ -1,5 +1,6 @@
 imports:
     - { resource: ../config.yml }
+    - { resource: services.yml }
 
 security:
 
@@ -27,6 +28,7 @@ ddr_rest:
         - '/rest'
     metadata:
         directories:
-            annotationbundle:
+            secured:
                 namespace_prefix: 'Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity'
                 path: '%kernel.root_dir%/config/secured/metadata'
+

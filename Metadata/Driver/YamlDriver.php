@@ -51,6 +51,10 @@ class YamlDriver extends AbstractFileDriver
             $classMetadata->setRestResource(true);
         }
 
+        if (array_key_exists('service', $config)) {
+            $classMetadata->setService($config['service']);
+        }
+
         $propertyConfigs = [];
         if (array_key_exists('fields', $config)) {
             $propertyConfigs = $config['fields'];

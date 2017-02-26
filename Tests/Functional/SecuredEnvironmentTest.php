@@ -4,8 +4,10 @@ namespace Dontdrinkandroot\RestBundle\Tests\Functional;
 
 use Dontdrinkandroot\RestBundle\Security\AbstractAccessTokenAuthenticator;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\AccessToken;
+use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\InheritedEntity;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\SecuredEntity;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\SubResourceEntity;
+use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\InheritedEntities;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\SecuredEntities;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\Users;
 use Symfony\Component\HttpFoundation\Response;
@@ -241,11 +243,23 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $this->assertCount(33, $content);
     }
 
+    public function testGetInheritedEntity()
+    {
+        $client = $this->makeClient();
+
+        /** @var InheritedEntity $entity */
+        $entity = $this->referenceRepository->getReference(InheritedEntities::INHERITED_ENTITY_0);
+        $response = $this->performGet($client, sprintf('/rest/inheritedentities/%s', $entity->getId()));
+
+        $content = $this->assertJsonResponse($response);
+        $this->assertContentEquals(['id' => $entity->getId()], $content, false);
+    }
+
     /**
      * {@inheritdoc}
      */
     protected function getFixtureClasses()
     {
-        return [Users::class, SecuredEntities::class];
+        return [Users::class, SecuredEntities::class, InheritedEntities::class];
     }
 }

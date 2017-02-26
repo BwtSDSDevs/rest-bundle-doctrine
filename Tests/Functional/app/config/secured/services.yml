@@ -1,0 +1,7 @@
+services:
+
+    ddr_rest.test.service.inherited_entity:
+        class: 'Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Service\InheritedEntityService'
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - 'Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\InheritedEntity'
