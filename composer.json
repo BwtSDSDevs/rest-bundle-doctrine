@@ -21,7 +21,7 @@
         "symfony/validator": "^3.0",
         "symfony/finder": "^3.0",
         "doctrine/annotations": "^1.2",
-        "jms/metadata": "^1.0",
+        "jms/metadata": "^1.2",
         "dontdrinkandroot/doctrine": "dev-master"
     },
     "require-dev": {
