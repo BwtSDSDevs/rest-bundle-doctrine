@@ -67,3 +67,4 @@ services:
         class: Dontdrinkandroot\RestBundle\Service\Normalizer
         arguments:
             - '@ddr_rest.metadata.factory'
+            - '@property_accessor'

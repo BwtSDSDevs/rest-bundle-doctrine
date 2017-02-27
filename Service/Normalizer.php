@@ -7,6 +7,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\MetadataFactoryInterface;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 class Normalizer
 {
@@ -15,9 +16,15 @@ class Normalizer
      */
     private $metadataFactory;
 
-    function __construct(MetadataFactoryInterface $metadataFactory)
+    /**
+     * @var PropertyAccessorInterface
+     */
+    private $propertyAccessor;
+
+    function __construct(MetadataFactoryInterface $metadataFactory, PropertyAccessorInterface $propertyAccessor)
     {
         $this->metadataFactory = $metadataFactory;
+        $this->propertyAccessor = $propertyAccessor;
     }
 
     /**
@@ -62,7 +69,7 @@ class Normalizer
                             $includes
                         )
                     ) {
-                        $value = $propertyMetadatum->getValue($data);
+                        $value = $this->propertyAccessor->getValue($data, $propertyMetadatum->name);
                         if ($propertyMetadatum->isCollection()) {
                             /** @var Collection $value */
                             $value = $value->getValues();
@@ -83,7 +90,7 @@ class Normalizer
                             $includes
                         )
                     ) {
-                        $value = $propertyMetadatum->getValue($data);
+                        $value = $this->propertyAccessor->getValue($data, $propertyMetadatum->name);
                         $normalizedData[$propertyMetadatum->name] = $this->normalizeField($value, $propertyMetadatum);
                     }
                 }
