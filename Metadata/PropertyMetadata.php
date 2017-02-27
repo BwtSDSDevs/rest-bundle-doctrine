@@ -31,7 +31,7 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
     /**
      * @var bool
      */
-    private $excluded = false;
+    private $excluded;
 
     /**
      * @var bool
@@ -56,12 +56,12 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
     /**
      * @var bool
      */
-    private $association = false;
+    private $association;
 
     /**
      * @var bool
      */
-    private $collection = false;
+    private $collection;
 
     /**
      * @var string|null
