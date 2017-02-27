@@ -8,18 +8,28 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
+use Dontdrinkandroot\RestBundle\Service\Normalizer;
+use Dontdrinkandroot\RestBundle\Service\RestRequestParser;
 use Dontdrinkandroot\Service\CrudServiceInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Metadata\MetadataFactoryInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class RestResourceController extends Controller
+class RestResourceController implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     public function listAction(Request $request)
     {
         $page = $request->query->get('page', 1);
@@ -39,8 +49,7 @@ class RestResourceController extends Controller
             $entities = $listResult;
         }
 
-        $normalizer = $this->get('ddr_rest.normalizer');
-        $content = $normalizer->normalize($entities, $this->parseIncludes($request));
+        $content = $this->getNormalizer()->normalize($entities, $this->parseIncludes($request));
 
         $response->setData($content);
 
@@ -50,20 +59,17 @@ class RestResourceController extends Controller
     public function postAction(Request $request)
     {
         $this->assertPostGranted();
-        $entity = $this->parseRequest($request, null, $this->getEntityClass());
+        $entity = $this->getRequestParser()->parseEntity($request, $this->getEntityClass());
         $entity = $this->postProcessPostedEntity($entity);
 
-        /** @var ValidatorInterface $validator */
-        $validator = $this->get('validator');
-        $errors = $validator->validate($entity);
+        $errors = $this->getValidator()->validate($entity);
         if ($errors->count() > 0) {
             return new JsonResponse($this->parseConstraintViolations($errors), Response::HTTP_BAD_REQUEST);
         }
 
         $entity = $this->createEntity($entity);
 
-        $normalizer = $this->get('ddr_rest.normalizer');
-        $content = $normalizer->normalize($entity);
+        $content = $this->getNormalizer()->normalize($entity);
 
         return new JsonResponse($content, Response::HTTP_CREATED);
     }
@@ -73,8 +79,7 @@ class RestResourceController extends Controller
         $entity = $this->fetchEntity($id);
         $this->assertGetGranted($entity);
 
-        $normalizer = $this->get('ddr_rest.normalizer');
-        $content = $normalizer->normalize($entity, $this->parseIncludes($request, ['details']));
+        $content = $this->getNormalizer()->normalize($entity, $this->parseIncludes($request, ['details']));
 
         return new JsonResponse($content);
     }
@@ -83,20 +88,17 @@ class RestResourceController extends Controller
     {
         $entity = $this->fetchEntity($id);
         $this->assertPutGranted($entity);
-        $entity = $this->parseRequest($request, $entity, $this->getEntityClass());
+        $entity = $this->getRequestParser()->parseEntity($request, $this->getEntityClass(), $entity);
         $entity = $this->postProcessPuttedEntity($entity);
 
-        /** @var ValidatorInterface $validator */
-        $validator = $this->get('validator');
-        $errors = $validator->validate($entity);
+        $errors = $this->getValidator()->validate($entity);
         if ($errors->count() > 0) {
             return new JsonResponse($this->parseConstraintViolations($errors), Response::HTTP_BAD_REQUEST);
         }
 
         $entity = $this->updateEntity($entity);
 
-        $normalizer = $this->get('ddr_rest.normalizer');
-        $content = $normalizer->normalize($entity);
+        $content = $this->getNormalizer()->normalize($entity);
 
         return new JsonResponse($content);
     }
@@ -136,8 +138,7 @@ class RestResourceController extends Controller
             $entities = $listResult;
         }
 
-        $normalizer = $this->get('ddr_rest.normalizer');
-        $content = $normalizer->normalize($entities, $this->parseIncludes($request));
+        $content = $this->getNormalizer()->normalize($entities, $this->parseIncludes($request));
 
         $response->setData($content);
 
@@ -149,12 +150,13 @@ class RestResourceController extends Controller
         $subresource = $this->getSubresource();
         $parent = $this->fetchEntity($id);
         $this->assertSubresourcePostGranted($parent, $subresource);
-        $entity = $this->parseRequest($request, null, $this->getSubResourceEntityClass($subresource));
+        $entity = $this->getRequestParser()->parseEntity(
+            $request,
+            $this->getSubResourceEntityClass($subresource)
+        );
         $entity = $this->postProcessSubResourcePostedEntity($subresource, $entity, $parent);
 
-        /** @var ValidatorInterface $validator */
-        $validator = $this->get('validator');
-        $errors = $validator->validate($entity);
+        $errors = $this->getValidator()->validate($entity);
 
         if ($errors->count() > 0) {
             return new JsonResponse($this->parseConstraintViolations($errors), Response::HTTP_BAD_REQUEST);
@@ -162,8 +164,7 @@ class RestResourceController extends Controller
 
         $entity = $this->createSubResource($parent, $subresource, $entity);
 
-        $normalizer = $this->get('ddr_rest.normalizer');
-        $content = $normalizer->normalize($entity, ['details']);
+        $content = $this->getNormalizer()->normalize($entity, ['details']);
 
         return new JsonResponse($content, Response::HTTP_CREATED);
     }
@@ -200,7 +201,7 @@ class RestResourceController extends Controller
                 throw new \RuntimeException('No service or entity class given');
             }
             /** @var EntityManagerInterface $entityManager */
-            $entityManager = $this->get('doctrine.orm.entity_manager');
+            $entityManager = $this->container->get('doctrine.orm.entity_manager');
             $repository = $entityManager->getRepository($entityClass);
             if (!$repository instanceof CrudServiceInterface) {
                 throw new \RuntimeException(
@@ -211,15 +212,10 @@ class RestResourceController extends Controller
             return $repository;
         } else {
             /** @var CrudServiceInterface $service */
-            $service = $this->get($serviceId);
+            $service = $this->container->get($serviceId);
 
             return $service;
         }
-    }
-
-    protected function parseRequest(Request $request, $entity = null, $entityClass = null)
-    {
-        return $this->get('ddr.rest.parser.request')->parseEntity($request, $entityClass, $entity);
     }
 
     /**
@@ -315,7 +311,7 @@ class RestResourceController extends Controller
 
     protected function getCurrentRequest()
     {
-        return $this->get('request_stack')->getCurrentRequest();
+        return $this->getRequestStack()->getCurrentRequest();
     }
 
     protected function assertListGranted()
@@ -334,7 +330,7 @@ class RestResourceController extends Controller
         $classMetadata = $this->getClassMetadata();
         $right = $classMetadata->getPostRight();
         if (null === $right) {
-            throw $this->createAccessDeniedException();
+            throw new AccessDeniedException();
         }
 
         $this->denyAccessUnlessGranted($right->attributes);
@@ -356,7 +352,7 @@ class RestResourceController extends Controller
         $classMetadata = $this->getClassMetadata();
         $right = $classMetadata->getPutRight();
         if (null === $right) {
-            throw $this->createAccessDeniedException();
+            throw new AccessDeniedException();
         }
 
         $this->assertRightGranted($entity, $right);
@@ -367,7 +363,7 @@ class RestResourceController extends Controller
         $classMetadata = $this->getClassMetadata();
         $right = $classMetadata->getDeleteRight();
         if (null === $right) {
-            throw $this->createAccessDeniedException();
+            throw new AccessDeniedException();
         }
 
         $this->assertRightGranted($entity, $right);
@@ -393,7 +389,7 @@ class RestResourceController extends Controller
         $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
         $right = $propertyMetadata->getSubResourcePostRight();
         if (null === $right) {
-            throw $this->createAccessDeniedException();
+            throw new AccessDeniedException();
         }
 
         $this->assertRightGranted($entity, $right);
@@ -406,7 +402,7 @@ class RestResourceController extends Controller
         $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
         $right = $propertyMetadata->getSubResourcePutRight();
         if (null === $right) {
-            throw $this->createAccessDeniedException();
+            throw new AccessDeniedException();
         }
 
         $this->assertRightGranted($entity, $right);
@@ -419,7 +415,7 @@ class RestResourceController extends Controller
         $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
         $right = $propertyMetadata->getSubResourceDeleteRight();
         if (null === $right) {
-            throw $this->createAccessDeniedException();
+            throw new AccessDeniedException();
         }
 
         $this->assertRightGranted($entity, $right);
@@ -430,7 +426,7 @@ class RestResourceController extends Controller
      */
     protected function getClassMetadata()
     {
-        $metaDataFactory = $this->get('ddr_rest.metadata.factory');
+        $metaDataFactory = $this->getMetadataFactory();
         /** @var ClassMetadata $classMetaData */
         $classMetaData = $metaDataFactory->getMetadataForClass($this->getEntityClass());
 
@@ -450,7 +446,7 @@ class RestResourceController extends Controller
         if ('this' === $propertyPath) {
             return $entity;
         }
-        $propertyAccessor = $this->get('property_accessor');
+        $propertyAccessor = $this->getPropertyAccessor();
 
         return $propertyAccessor->getValue($entity, $propertyPath);
     }
@@ -533,5 +529,68 @@ class RestResourceController extends Controller
                 'x-pagination-total-pages'  => (int)(($total - 1) / $perPage + 1)
             ]
         );
+    }
+
+    protected function denyAccessUnlessGranted($attributes, $object = null, $message = 'Access Denied.')
+    {
+        if (!$this->getAuthorizationChecker()->isGranted($attributes, $object)) {
+            throw new AccessDeniedException($message);
+        }
+    }
+
+    /**
+     * @return Normalizer
+     */
+    protected function getNormalizer()
+    {
+        return $this->container->get('ddr_rest.normalizer');
+    }
+
+    /**
+     * @return ValidatorInterface
+     */
+    protected function getValidator()
+    {
+        return $this->container->get('validator');
+    }
+
+    /**
+     * @return RestRequestParser
+     */
+    protected function getRequestParser()
+    {
+        return $this->container->get('ddr.rest.parser.request');
+    }
+
+    /**
+     * @return RequestStack
+     */
+    protected function getRequestStack()
+    {
+        return $this->container->get('request_stack');
+    }
+
+    /**
+     * @return MetadataFactoryInterface
+     */
+    protected function getMetadataFactory()
+    {
+        return $this->container->get('ddr_rest.metadata.factory');
+    }
+
+    /**
+     * @return PropertyAccessorInterface
+     */
+    protected function getPropertyAccessor()
+    {
+        return $this->container->get('property_accessor');
+    }
+
+    /**
+     * @return AuthorizationCheckerInterface
+     */
+    protected function getAuthorizationChecker()
+    {
+        return $this->container->get('security.authorization_checker');
     }
 }
