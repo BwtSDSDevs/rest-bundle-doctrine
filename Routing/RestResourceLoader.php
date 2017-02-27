@@ -66,6 +66,7 @@ class RestResourceLoader extends Loader
 
                 $defaults = [
                     '_entityClass' => $class,
+                    '_format'      => 'json'
                 ];
 
                 if (null !== $classMetadata->getService()) {

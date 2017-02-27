@@ -32,8 +32,11 @@ class RestRequestParser
         $entity = null
     ) {
         $method = $request->getMethod();
-        $content = $this->getRequestContent($request);
         $format = $request->getRequestFormat();
+
+        if ('json' !== $format) {
+            throw new \RuntimeException(sprintf('Unsupported format "%s"', $format));
+        }
 
         $data = $this->getRequestContent($request);
 
