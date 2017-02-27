@@ -29,7 +29,7 @@ abstract class RestTestCase extends WebTestCase
      *
      * @return array
      */
-    protected function assertJsonResponse(Response $response, $statusCode = 200)
+    protected function assertJsonResponse(Response $response, $statusCode = 200, $detailedOutput = false)
     {
         if (Response::HTTP_NO_CONTENT !== $statusCode) {
             $this->assertTrue(
@@ -41,7 +41,7 @@ abstract class RestTestCase extends WebTestCase
         $content = $response->getContent();
 
         $decodedContent = json_decode($content, true);
-        if ($statusCode !== $response->getStatusCode()) {
+        if ($detailedOutput && $statusCode !== $response->getStatusCode()) {
             var_dump($decodedContent);
         }
 
