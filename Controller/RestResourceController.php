@@ -139,12 +139,7 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         $entity = $this->fetchEntity($id);
         $this->assertSubresourceListGranted($entity, $subresource);
 
-        $listResult = $this->listSubresource(
-            $entity,
-            $subresource,
-            $page,
-            $perPage
-        );
+        $listResult = $this->listSubresource($entity, $subresource, $page, $perPage);
 
         $response = new JsonResponse();
 
@@ -491,14 +486,6 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
             $subject = $this->resolveSubject($entity, $propertyPath);
             $this->denyAccessUnlessGranted($right->attributes, $subject);
         }
-    }
-
-    /**
-     * @return string[]
-     */
-    protected function getSubresourceSerializationGroups($subresource)
-    {
-        return ['Default', 'ddr.rest.subresource', 'ddr.rest.' . $this->getShortName() . '.' . $subresource];
     }
 
     /**
