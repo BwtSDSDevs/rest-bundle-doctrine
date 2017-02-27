@@ -26,10 +26,13 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class RestResourceController implements ContainerAwareInterface
+class RestResourceController implements ContainerAwareInterface, RestResourceControllerInterface
 {
     use ContainerAwareTrait;
 
+    /**
+     * {@inheritdoc}
+     */
     public function listAction(Request $request)
     {
         $page = $request->query->get('page', 1);
@@ -56,6 +59,9 @@ class RestResourceController implements ContainerAwareInterface
         return $response;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function postAction(Request $request)
     {
         $this->assertPostGranted();
@@ -74,6 +80,9 @@ class RestResourceController implements ContainerAwareInterface
         return new JsonResponse($content, Response::HTTP_CREATED);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getAction(Request $request, $id)
     {
         $entity = $this->fetchEntity($id);
@@ -84,6 +93,9 @@ class RestResourceController implements ContainerAwareInterface
         return new JsonResponse($content);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function putAction(Request $request, $id)
     {
         $entity = $this->fetchEntity($id);
@@ -103,6 +115,9 @@ class RestResourceController implements ContainerAwareInterface
         return new JsonResponse($content);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function deleteAction(Request $request, $id)
     {
         $entity = $this->fetchEntity($id);
@@ -112,6 +127,9 @@ class RestResourceController implements ContainerAwareInterface
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function listSubresourceAction(Request $request, $id)
     {
         $page = $request->query->get('page', 1);
@@ -145,6 +163,9 @@ class RestResourceController implements ContainerAwareInterface
         return $response;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function postSubresourceAction(Request $request, $id)
     {
         $subresource = $this->getSubresource();
@@ -169,6 +190,9 @@ class RestResourceController implements ContainerAwareInterface
         return new JsonResponse($content, Response::HTTP_CREATED);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function putSubresourceAction(Request $request, $id, $subId)
     {
         $subresource = $this->getSubresource();
@@ -179,6 +203,9 @@ class RestResourceController implements ContainerAwareInterface
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function deleteSubresourceAction(Request $request, $id, $subId)
     {
         $subresource = $this->getSubresource();
