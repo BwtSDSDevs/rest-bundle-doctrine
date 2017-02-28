@@ -4,6 +4,7 @@ namespace Dontdrinkandroot\RestBundle\Service;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\ClassUtils;
+use Doctrine\DBAL\Types\Type;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\MetadataFactoryInterface;
@@ -91,7 +92,19 @@ class Normalizer
                         )
                     ) {
                         $value = $this->propertyAccessor->getValue($data, $propertyMetadatum->name);
-                        $normalizedData[$propertyMetadatum->name] = $this->normalizeField($value, $propertyMetadatum);
+                        if (!array_key_exists($propertyMetadatum->getType(), Type::getTypesMap())) {
+                            $normalizedData[$propertyMetadatum->name] = $this->normalize(
+                                $value,
+                                $includes,
+                                $depth + 1,
+                                $this->appendPath($path, $propertyMetadatum->name)
+                            );
+                        } else {
+                            $normalizedData[$propertyMetadatum->name] = $this->normalizeField(
+                                $value,
+                                $propertyMetadatum
+                            );
+                        }
                     }
                 }
             }

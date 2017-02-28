@@ -32,7 +32,11 @@ class DoctrineDriver implements DriverInterface
             return $ddrRestClassMetadata;
         }
 
-        //TODO: Handle Embedded Entities
+        foreach ($doctrineClassMetadata->embeddedClasses as $fieldName => $embeddedClass) {
+            $ddrRestPropertyMetadata = new PropertyMetadata($doctrineClassMetadata->getName(), $fieldName);
+            $ddrRestPropertyMetadata->setType($embeddedClass['class']);
+            $ddrRestClassMetadata->addPropertyMetadata($ddrRestPropertyMetadata);
+        }
 
         foreach ($doctrineClassMetadata->fieldMappings as $fieldMapping) {
             if (!array_key_exists('declared', $fieldMapping) && !array_key_exists('declaredField', $fieldMapping)) {

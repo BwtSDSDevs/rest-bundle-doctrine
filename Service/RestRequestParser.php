@@ -3,9 +3,11 @@
 namespace Dontdrinkandroot\RestBundle\Service;
 
 use Doctrine\Common\Util\ClassUtils;
+use Doctrine\DBAL\Types\Type;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\MetadataFactory;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class RestRequestParser
 {
@@ -14,9 +16,15 @@ class RestRequestParser
      */
     private $ddrRestMetadataFactory;
 
-    public function __construct(MetadataFactory $ddrRestMetadataFactory)
+    /**
+     * @var PropertyAccessor
+     */
+    private $propertyAccessor;
+
+    public function __construct(MetadataFactory $ddrRestMetadataFactory, PropertyAccessor $propertyAccessor)
     {
         $this->ddrRestMetadataFactory = $ddrRestMetadataFactory;
+        $this->propertyAccessor = $propertyAccessor;
     }
 
     /**
@@ -74,7 +82,6 @@ class RestRequestParser
         $method,
         $data
     ) {
-
         $classMetadata = $this->ddrRestMetadataFactory->getMetadataForClass(ClassUtils::getClass($object));
 
         foreach ($data as $key => $value) {
@@ -121,31 +128,29 @@ class RestRequestParser
 //            return;
 //        }
 
-        $convertedValue = $this->convert($propertyMetadata->getType(), $value);
-        $propertyMetadata->setValue($object, $convertedValue);
+        if (array_key_exists($propertyMetadata->getType(), Type::getTypesMap())) {
+            $convertedValue = $this->convert($propertyMetadata->getType(), $value);
+            $this->propertyAccessor->setValue($object, $propertyMetadata->name, $convertedValue);
+        } else {
+            $this->updatePropertyObject($object, $method, $propertyMetadata, $value);
+        }
     }
 
-//    /**
-//     * @param object $object Access by reference.
-//     * @param string $method
-//     * @param string $propertyName
-//     * @param [] $value
-//     */
-//    protected function updatePropertyObject(
-//        &$object,
-//        $method,
-//        $class,
-//        $propertyName,
-//        $value
-//    ) {
-//        $propertyObject = $this->propertyAccessor->getValue($object, $propertyName);
-//        if (null === $propertyObject) {
-//            $propertyObject = new $class;
-//        }
-//
-//        $this->updateObject($propertyObject, $method, $value);
-//        $this->propertyAccessor->setValue($object, $propertyName, $propertyObject);
-//    }
+    protected function updatePropertyObject(
+        &$object,
+        string $method,
+        PropertyMetadata $propertyMetadata,
+        $value
+    ) {
+        $propertyObject = $this->propertyAccessor->getValue($object, $propertyMetadata->name);
+        if (null === $propertyObject) {
+            $type = $propertyMetadata->getType();
+            $propertyObject = new $type;
+        }
+
+        $this->updateObject($propertyObject, $method, $value);
+        $this->propertyAccessor->setValue($object, $propertyMetadata->name, $propertyObject);
+    }
 
     /**
      * @param string           $method
