@@ -18,6 +18,7 @@ class InheritedEntities extends AbstractFixture
         $entity = new InheritedEntity();
         $entity->setExcludedFieldOne('one');
         $entity->setExcludedFieldTwo('two');
+        $entity->setSubClassField('subClass');
         $manager->persist($entity);
         $this->referenceRepository->addReference(self::INHERITED_ENTITY_0, $entity);
 

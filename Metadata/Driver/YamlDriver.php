@@ -86,16 +86,16 @@ class YamlDriver extends AbstractFileDriver
 
     protected function parseFieldConfig(string $name, array $fieldConfig, PropertyMetadata $propertyMetadata): void
     {
-        if (array_key_exists('puttable', $fieldConfig) && true === $fieldConfig['puttable']) {
-            $propertyMetadata->setPuttable(true);
+        if (null !== $value = $this->getBool('puttable', $fieldConfig)) {
+            $propertyMetadata->setPuttable($value);
         }
 
-        if (array_key_exists('excluded', $fieldConfig) && true === $fieldConfig['excluded']) {
-            $propertyMetadata->setExcluded(true);
+        if (null !== $value = $this->getBool('excluded', $fieldConfig)) {
+            $propertyMetadata->setExcluded($value);
         }
 
-        if (array_key_exists('postable', $fieldConfig) && true === $fieldConfig['postable']) {
-            $propertyMetadata->setPostable(true);
+        if (null !== $value = $this->getBool('postable', $fieldConfig)) {
+            $propertyMetadata->setPostable($value);
         }
 
         if (array_key_exists('includable', $fieldConfig)) {
@@ -108,6 +108,24 @@ class YamlDriver extends AbstractFileDriver
                 $propertyMetadata->setIncludablePaths([$name]);
             }
         }
+    }
+
+    private function getBool(string $key, array $haystack, bool $required = false)
+    {
+        if (!array_key_exists($key, $haystack)) {
+            if ($required) {
+                throw new \RuntimeException(sprintf('Value %s is required', $key));
+            }
+
+            return null;
+        }
+
+        $value = $haystack[$key];
+        if (!is_bool($value)) {
+            throw new \RuntimeException(sprintf('Value %s must be of type bool', $key));
+        }
+
+        return $value;
     }
 
     /**
