@@ -9,7 +9,7 @@ use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
  * @ORM\Entity(
  *     repositoryClass="Dontdrinkandroot\Service\DoctrineCrudService"
  * )
- * @REST\RootResource(methods={@REST\Method("LIST"),@Rest\Method("GET")})
+ * @REST\RootResource(methods={@REST\Method("LIST"),@Rest\Method(name="GET",defaultIncludes={"detail", "arbitrary"})})
  */
 class MinimalEntity
 {
@@ -29,6 +29,13 @@ class MinimalEntity
      */
     private $integerValue;
 
+    /**
+     * @REST\Includable("detail")
+     *
+     * @var string
+     */
+    private $defaultIncludedField = 'detail';
+
     public function getId(): int
     {
         return $this->id;
@@ -42,5 +49,13 @@ class MinimalEntity
     public function setIntegerValue(?int $integerValue)
     {
         $this->integerValue = $integerValue;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultIncludedField(): string
+    {
+        return $this->defaultIncludedField;
     }
 }

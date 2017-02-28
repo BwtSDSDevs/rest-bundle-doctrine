@@ -76,35 +76,60 @@ class RestResourceLoader extends Loader
                 if (null !== $method = $classMetadata->getMethod(Method::LIST)) {
                     $listRoute = new Route($pathPrefix);
                     $listRoute->setMethods(Request::METHOD_GET);
-                    $listRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':list']));
+                    $listRoute->setDefaults(
+                        array_merge(
+                            $defaults,
+                            ['_controller' => $controller . ':list', '_defaultincludes' => $method->defaultIncludes]
+                        )
+                    );
                     $routes->add($namePrefix . '.list', $listRoute);
                 }
 
                 if (null !== $method = $classMetadata->getMethod(Method::POST)) {
                     $postRoute = new Route($pathPrefix);
                     $postRoute->setMethods(Request::METHOD_POST);
-                    $postRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':post']));
+                    $postRoute->setDefaults(
+                        array_merge(
+                            $defaults,
+                            ['_controller' => $controller . ':post', '_defaultincludes' => $method->defaultIncludes]
+                        )
+                    );
                     $routes->add($namePrefix . '.post', $postRoute);
                 }
 
                 if (null !== $method = $classMetadata->getMethod(Method::GET)) {
                     $getRoute = new Route($pathPrefix . '/{id}');
                     $getRoute->setMethods(Request::METHOD_GET);
-                    $getRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':get']));
+                    $getRoute->setDefaults(
+                        array_merge(
+                            $defaults,
+                            ['_controller' => $controller . ':get', '_defaultincludes' => $method->defaultIncludes]
+                        )
+                    );
                     $routes->add($namePrefix . '.get', $getRoute);
                 }
 
                 if (null !== $method = $classMetadata->getMethod(Method::PUT)) {
                     $putRoute = new Route($pathPrefix . '/{id}');
                     $putRoute->setMethods(Request::METHOD_PUT);
-                    $putRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':put']));
+                    $putRoute->setDefaults(
+                        array_merge(
+                            $defaults,
+                            ['_controller' => $controller . ':put', '_defaultincludes' => $method->defaultIncludes]
+                        )
+                    );
                     $routes->add($namePrefix . '.put', $putRoute);
                 }
 
                 if (null !== $method = $classMetadata->getMethod(Method::DELETE)) {
                     $deleteRoute = new Route($pathPrefix . '/{id}');
                     $deleteRoute->setMethods(Request::METHOD_DELETE);
-                    $deleteRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':delete']));
+                    $deleteRoute->setDefaults(
+                        array_merge(
+                            $defaults,
+                            ['_controller' => $controller . ':delete', '_defaultincludes' => $method->defaultIncludes]
+                        )
+                    );
                     $routes->add($namePrefix . '.delete', $deleteRoute);
                 }
 

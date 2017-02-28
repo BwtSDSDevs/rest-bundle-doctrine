@@ -177,8 +177,13 @@ class YamlDriver extends AbstractFileDriver
         foreach ($methodsConfig as $name => $config) {
             $method = new Method();
             $method->name = $name;
-            if (null !== $config && array_key_exists('right', $config)) {
-                $method->right = $this->parseRight($config['right']);
+            if (null !== $config) {
+                if (array_key_exists('right', $config)) {
+                    $method->right = $this->parseRight($config['right']);
+                }
+                if (array_key_exists('defaultIncludes', $config)) {
+                    $method->defaultIncludes = $config['defaultIncludes'];
+                }
             }
             $methods[$method->name] = $method;
         }

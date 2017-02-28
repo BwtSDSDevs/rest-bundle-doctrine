@@ -92,17 +92,17 @@ class Normalizer
                         )
                     ) {
                         $value = $this->propertyAccessor->getValue($data, $propertyMetadatum->name);
-                        if (!array_key_exists($propertyMetadatum->getType(), Type::getTypesMap())) {
+                        if (is_scalar($value) || array_key_exists($propertyMetadatum->getType(), Type::getTypesMap())) {
+                            $normalizedData[$propertyMetadatum->name] = $this->normalizeField(
+                                $value,
+                                $propertyMetadatum
+                            );
+                        } else {
                             $normalizedData[$propertyMetadatum->name] = $this->normalize(
                                 $value,
                                 $includes,
                                 $depth + 1,
                                 $this->appendPath($path, $propertyMetadatum->name)
-                            );
-                        } else {
-                            $normalizedData[$propertyMetadatum->name] = $this->normalizeField(
-                                $value,
-                                $propertyMetadatum
                             );
                         }
                     }

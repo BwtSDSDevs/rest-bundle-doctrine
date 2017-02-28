@@ -33,6 +33,8 @@ class MinimalEnvironmentTest extends FunctionalTestCase
         $this->assertEquals(10, $headers->get('x-pagination-per-page'));
         $this->assertEquals(5, $headers->get('x-pagination-total-pages'));
         $this->assertEquals(49, $headers->get('x-pagination-total'));
+
+        $this->assertArrayNotHasKey('defaultIncludedField', $content[0]);
     }
 
     public function testGet()
@@ -43,6 +45,17 @@ class MinimalEnvironmentTest extends FunctionalTestCase
 
         $client->request(Request::METHOD_GET, sprintf('/rest/minimalentities/%s', $entity->getId()));
         $content = $this->assertJsonResponse($client->getResponse());
+
+        $this->assertContentEquals(
+            [
+                'defaultIncludedField' => 'detail',
+                'id'                   => $entity->getId(),
+                'integerValue'         => 10
+            ],
+            $content,
+            false
+        );
+
         $this->assertEquals($entity->getId(), $content['id']);
         $this->assertEquals(10, $content['integerValue']);
     }

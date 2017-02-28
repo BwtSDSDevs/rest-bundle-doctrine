@@ -76,7 +76,7 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
 
         $entity = $this->createEntity($entity);
 
-        $content = $this->getNormalizer()->normalize($entity);
+        $content = $this->getNormalizer()->normalize($entity, $this->parseIncludes($request));
 
         return new JsonResponse($content, Response::HTTP_CREATED);
     }
@@ -89,7 +89,7 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         $entity = $this->fetchEntity($id);
         $this->assertGetGranted($entity);
 
-        $content = $this->getNormalizer()->normalize($entity, $this->parseIncludes($request, ['details']));
+        $content = $this->getNormalizer()->normalize($entity, $this->parseIncludes($request));
 
         return new JsonResponse($content);
     }
@@ -111,7 +111,7 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
 
         $entity = $this->updateEntity($entity);
 
-        $content = $this->getNormalizer()->normalize($entity);
+        $content = $this->getNormalizer()->normalize($entity, $this->parseIncludes($request));
 
         return new JsonResponse($content);
     }
@@ -503,14 +503,21 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         return $this->getCurrentRequest()->attributes->get('_subresource');
     }
 
-    protected function parseIncludes(Request $request, array $defaultIncludes = [])
+    protected function parseIncludes(Request $request)
     {
-        $includeString = $request->query->get('include');
-        if (empty($includeString)) {
-            return $defaultIncludes;
+        $defaultIncludes = $request->attributes->get('_defaultincludes');
+        if (null == $defaultIncludes) {
+            $defaultIncludes = [];
         }
 
-        return explode(',', $includeString);
+        $includeString = $request->query->get('include');
+        if (empty($includeString)) {
+            $includes = [];
+        } else {
+            $includes = explode(',', $includeString);
+        }
+
+        return array_merge($defaultIncludes, $includes);
     }
 
     private function parseConstraintViolations(ConstraintViolationListInterface $errors)
