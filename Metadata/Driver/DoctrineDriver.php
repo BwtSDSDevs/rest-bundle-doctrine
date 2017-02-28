@@ -55,7 +55,7 @@ class DoctrineDriver implements DriverInterface
                 $associationMapping['fieldName']
             );
             $ddrRestPropertyMetadata->setAssociation(true);
-            $ddrRestPropertyMetadata->setTargetClass($associationMapping['targetEntity']);
+            $ddrRestPropertyMetadata->setType($associationMapping['targetEntity']);
             $ddrRestPropertyMetadata->setCollection(
                 $doctrineClassMetadata->isCollectionValuedAssociation($associationMapping['fieldName'])
             );

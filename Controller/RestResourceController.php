@@ -460,7 +460,7 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         /** @var PropertyMetadata $propertyMetadata */
         $propertyMetadata = $this->getClassMetadata()->propertyMetadata[$subresource];
 
-        return $propertyMetadata->getTargetClass();
+        return $propertyMetadata->getType();
     }
 
     protected function resolveSubject($entity, $propertyPath)

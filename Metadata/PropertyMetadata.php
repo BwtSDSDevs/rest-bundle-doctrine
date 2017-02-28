@@ -89,11 +89,6 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
     private $subResourceDeleteRight;
 
     /**
-     * @var string|null
-     */
-    private $targetClass;
-
-    /**
      * @return boolean
      */
     public function isPuttable()
@@ -224,22 +219,6 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
     /**
      * @return null|string
      */
-    public function getTargetClass()
-    {
-        return $this->targetClass;
-    }
-
-    /**
-     * @param null|string $targetClass
-     */
-    public function setTargetClass($targetClass)
-    {
-        $this->targetClass = $targetClass;
-    }
-
-    /**
-     * @return null|string
-     */
     public function getSubResourcePath()
     {
         return $this->subResourcePath;
@@ -351,7 +330,6 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
             $other->subResourceDeleteRight,
             $this->subResourceDeleteRight
         );
-        $this->targetClass = $this->mergeField($other->targetClass, $this->targetClass);
 
         return $this;
     }
