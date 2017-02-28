@@ -2,7 +2,15 @@
 
 namespace Dontdrinkandroot\RestBundle\Metadata\Annotation;
 
-abstract class Method
+use Doctrine\Common\Annotations\Annotation\Required;
+
+/**
+ * @author Philip Washington Sorst <philip@sorst.net>
+ *
+ * @Annotation
+ * @Target({"ANNOTATION"})
+ */
+class Method
 {
     const LIST = 'LIST';
     const POST = 'POST';
@@ -11,26 +19,18 @@ abstract class Method
     const DELETE = 'DELETE';
 
     /**
+     * @Required()
+     * @var string
+     */
+    public $name;
+
+    /**
      * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Right
      */
     public $right;
 
-    abstract public function getName(): string;
-
-    public static function create(string $name): Method
-    {
-        switch ($name) {
-            case 'LIST':
-                return new MethodList();
-            case 'POST':
-                return new MethodPost();
-            case 'GET':
-                return new MethodGet();
-            case 'PUT':
-                return new MethodPut();
-            case 'DELETE':
-                return new MethodDelete();
-        }
-        throw new \RuntimeException(sprintf('Unknown Method %s', $name));
-    }
+    /**
+     * @var array<string>
+     */
+    public $defaultIncludes;
 }

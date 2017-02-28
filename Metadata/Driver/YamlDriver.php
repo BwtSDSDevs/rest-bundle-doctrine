@@ -175,11 +175,12 @@ class YamlDriver extends AbstractFileDriver
 
         $methodsConfig = $config['methods'];
         foreach ($methodsConfig as $name => $config) {
-            $method = Method::create($name);
+            $method = new Method();
+            $method->name = $name;
             if (null !== $config && array_key_exists('right', $config)) {
                 $method->right = $this->parseRight($config['right']);
             }
-            $methods[$method->getName()] = $method;
+            $methods[$method->name] = $method;
         }
 
         return $methods;

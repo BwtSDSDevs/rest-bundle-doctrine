@@ -17,9 +17,9 @@ use Ramsey\Uuid\Uuid;
  * @REST\RootResource(
  *      pathPrefix="secured",
  *      methods={
- *          @REST\MethodList(right=@REST\Right(attributes={"ROLE_USER"})),
- *          @REST\MethodGet(right=@REST\Right(attributes={"ROLE_USER"})),
- *          @REST\MethodPut(right=@REST\Right(attributes={"ROLE_ADMIN"}))
+ *          @REST\Method(name="LIST", right=@REST\Right(attributes={"ROLE_USER"})),
+ *          @REST\Method(name="GET", right=@REST\Right(attributes={"ROLE_USER"})),
+ *          @REST\Method(name="PUT", right=@REST\Right(attributes={"ROLE_ADMIN"}))
  *     }
  * )
  */

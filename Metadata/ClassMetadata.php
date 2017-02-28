@@ -313,7 +313,7 @@ class ClassMetadata extends MergeableClassMetadata
         }
 
         foreach ($this->methods as $method) {
-            if ($methodName === $method->getName()) {
+            if ($methodName === $method->name) {
                 return $method;
             }
         }

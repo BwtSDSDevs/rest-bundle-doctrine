@@ -64,7 +64,7 @@ class AnnotationDriver implements DriverInterface
                 $methods = [];
                 $methodAnnotations = $restResourceAnnotation->methods;
                 foreach ($methodAnnotations as $methodAnnotation) {
-                    $methods[$methodAnnotation->getName()] = $methodAnnotation;
+                    $methods[$methodAnnotation->name] = $methodAnnotation;
                 }
                 $ddrRestClassMetadata->setMethods($methods);
             }
