@@ -15,10 +15,12 @@ use Ramsey\Uuid\Uuid;
  *     repositoryClass="Dontdrinkandroot\Service\DoctrineCrudService"
  * )
  * @REST\RootResource(
- *     pathPrefix="secured",
- *     listRight=@REST\Right(attributes={"ROLE_USER"}),
- *     getRight=@REST\Right(attributes={"ROLE_USER"}),
- *     putRight=@REST\Right(attributes={"ROLE_ADMIN"})
+ *      pathPrefix="secured",
+ *      methods={
+ *          @REST\MethodList(right=@REST\Right(attributes={"ROLE_USER"})),
+ *          @REST\MethodGet(right=@REST\Right(attributes={"ROLE_USER"})),
+ *          @REST\MethodPut(right=@REST\Right(attributes={"ROLE_ADMIN"}))
+ *     }
  * )
  */
 class SecuredEntity

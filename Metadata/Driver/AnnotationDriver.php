@@ -60,24 +60,13 @@ class AnnotationDriver implements DriverInterface
                 $ddrRestClassMetadata->setController($restResourceAnnotation->controller);
             }
 
-            if (null !== $restResourceAnnotation->listRight) {
-                $ddrRestClassMetadata->setListRight($restResourceAnnotation->listRight);
-            }
-
-            if (null !== $restResourceAnnotation->postRight) {
-                $ddrRestClassMetadata->setPostRight($restResourceAnnotation->postRight);
-            }
-
-            if (null !== $restResourceAnnotation->getRight) {
-                $ddrRestClassMetadata->setGetRight($restResourceAnnotation->getRight);
-            }
-
-            if (null !== $restResourceAnnotation->putRight) {
-                $ddrRestClassMetadata->setPutRight($restResourceAnnotation->putRight);
-            }
-
-            if (null !== $restResourceAnnotation->deleteRight) {
-                $ddrRestClassMetadata->setDeleteRight($restResourceAnnotation->deleteRight);
+            if (null !== $restResourceAnnotation->methods) {
+                $methods = [];
+                $methodAnnotations = $restResourceAnnotation->methods;
+                foreach ($methodAnnotations as $methodAnnotation) {
+                    $methods[$methodAnnotation->getName()] = $methodAnnotation;
+                }
+                $ddrRestClassMetadata->setMethods($methods);
             }
 
             if (null !== $restResourceAnnotation->methods) {

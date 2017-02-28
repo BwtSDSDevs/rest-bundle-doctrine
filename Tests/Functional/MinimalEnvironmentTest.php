@@ -5,8 +5,8 @@ namespace Dontdrinkandroot\RestBundle\Tests\Functional;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\MinimalEntity;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\MinimalEntities;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class MinimalEnvironmentTest extends FunctionalTestCase
 {
@@ -51,7 +51,7 @@ class MinimalEnvironmentTest extends FunctionalTestCase
     {
         $client = $this->makeClient();
 
-        $this->expectException(AccessDeniedException::class);
+        $this->expectException(MethodNotAllowedHttpException::class);
         $client->request(
             Request::METHOD_POST,
             '/rest/minimalentities',
@@ -67,7 +67,7 @@ class MinimalEnvironmentTest extends FunctionalTestCase
         /** @var MinimalEntity $entity */
         $entity = $this->referenceRepository->getReference('minimal-entity-10');
 
-        $this->expectException(AccessDeniedException::class);
+        $this->expectException(MethodNotAllowedHttpException::class);
         $client->request(
             Request::METHOD_PUT,
             sprintf('/rest/minimalentities/%s', $entity->getId()),
@@ -83,7 +83,7 @@ class MinimalEnvironmentTest extends FunctionalTestCase
         /** @var MinimalEntity $entity */
         $entity = $this->referenceRepository->getReference('minimal-entity-10');
 
-        $this->expectException(AccessDeniedException::class);
+        $this->expectException(MethodNotAllowedHttpException::class);
         $client->request(
             Request::METHOD_DELETE,
             sprintf('/rest/minimalentities/%s', $entity->getId())

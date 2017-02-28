@@ -2,6 +2,8 @@
 
 namespace Dontdrinkandroot\RestBundle\Metadata\Driver;
 
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\Driver\AbstractFileDriver;
@@ -54,6 +56,8 @@ class YamlDriver extends AbstractFileDriver
         if (array_key_exists('service', $config)) {
             $classMetadata->setService($config['service']);
         }
+
+        $classMetadata->setMethods($this->parseMethods($config));
 
         $fieldConfigs = [];
         if (array_key_exists('fields', $config)) {
@@ -112,6 +116,20 @@ class YamlDriver extends AbstractFileDriver
 
     private function getBool(string $key, array $haystack, bool $required = false)
     {
+        $value = $this->getArrayValue($key, $haystack, $required);
+        if (null === $value) {
+            return null;
+        }
+
+        if (!is_bool($value)) {
+            throw new \RuntimeException(sprintf('Value %s must be of type bool', $key));
+        }
+
+        return $value;
+    }
+
+    private function getArrayValue(string $key, array $haystack, bool $required = false)
+    {
         if (!array_key_exists($key, $haystack)) {
             if ($required) {
                 throw new \RuntimeException(sprintf('Value %s is required', $key));
@@ -120,12 +138,7 @@ class YamlDriver extends AbstractFileDriver
             return null;
         }
 
-        $value = $haystack[$key];
-        if (!is_bool($value)) {
-            throw new \RuntimeException(sprintf('Value %s must be of type bool', $key));
-        }
-
-        return $value;
+        return $haystack[$key];
     }
 
     /**
@@ -146,5 +159,38 @@ class YamlDriver extends AbstractFileDriver
         }
 
         return $propertyMetadata;
+    }
+
+    /**
+     * @param array $config
+     *
+     * @return Method[]
+     */
+    private function parseMethods(array $config)
+    {
+        $methods = [];
+        if (!array_key_exists('methods', $config)) {
+            return $methods;
+        }
+
+        $methodsConfig = $config['methods'];
+        foreach ($methodsConfig as $name => $config) {
+            $method = Method::create($name);
+            if (null !== $config && array_key_exists('right', $config)) {
+                $method->right = $this->parseRight($config['right']);
+            }
+            $methods[$method->getName()] = $method;
+        }
+
+        return $methods;
+    }
+
+    private function parseRight(array $config): Right
+    {
+        $right = new Right();
+        $right->attributes = $this->getArrayValue('attributes', $config);
+        $right->propertyPath = $this->getArrayValue('propertyPath', $config);
+
+        return $right;
     }
 }

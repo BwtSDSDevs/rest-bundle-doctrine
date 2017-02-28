@@ -5,6 +5,7 @@ namespace Dontdrinkandroot\RestBundle\Controller;
 use Doctrine\Common\Util\Inflector;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
@@ -338,19 +339,16 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
 
     protected function assertListGranted()
     {
-        $classMetadata = $this->getClassMetadata();
-        $right = $classMetadata->getListRight();
-        if (null === $right) {
-            return;
+        $method = $this->getClassMetadata()->getMethod(Method::LIST);
+        if ($method !== null && null !== $right = $method->right) {
+            $this->denyAccessUnlessGranted($right->attributes);
         }
-
-        $this->denyAccessUnlessGranted($right->attributes);
     }
 
     protected function assertPostGranted()
     {
-        $classMetadata = $this->getClassMetadata();
-        $right = $classMetadata->getPostRight();
+        $method = $this->getClassMetadata()->getMethod(Method::POST);
+        $right = $method->right;
         if (null === $right) {
             throw new AccessDeniedException();
         }
@@ -360,19 +358,16 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
 
     protected function assertGetGranted($entity)
     {
-        $classMetadata = $this->getClassMetadata();
-        $right = $classMetadata->getGetRight();
-        if (null === $right) {
-            return;
+        $method = $this->getClassMetadata()->getMethod(Method::GET);
+        if ($method !== null && null !== $right = $method->right) {
+            $this->assertRightGranted($entity, $right);
         }
-
-        $this->assertRightGranted($entity, $right);
     }
 
     protected function assertPutGranted($entity)
     {
-        $classMetadata = $this->getClassMetadata();
-        $right = $classMetadata->getPutRight();
+        $method = $this->getClassMetadata()->getMethod(Method::PUT);
+        $right = $method->right;
         if (null === $right) {
             throw new AccessDeniedException();
         }
@@ -382,8 +377,8 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
 
     protected function assertDeleteGranted($entity)
     {
-        $classMetadata = $this->getClassMetadata();
-        $right = $classMetadata->getDeleteRight();
+        $method = $this->getClassMetadata()->getMethod(Method::POST);
+        $right = $method->right;
         if (null === $right) {
             throw new AccessDeniedException();
         }

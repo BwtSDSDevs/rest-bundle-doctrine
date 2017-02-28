@@ -2,6 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Metadata;
 
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Metadata\MergeableClassMetadata;
 use Metadata\MergeableInterface;
@@ -59,9 +60,9 @@ class ClassMetadata extends MergeableClassMetadata
     public $getRight;
 
     /**
-     * @var string[]
+     * @var Method[]
      */
-    public $methods = ['LIST', 'POST', 'GET', 'PUT', 'DELETE'];
+    public $methods;
 
     /**
      * {@inheritdoc}
@@ -84,6 +85,8 @@ class ClassMetadata extends MergeableClassMetadata
 
         /** @var ClassMetadata $object */
         $this->restResource = $object->restResource;
+        //TODO: merge
+        $this->methods = $object->methods;
         $this->namePrefix = $object->namePrefix;
         $this->pathPrefix = $object->pathPrefix;
         $this->service = $object->service;
@@ -93,7 +96,6 @@ class ClassMetadata extends MergeableClassMetadata
         $this->postRight = $object->postRight;
         $this->putRight = $object->putRight;
         $this->deleteRight = $object->deleteRight;
-
     }
 
     /**
@@ -257,7 +259,7 @@ class ClassMetadata extends MergeableClassMetadata
     }
 
     /**
-     * @return string[]
+     * @return Method[]
      */
     public function getMethods()
     {
@@ -302,5 +304,20 @@ class ClassMetadata extends MergeableClassMetadata
         }
 
         return $mergedMetadata;
+    }
+
+    public function getMethod(string $methodName): ?Method
+    {
+        if (null === $this->methods) {
+            return null;
+        }
+
+        foreach ($this->methods as $method) {
+            if ($methodName === $method->getName()) {
+                return $method;
+            }
+        }
+
+        return null;
     }
 }

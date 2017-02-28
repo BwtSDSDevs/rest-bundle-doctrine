@@ -1,5 +1,10 @@
 Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\SubResourceEntity:
     rootResource: true
+    methods:
+        LIST:
+            right:
+                attributes:
+                    - 'ROLE_USER'
     fields:
         parentEntity:
             includable: ['details']

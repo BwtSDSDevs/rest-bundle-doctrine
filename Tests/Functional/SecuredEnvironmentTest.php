@@ -243,10 +243,24 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $this->assertCount(4, $content);
     }
 
-    public function testSubResourcesList()
+    public function testSubResourcesListUnauthorized()
     {
         $client = $this->makeClient();
         $response = $this->performGet($client, '/rest/subresourceentities');
+        $content = $this->assertJsonResponse($response, Response::HTTP_UNAUTHORIZED);
+    }
+
+    public function testSubResourcesList()
+    {
+        /** @var AccessToken $accessToken */
+        $accessToken = $this->referenceRepository->getReference('token-user-user');
+        $client = $this->makeClient();
+        $response = $this->performGet(
+            $client,
+            '/rest/subresourceentities',
+            [],
+            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
+        );
         $content = $this->assertJsonResponse($response);
         $this->assertCount(33, $content);
     }

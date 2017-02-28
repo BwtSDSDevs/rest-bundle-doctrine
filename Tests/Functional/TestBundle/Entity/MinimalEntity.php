@@ -9,7 +9,7 @@ use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
  * @ORM\Entity(
  *     repositoryClass="Dontdrinkandroot\Service\DoctrineCrudService"
  * )
- * @REST\RootResource()
+ * @REST\RootResource(methods={@REST\MethodList,@Rest\MethodGet})
  */
 class MinimalEntity
 {
