@@ -77,6 +77,14 @@ class SecuredEntity
     private $subResources;
 
     /**
+     * @ORM\Embedded(class="EmbeddableEntity")
+     * @REST\Puttable()
+     *
+     * @var EmbeddableEntity
+     */
+    private $embeddedEntity;
+
+    /**
      * @REST\Excluded()
      *
      * @var mixed
@@ -87,6 +95,7 @@ class SecuredEntity
     {
         $this->uuid = Uuid::uuid4();
         $this->subResources = new ArrayCollection();
+        $this->embeddedEntity = new EmbeddableEntity();
     }
 
     /**
@@ -152,5 +161,21 @@ class SecuredEntity
     {
         $subResourceEntity->setParentEntity(null);
         $this->subResources->removeElement($subResourceEntity);
+    }
+
+    /**
+     * @return EmbeddableEntity
+     */
+    public function getEmbeddedEntity(): EmbeddableEntity
+    {
+        return $this->embeddedEntity;
+    }
+
+    /**
+     * @param EmbeddableEntity $embeddedEntity
+     */
+    public function setEmbeddedEntity(EmbeddableEntity $embeddedEntity)
+    {
+        $this->embeddedEntity = $embeddedEntity;
     }
 }

@@ -73,11 +73,15 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $content = $this->assertJsonResponse($response);
 
         $expectedContent = [
-            'id'            => $entity->getId(),
-            'uuid'          => $entity->getUuid(),
-            'dateTimeField' => '2015-03-04 13:12:11',
-            'dateField'     => '2016-01-02',
-            'timeField'     => '03:13:37'
+            'id'             => $entity->getId(),
+            'uuid'           => $entity->getUuid(),
+            'dateTimeField'  => '2015-03-04 13:12:11',
+            'dateField'      => '2016-01-02',
+            'timeField'      => '03:13:37',
+            'embeddedEntity' => [
+                'fieldString'  => null,
+                'fieldInteger' => null
+            ]
         ];
 
         $this->assertContentEquals($expectedContent, $content, false);
@@ -117,9 +121,13 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $entity = $this->referenceRepository->getReference('secured-entity-0');
 
         $data = [
-            'dateTimeField' => '2011-02-03 04:05:06',
-            'dateField'     => '2012-05-31',
-            'timeField'     => '12:34:56'
+            'dateTimeField'  => '2011-02-03 04:05:06',
+            'dateField'      => '2012-05-31',
+            'timeField'      => '12:34:56',
+            'embeddedEntity' => [
+                'fieldString'  => 'haha',
+                'fieldInteger' => 23
+            ]
         ];
 
         /** @var AccessToken $accessToken */
