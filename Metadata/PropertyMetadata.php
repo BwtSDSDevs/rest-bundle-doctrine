@@ -337,7 +337,6 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         $this->type = $this->mergeField($other->type, $this->type);
         $this->puttable = $this->mergeField($other->puttable, $this->puttable);
         $this->postable = $this->mergeField($other->postable, $this->postable);
-        $this->type = $this->mergeField($other->type, $other->type);
         $this->excluded = $this->mergeField($other->excluded, $this->excluded);
         $this->includable = $this->mergeField($other->includable, $this->includable);
         $this->subResource = $this->mergeField($other->subResource, $this->subResource);
