@@ -69,3 +69,4 @@ services:
         arguments:
             - '@ddr_rest.metadata.factory'
             - '@property_accessor'
+            - '@router'

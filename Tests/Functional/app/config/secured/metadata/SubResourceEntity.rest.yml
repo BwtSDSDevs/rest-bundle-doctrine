@@ -5,6 +5,11 @@ Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\SubResourceEntity
             right:
                 attributes:
                     - 'ROLE_USER'
+        GET:
+            right:
+                attributes:
+                    - 'ROLE_USER'
+
     fields:
         parentEntity:
             includable: ['details']

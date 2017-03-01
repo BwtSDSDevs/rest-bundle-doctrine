@@ -29,6 +29,7 @@ class DoctrineDriver implements DriverInterface
         try {
             $doctrineClassMetadata = $this->entityManager->getClassMetadata($class->getName());
         } catch (MappingException $e) {
+            /* If this is not a doctrine entity just generate a fresh metaclass */
             return $ddrRestClassMetadata;
         }
 

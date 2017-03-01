@@ -5,10 +5,12 @@ namespace Dontdrinkandroot\RestBundle\Service;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Types\Type;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\MetadataFactoryInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class Normalizer
 {
@@ -22,10 +24,19 @@ class Normalizer
      */
     private $propertyAccessor;
 
-    function __construct(MetadataFactoryInterface $metadataFactory, PropertyAccessorInterface $propertyAccessor)
-    {
+    /**
+     * @var UrlGeneratorInterface
+     */
+    private $urlGenerator;
+
+    function __construct(
+        MetadataFactoryInterface $metadataFactory,
+        PropertyAccessorInterface $propertyAccessor,
+        UrlGeneratorInterface $urlGenerator
+    ) {
         $this->metadataFactory = $metadataFactory;
         $this->propertyAccessor = $propertyAccessor;
+        $this->urlGenerator = $urlGenerator;
     }
 
     /**
@@ -49,10 +60,28 @@ class Normalizer
 
         if (is_object($data)) {
 
-            $normalizedData = [];
-
             /** @var ClassMetadata $classMetadata */
             $classMetadata = $this->metadataFactory->getMetadataForClass(ClassUtils::getClass($data));
+
+            $normalizedData = [];
+
+            if ($classMetadata->isRestResource() && $classMetadata->hasMethod(Method::GET) && $this->isIncluded(
+                    $path,
+                    ['_links'],
+                    $includes
+                )
+            ) {
+                $selfLink = $this->urlGenerator->generate(
+                    $classMetadata->namePrefix . '.get',
+                    ['id' => $this->propertyAccessor->getValue($data, $classMetadata->getIdField())],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
+                $normalizedData['_links'] = [
+                    'self' => [
+                        'href' => $selfLink
+                    ]
+                ];
+            }
 
             /** @var PropertyMetadata $propertyMetadatum */
             foreach ($classMetadata->propertyMetadata as $propertyMetadatum) {

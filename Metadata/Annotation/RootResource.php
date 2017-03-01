@@ -29,6 +29,11 @@ class RootResource
     public $controller;
 
     /**
+     * @var string
+     */
+    public $idField;
+
+    /**
      * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Method[]
      */
     public $methods;

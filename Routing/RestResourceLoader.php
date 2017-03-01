@@ -2,7 +2,6 @@
 
 namespace Dontdrinkandroot\RestBundle\Routing;
 
-use Doctrine\Common\Util\Inflector;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
@@ -60,8 +59,8 @@ class RestResourceLoader extends Loader
             $classMetadata = $this->metadataFactory->getMetadataForClass($class);
             if ($classMetadata->isRestResource()) {
 
-                $namePrefix = $this->getNamePrefix($classMetadata);
-                $pathPrefix = $this->getPathPrefix($classMetadata);
+                $namePrefix = $classMetadata->getNamePrefix();
+                $pathPrefix = $classMetadata->getPathPrefix();
                 $controller = $this->getController($classMetadata);
 
                 $defaults = [
@@ -267,34 +266,6 @@ class RestResourceLoader extends Loader
     public function supports($resource, $type = null)
     {
         return 'ddr_rest' === $type;
-    }
-
-    /**
-     * @param ClassMetadata $classMetadata
-     *
-     * @return string
-     */
-    private function getNamePrefix(ClassMetadata $classMetadata)
-    {
-        if (null !== $classMetadata->getNamePrefix()) {
-            return $classMetadata->getNamePrefix();
-        }
-
-        return Inflector::tableize($classMetadata->reflection->getShortName());
-    }
-
-    /**
-     * @param ClassMetadata $classMetadata
-     *
-     * @return string
-     */
-    private function getPathPrefix(ClassMetadata $classMetadata)
-    {
-        if (null !== $classMetadata->getPathPrefix()) {
-            return $classMetadata->getPathPrefix();
-        }
-
-        return Inflector::pluralize(strtolower($classMetadata->reflection->getShortName()));
     }
 
     /**

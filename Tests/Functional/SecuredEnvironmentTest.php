@@ -160,12 +160,17 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $response = $this->performGet(
             $client,
             sprintf('/rest/secured/%s', $entity->getId()),
-            ['include' => 'subResources'],
+            ['include' => 'subResources,subResources._links'],
             [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
         );
         $content = $this->assertJsonResponse($response);
 
         $this->assertCount(5, $content['subResources']);
+        $id = $content['subResources'][0]['id'];
+        $this->assertEquals(
+            sprintf('http://localhost/rest/subresourceentities/%s', $id),
+            $content['subResources'][0]['_links']['self']['href']
+        );
     }
 
     public function testListSubResources()

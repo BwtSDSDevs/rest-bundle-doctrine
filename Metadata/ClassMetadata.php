@@ -2,6 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Metadata;
 
+use Doctrine\Common\Inflector\Inflector;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Metadata\MergeableClassMetadata;
 use Metadata\MergeableInterface;
@@ -26,6 +27,11 @@ class ClassMetadata extends MergeableClassMetadata
     /**
      * @var string
      */
+    public $idField;
+
+    /**
+     * @var string
+     */
     public $service;
 
     /**
@@ -37,6 +43,14 @@ class ClassMetadata extends MergeableClassMetadata
      * @var Method[]|null
      */
     public $methods;
+
+    public function __construct($name)
+    {
+        parent::__construct($name);
+
+        $this->namePrefix = Inflector::tableize($this->reflection->getShortName());
+        $this->pathPrefix = Inflector::pluralize(strtolower($this->reflection->getShortName()));
+    }
 
     /**
      * {@inheritdoc}
@@ -58,12 +72,13 @@ class ClassMetadata extends MergeableClassMetadata
         }
 
         /** @var ClassMetadata $object */
-        $this->restResource = $object->restResource;
-        $this->methods = $object->methods;
-        $this->namePrefix = $object->namePrefix;
-        $this->pathPrefix = $object->pathPrefix;
-        $this->service = $object->service;
-        $this->controller = $object->controller;
+        $this->restResource = $this->mergeField($this->restResource, $object->restResource);
+        $this->idField = $this->mergeField($this->idField, $object->idField);
+        $this->methods = $this->mergeField($this->methods, $object->methods);
+        $this->namePrefix = $this->mergeField($this->namePrefix, $object->namePrefix);
+        $this->pathPrefix = $this->mergeField($this->pathPrefix, $object->pathPrefix);
+        $this->service = $this->mergeField($this->service, $object->service);
+        $this->controller = $this->mergeField($this->controller, $object->controller);
     }
 
     /**
@@ -207,5 +222,28 @@ class ClassMetadata extends MergeableClassMetadata
         }
 
         return null;
+    }
+
+    public function hasMethod($methodName)
+    {
+        return null !== $this->getMethod($methodName);
+    }
+
+    private function mergeField($existing, $toMerge)
+    {
+        if (null !== $toMerge) {
+            return $toMerge;
+        }
+
+        return $existing;
+    }
+
+    public function getIdField(string $default = 'id'): string
+    {
+        if (null !== $this->idField) {
+            return $this->idField;
+        }
+
+        return $default;
     }
 }

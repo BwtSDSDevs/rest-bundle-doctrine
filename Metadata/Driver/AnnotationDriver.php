@@ -60,6 +60,8 @@ class AnnotationDriver implements DriverInterface
                 $ddrRestClassMetadata->setController($restResourceAnnotation->controller);
             }
 
+            $ddrRestClassMetadata->idField = $restResourceAnnotation->idField;
+
             if (null !== $restResourceAnnotation->methods) {
                 $methods = [];
                 $methodAnnotations = $restResourceAnnotation->methods;
