@@ -181,7 +181,7 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
 
         $entity = $this->createSubResource($parent, $subresource, $entity);
 
-        $content = $this->getNormalizer()->normalize($entity, ['details']);
+        $content = $this->getNormalizer()->normalize($entity, $this->parseIncludes($request));
 
         return new JsonResponse($content, Response::HTTP_CREATED);
     }
