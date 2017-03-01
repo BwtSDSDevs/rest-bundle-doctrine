@@ -46,7 +46,7 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         $response = new JsonResponse();
 
         if ($listResult instanceof Paginator) {
-            $entities = $listResult->getIterator()->getArrayCopy();
+            $entities = iterator_to_array($listResult->getIterator());
             $total = $listResult->count();
             $this->addPaginationHeaders($response, $page, $perPage, $total);
         } else {
@@ -145,7 +145,7 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         $response = new JsonResponse();
 
         if ($listResult instanceof Paginator) {
-            $entities = $listResult->getIterator()->getArrayCopy();
+            $entities = iterator_to_array($listResult->getIterator());
             $total = $listResult->count();
             $this->addPaginationHeaders($response, $page, $perPage, $total);
         } else {

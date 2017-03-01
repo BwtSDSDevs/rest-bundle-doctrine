@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @author Philip Washington Sorst <philip@sorst.net>
@@ -18,6 +19,8 @@ use Ramsey\Uuid\Uuid;
  *      pathPrefix="secured",
  *      methods={
  *          @REST\Method(name="LIST", right=@REST\Right(attributes={"ROLE_USER"})),
+ *          @REST\Method(name="POST", right=@REST\Right(attributes={"ROLE_ADMIN"})),
+ *          @REST\Method(name="DELETE", right=@REST\Right(attributes={"ROLE_ADMIN"})),
  *          @REST\Method(name="GET", right=@REST\Right(attributes={"ROLE_USER"}), defaultIncludes={"details"}),
  *          @REST\Method(name="PUT", right=@REST\Right(attributes={"ROLE_ADMIN"}), defaultIncludes={"details"})
  *     }
@@ -67,6 +70,15 @@ class SecuredEntity
      * @var \DateTime|null
      */
     private $timeField;
+
+    /**
+     * @REST\Includable("details")
+     * @Assert\Type("integer")
+     * @ORM\Column(type="integer", nullable=true)
+     * @var int|null
+     * @REST\Postable()
+     */
+    private $integerField;
 
     /**
      * @ORM\OneToMany(targetEntity="SubResourceEntity", mappedBy="parentEntity")
@@ -186,5 +198,21 @@ class SecuredEntity
     public function setEmbeddedEntity(EmbeddableEntity $embeddedEntity)
     {
         $this->embeddedEntity = $embeddedEntity;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getIntegerField()
+    {
+        return $this->integerField;
+    }
+
+    /**
+     * @param int|null $integerField
+     */
+    public function setIntegerField($integerField)
+    {
+        $this->integerField = $integerField;
     }
 }

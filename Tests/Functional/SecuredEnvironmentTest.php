@@ -42,6 +42,40 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $this->assertCount(2, $content);
     }
 
+    public function testPostUnauthorized()
+    {
+        $client = $this->makeClient();
+        $response = $this->performPost($client, '/rest/secured');
+        $content = $this->assertJsonResponse($response, Response::HTTP_UNAUTHORIZED);
+    }
+
+    public function testPostInvalid()
+    {
+        /** @var AccessToken $accessToken */
+        $accessToken = $this->referenceRepository->getReference('token-user-admin');
+
+        $client = $this->makeClient();
+        $response = $this->performPost(
+            $client,
+            '/rest/secured',
+            [],
+            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()],
+            ['integerField' => 'thisisnointeger']
+        );
+        $content = $this->assertJsonResponse($response, Response::HTTP_BAD_REQUEST, true);
+        $this->assertContentEquals(
+            [
+                [
+                    'propertyPath' => "integerField",
+                    'message'      => "This value should be of type integer.",
+                    'value'        => "thisisnointeger"
+                ]
+            ],
+            $content,
+            false
+        );
+    }
+
     public function testGetUnauthorized()
     {
         $client = $this->makeClient();
@@ -78,6 +112,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             'dateTimeField'  => '2015-03-04 13:12:11',
             'dateField'      => '2016-01-02',
             'timeField'      => '03:13:37',
+            'integerField'   => null,
             'embeddedEntity' => [
                 'fieldString'  => null,
                 'fieldInteger' => null
@@ -85,6 +120,32 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         ];
 
         $this->assertContentEquals($expectedContent, $content, false);
+    }
+
+    public function testDeleteUnauthorized()
+    {
+        $entity = $this->referenceRepository->getReference('secured-entity-0');
+        $client = $this->makeClient();
+        $response = $this->performDelete($client, sprintf('/rest/secured/%s', $entity->getId()));
+        $content = $this->assertJsonResponse($response, Response::HTTP_UNAUTHORIZED);
+    }
+
+    public function testDelete()
+    {
+        /** @var AccessToken $accessToken */
+        $accessToken = $this->referenceRepository->getReference('token-user-admin');
+        $entity = $this->referenceRepository->getReference('secured-entity-0');
+        $client = $this->makeClient();
+        $response = $this->performDelete(
+            $client,
+            sprintf('/rest/secured/%s', $entity->getId()),
+            [],
+            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
+        );
+        $content = $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT);
+
+        $response = $this->performGet($client, sprintf('/rest/secured/%s', $entity->getId()));
+        $this->assertJsonResponse($response, Response::HTTP_NOT_FOUND);
     }
 
     public function testPutUnauthorized()
@@ -144,6 +205,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $expectedContent = $data;
         $expectedContent['id'] = $entity->getId();
         $expectedContent['uuid'] = $entity->getUuid();
+        $expectedContent['integerField'] = null;
 
         $this->assertContentEquals($expectedContent, $content, false);
     }
