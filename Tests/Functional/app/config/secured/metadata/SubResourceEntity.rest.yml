@@ -6,10 +6,22 @@ Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\SubResourceEntity
                 attributes:
                     - 'ROLE_USER'
         GET:
+            defaultIncludes:
+                - 'details'
             right:
                 attributes:
                     - 'ROLE_USER'
 
     fields:
         parentEntity:
-            includable: ['details']
+            includable: ['parentEntity','details']
+            subResource:
+                methods:
+                    PUT:
+                        right:
+                            attributes:
+                                - 'ROLE_ADMIN'
+                    DELETE:
+                        right:
+                            attributes:
+                                - 'ROLE_ADMIN'

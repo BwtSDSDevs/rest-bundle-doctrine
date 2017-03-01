@@ -89,6 +89,10 @@ class YamlDriver extends AbstractFileDriver
 
     protected function parseFieldConfig(string $name, array $fieldConfig, PropertyMetadata $propertyMetadata): void
     {
+        if (null !== $value = $this->getBool('postable', $fieldConfig)) {
+            $propertyMetadata->setPostable($value);
+        }
+
         if (null !== $value = $this->getBool('puttable', $fieldConfig)) {
             $propertyMetadata->setPuttable($value);
         }
@@ -97,8 +101,9 @@ class YamlDriver extends AbstractFileDriver
             $propertyMetadata->setExcluded($value);
         }
 
-        if (null !== $value = $this->getBool('postable', $fieldConfig)) {
-            $propertyMetadata->setPostable($value);
+        if (null !== $subResourceConfig = $fieldConfig['subResource'] ?? null) {
+            $propertyMetadata->setSubResource(true);
+            $propertyMetadata->setMethods($this->parseMethods($subResourceConfig));
         }
 
         if (array_key_exists('includable', $fieldConfig)) {
@@ -167,11 +172,11 @@ class YamlDriver extends AbstractFileDriver
      */
     private function parseMethods(array $config)
     {
-        $methods = [];
         if (!array_key_exists('methods', $config)) {
-            return $methods;
+            return null;
         }
 
+        $methods = [];
         $methodsConfig = $config['methods'];
         foreach ($methodsConfig as $name => $config) {
             $method = new Method();

@@ -194,7 +194,7 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         $subresource = $this->getSubresource();
         $parent = $this->fetchEntity($id);
         $this->assertSubresourcePutGranted($parent, $subresource);
-        $this->getService()->addToCollection($parent, $subresource, $subId);
+        $this->getService()->addAssociation($parent, $subresource, $subId);
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
@@ -202,12 +202,12 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
     /**
      * {@inheritdoc}
      */
-    public function deleteSubresourceAction(Request $request, $id, $subId)
+    public function deleteSubresourceAction(Request $request, $id, $subId = null)
     {
         $subresource = $this->getSubresource();
         $parent = $this->fetchEntity($id);
         $this->assertSubresourceDeleteGranted($parent, $subresource);
-        $this->getService()->removeFromCollection($parent, $subresource, $subId);
+        $this->getService()->removeAssociation($parent, $subresource, $subId);
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }

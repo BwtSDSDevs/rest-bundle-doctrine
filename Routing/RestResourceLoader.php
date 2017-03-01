@@ -194,7 +194,11 @@ class RestResourceLoader extends Loader
                         }
 
                         if (null !== $method = $propertyMetadata->getMethod(Method::DELETE)) {
-                            $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath . '/{subId}';
+                            if ($propertyMetadata->isCollection()) {
+                                $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath . '/{subId}';
+                            } else {
+                                $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath;
+                            }
                             $subResourceRoute = new Route($subResourceFullPath);
                             $subResourceRoute->setMethods(Request::METHOD_DELETE);
                             $subResourceRoute->setDefaults(

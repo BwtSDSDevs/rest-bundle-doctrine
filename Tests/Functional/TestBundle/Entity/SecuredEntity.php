@@ -18,8 +18,8 @@ use Ramsey\Uuid\Uuid;
  *      pathPrefix="secured",
  *      methods={
  *          @REST\Method(name="LIST", right=@REST\Right(attributes={"ROLE_USER"})),
- *          @REST\Method(name="GET", right=@REST\Right(attributes={"ROLE_USER"})),
- *          @REST\Method(name="PUT", right=@REST\Right(attributes={"ROLE_ADMIN"}))
+ *          @REST\Method(name="GET", right=@REST\Right(attributes={"ROLE_USER"}), defaultIncludes={"details"}),
+ *          @REST\Method(name="PUT", right=@REST\Right(attributes={"ROLE_ADMIN"}), defaultIncludes={"details"})
  *     }
  * )
  */
@@ -42,6 +42,7 @@ class SecuredEntity
     private $uuid;
 
     /**
+     * @REST\Includable("details")
      * @ORM\Column(type="datetime", nullable=true)
      * @REST\Puttable()
      *
@@ -50,6 +51,7 @@ class SecuredEntity
     private $dateTimeField;
 
     /**
+     * @REST\Includable("details")
      * @ORM\Column(type="date", nullable=true)
      * @REST\Puttable()
      *
@@ -58,6 +60,7 @@ class SecuredEntity
     private $dateField;
 
     /**
+     * @REST\Includable("details")
      * @ORM\Column(type="time", nullable=true)
      * @REST\Puttable()
      *
@@ -71,7 +74,7 @@ class SecuredEntity
      * @REST\SubResource(
      *      methods={
      *          @REST\Method(name="LIST", right=@REST\Right(attributes={"ROLE_USER"})),
-     *          @REST\Method(name="POST", right=@REST\Right(attributes={"ROLE_ADMIN"})),
+     *          @REST\Method(name="POST", right=@REST\Right(attributes={"ROLE_ADMIN"}), defaultIncludes={"parentEntity"}),
      *          @REST\Method(name="PUT", right=@REST\Right(attributes={"ROLE_ADMIN"})),
      *          @REST\Method(name="DELETE", right=@REST\Right(attributes={"ROLE_ADMIN"}))
      *      }
@@ -82,6 +85,7 @@ class SecuredEntity
     private $subResources;
 
     /**
+     * @REST\Includable("details")
      * @ORM\Embedded(class="EmbeddableEntity")
      * @REST\Puttable()
      *

@@ -224,6 +224,50 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $this->assertCount(1, $content);
     }
 
+    public function testAddParent()
+    {
+        /** @var AccessToken $adminToken */
+        $userToken = $this->referenceRepository->getReference('token-user-user');
+        /** @var AccessToken $adminToken */
+        $adminToken = $this->referenceRepository->getReference('token-user-admin');
+
+        /** @var SecuredEntity $parent */
+        $parent = $this->referenceRepository->getReference('secured-entity-1');
+
+        /** @var SubResourceEntity $child */
+        $child = $this->referenceRepository->getReference('subresource-entity-0');
+
+        $client = $this->makeClient();
+
+        $response = $this->performPut(
+            $client,
+            sprintf('/rest/subresourceentities/%s/parententity/%s', $child->getId(), $parent->getId()),
+            [],
+            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $adminToken->getToken()]
+        );
+        $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT, true);
+
+        $response = $this->performGet(
+            $client,
+            sprintf('/rest/subresourceentities/%s', $child->getId()),
+            [],
+            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $userToken->getToken()]
+        );
+        $content = $this->assertJsonResponse($response);
+
+        $this->assertContentEquals(
+            [
+                'id'           => $child->getId(),
+                'parentEntity' => [
+                    'id'   => $parent->getId(),
+                    'uuid' => $parent->getUuid()
+                ]
+            ],
+            $content,
+            false
+        );
+    }
+
     public function testRemoveSubResource()
     {
         /** @var AccessToken $accessToken */
@@ -253,6 +297,47 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         );
         $content = $this->assertJsonResponse($response);
         $this->assertCount(4, $content);
+    }
+
+    public function testRemoveParent()
+    {
+        /** @var AccessToken $adminToken */
+        $userToken = $this->referenceRepository->getReference('token-user-user');
+        /** @var AccessToken $adminToken */
+        $adminToken = $this->referenceRepository->getReference('token-user-admin');
+
+        /** @var SecuredEntity $parent */
+        $parent = $this->referenceRepository->getReference('secured-entity-1');
+
+        /** @var SubResourceEntity $child */
+        $child = $this->referenceRepository->getReference('subresource-entity-2');
+
+        $client = $this->makeClient();
+
+        $response = $this->performDelete(
+            $client,
+            sprintf('/rest/subresourceentities/%s/parententity', $child->getId(), $parent->getId()),
+            [],
+            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $adminToken->getToken()]
+        );
+        $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT, true);
+
+        $response = $this->performGet(
+            $client,
+            sprintf('/rest/subresourceentities/%s', $child->getId()),
+            [],
+            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $userToken->getToken()]
+        );
+        $content = $this->assertJsonResponse($response);
+
+        $this->assertContentEquals(
+            [
+                'id'           => $child->getId(),
+                'parentEntity' => null
+            ],
+            $content,
+            false
+        );
     }
 
     public function testSubResourcesListUnauthorized()
