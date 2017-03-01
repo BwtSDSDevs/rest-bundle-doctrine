@@ -172,13 +172,16 @@ class SecuredEnvironmentTest extends FunctionalTestCase
     {
         $client = $this->makeClient();
 
+        /** @var AccessToken $accessToken */
+        $accessToken = $this->referenceRepository->getReference('token-user-user');
         /** @var SecuredEntity $entity */
         $entity = $this->referenceRepository->getReference('secured-entity-0');
 
         $response = $this->performGet(
             $client,
             sprintf('/rest/secured/%s/subresources', $entity->getId()),
-            ['page' => 1, 'perPage' => 3]
+            ['page' => 1, 'perPage' => 3],
+            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
         );
         $content = $this->assertJsonResponse($response);
         $this->assertCount(3, $content);
@@ -208,7 +211,9 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
         $response = $this->performGet(
             $client,
-            sprintf('/rest/secured/%s/subresources', $entity->getId())
+            sprintf('/rest/secured/%s/subresources', $entity->getId()),
+            [],
+            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
         );
         $content = $this->assertJsonResponse($response);
         $this->assertCount(1, $content);
@@ -237,7 +242,9 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
         $response = $this->performGet(
             $client,
-            sprintf('/rest/secured/%s/subresources', $entity->getId())
+            sprintf('/rest/secured/%s/subresources', $entity->getId()),
+            [],
+            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
         );
         $content = $this->assertJsonResponse($response);
         $this->assertCount(4, $content);

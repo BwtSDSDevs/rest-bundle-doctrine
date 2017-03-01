@@ -391,7 +391,8 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         $classMetadata = $this->getClassMetadata();
         /** @var PropertyMetadata $propertyMetadata */
         $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
-        $right = $propertyMetadata->getSubResourceListRight();
+        $method = $propertyMetadata->getMethod(Method::LIST);
+        $right = $method->right;
         if (null === $right) {
             return;
         }
@@ -404,7 +405,8 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         $classMetadata = $this->getClassMetadata();
         /** @var PropertyMetadata $propertyMetadata */
         $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
-        $right = $propertyMetadata->getSubResourcePostRight();
+        $method = $propertyMetadata->getMethod(Method::POST);
+        $right = $method->right;
         if (null === $right) {
             throw new AccessDeniedException();
         }
@@ -417,7 +419,8 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         $classMetadata = $this->getClassMetadata();
         /** @var PropertyMetadata $propertyMetadata */
         $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
-        $right = $propertyMetadata->getSubResourcePutRight();
+        $method = $propertyMetadata->getMethod(Method::PUT);
+        $right = $method->right;
         if (null === $right) {
             throw new AccessDeniedException();
         }
@@ -430,7 +433,8 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         $classMetadata = $this->getClassMetadata();
         /** @var PropertyMetadata $propertyMetadata */
         $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
-        $right = $propertyMetadata->getSubResourceDeleteRight();
+        $method = $propertyMetadata->getMethod(Method::DELETE);
+        $right = $method->right;
         if (null === $right) {
             throw new AccessDeniedException();
         }

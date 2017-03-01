@@ -136,26 +136,31 @@ class RestResourceLoader extends Loader
                 /** @var PropertyMetadata $propertyMetadata */
                 foreach ($classMetadata->propertyMetadata as $propertyMetadata) {
                     if ($propertyMetadata->isSubResource()) {
+
                         $subResourcePath = strtolower($propertyMetadata->name);
                         if (null !== $propertyMetadata->getSubResourcePath()) {
                             $subResourcePath = $propertyMetadata->getSubResourcePath();
                         }
-                        $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath;
-                        $subResourceRoute = new Route($subResourceFullPath);
-                        $subResourceRoute->setMethods(Request::METHOD_GET);
-                        $subResourceRoute->setDefaults(
-                            array_merge(
-                                $defaults,
-                                [
-                                    '_controller'  => $controller . ':listSubresource',
-                                    '_subresource' => $propertyMetadata->name,
-                                ]
-                            )
-                        );
-                        $routes->add($namePrefix . '.' . $propertyMetadata->name . '.list', $subResourceRoute);
 
-                        $postRight = $propertyMetadata->getSubResourcePostRight();
-                        if (null !== $postRight) {
+                        $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath;
+
+                        if (null !== $method = $propertyMetadata->getMethod(Method::LIST)) {
+                            $subResourceRoute = new Route($subResourceFullPath);
+                            $subResourceRoute->setMethods(Request::METHOD_GET);
+                            $subResourceRoute->setDefaults(
+                                array_merge(
+                                    $defaults,
+                                    [
+                                        '_controller'      => $controller . ':listSubresource',
+                                        '_subresource'     => $propertyMetadata->name,
+                                        '_defaultincludes' => $method->defaultIncludes
+                                    ]
+                                )
+                            );
+                            $routes->add($namePrefix . '.' . $propertyMetadata->name . '.list', $subResourceRoute);
+                        }
+
+                        if (null !== $method = $propertyMetadata->getMethod(Method::POST)) {
                             $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath;
                             $subResourceRoute = new Route($subResourceFullPath);
                             $subResourceRoute->setMethods(Request::METHOD_POST);
@@ -163,16 +168,16 @@ class RestResourceLoader extends Loader
                                 array_merge(
                                     $defaults,
                                     [
-                                        '_controller'  => $controller . ':postSubresource',
-                                        '_subresource' => $propertyMetadata->name,
+                                        '_controller'      => $controller . ':postSubresource',
+                                        '_subresource'     => $propertyMetadata->name,
+                                        '_defaultincludes' => $method->defaultIncludes
                                     ]
                                 )
                             );
                             $routes->add($namePrefix . '.' . $propertyMetadata->name . '.post', $subResourceRoute);
                         }
 
-                        $putRight = $propertyMetadata->getSubResourcePutRight();
-                        if (null !== $putRight) {
+                        if (null !== $method = $propertyMetadata->getMethod(Method::PUT)) {
                             $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath . '/{subId}';
                             $subResourceRoute = new Route($subResourceFullPath);
                             $subResourceRoute->setMethods(Request::METHOD_PUT);
@@ -180,16 +185,16 @@ class RestResourceLoader extends Loader
                                 array_merge(
                                     $defaults,
                                     [
-                                        '_controller'  => $controller . ':putSubresource',
-                                        '_subresource' => $propertyMetadata->name,
+                                        '_controller'      => $controller . ':putSubresource',
+                                        '_subresource'     => $propertyMetadata->name,
+                                        '_defaultincludes' => $method->defaultIncludes
                                     ]
                                 )
                             );
                             $routes->add($namePrefix . '.' . $propertyMetadata->name . '.put', $subResourceRoute);
                         }
 
-                        $deleteRight = $propertyMetadata->getSubResourceDeleteRight();
-                        if (null !== $deleteRight) {
+                        if (null !== $method = $propertyMetadata->getMethod(Method::DELETE)) {
                             $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath . '/{subId}';
                             $subResourceRoute = new Route($subResourceFullPath);
                             $subResourceRoute->setMethods(Request::METHOD_DELETE);

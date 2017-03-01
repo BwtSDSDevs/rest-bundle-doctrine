@@ -2,7 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Metadata;
 
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Metadata\MergeableInterface;
 use Metadata\PropertyMetadata as BasePropertyMetadata;
 
@@ -54,6 +54,11 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
     private $subResource;
 
     /**
+     * @var Method[]|null
+     */
+    private $methods;
+
+    /**
      * @var bool
      */
     private $association;
@@ -67,26 +72,6 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
      * @var string|null
      */
     private $subResourcePath;
-
-    /**
-     * @var Right|null
-     */
-    private $subResourceListRight;
-
-    /**
-     * @var Right|null
-     */
-    private $subResourcePostRight;
-
-    /**
-     * @var Right|null
-     */
-    private $subResourcePutRight;
-
-    /**
-     * @var Right|null
-     */
-    private $subResourceDeleteRight;
 
     /**
      * @return boolean
@@ -150,70 +135,6 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
     public function setSubResource($subResource)
     {
         $this->subResource = $subResource;
-    }
-
-    /**
-     * @return Right|null
-     */
-    public function getSubResourceListRight()
-    {
-        return $this->subResourceListRight;
-    }
-
-    /**
-     * @param Right|null $subResourceListRight
-     */
-    public function setSubResourceListRight($subResourceListRight)
-    {
-        $this->subResourceListRight = $subResourceListRight;
-    }
-
-    /**
-     * @return Right|null
-     */
-    public function getSubResourcePostRight()
-    {
-        return $this->subResourcePostRight;
-    }
-
-    /**
-     * @param Right|null $subResourcePostRight
-     */
-    public function setSubResourcePostRight($subResourcePostRight)
-    {
-        $this->subResourcePostRight = $subResourcePostRight;
-    }
-
-    /**
-     * @param Right|null $subResourcePutRight
-     */
-    public function setSubResourcePutRight($subResourcePutRight)
-    {
-        $this->subResourcePutRight = $subResourcePutRight;
-    }
-
-    /**
-     * @return Right|null
-     */
-    public function getSubResourcePutRight()
-    {
-        return $this->subResourcePutRight;
-    }
-
-    /**
-     * @param Right|null $subResourceDeleteRight
-     */
-    public function setSubResourceDeleteRight($subResourceDeleteRight)
-    {
-        $this->subResourceDeleteRight = $subResourceDeleteRight;
-    }
-
-    /**
-     * @return Right|null
-     */
-    public function getSubResourceDeleteRight()
-    {
-        return $this->subResourceDeleteRight;
     }
 
     /**
@@ -306,6 +227,14 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         $this->type = $type;
     }
 
+    /**
+     * @param Method[] $methods
+     */
+    public function setMethods(array $methods)
+    {
+        $this->methods = $methods;
+    }
+
     public function merge(MergeableInterface $other)
     {
         if (!$other instanceof PropertyMetadata) {
@@ -323,13 +252,7 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         $this->association = $this->mergeField($other->association, $this->association);
         $this->collection = $this->mergeField($other->collection, $this->collection);
         $this->subResourcePath = $this->mergeField($other->subResourcePath, $this->subResourcePath);
-        $this->subResourceListRight = $this->mergeField($other->subResourceListRight, $this->subResourceListRight);
-        $this->subResourcePostRight = $this->mergeField($other->subResourcePostRight, $this->subResourcePostRight);
-        $this->subResourcePutRight = $this->mergeField($other->subResourcePutRight, $this->subResourcePutRight);
-        $this->subResourceDeleteRight = $this->mergeField(
-            $other->subResourceDeleteRight,
-            $this->subResourceDeleteRight
-        );
+        $this->methods = $this->mergeField($other->methods, $this->methods);
 
         return $this;
     }
@@ -350,5 +273,20 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         }
 
         return $otherValue;
+    }
+
+    public function getMethod(string $methodName): ?Method
+    {
+        if (null === $this->methods) {
+            return null;
+        }
+
+        foreach ($this->methods as $method) {
+            if ($methodName === $method->name) {
+                return $method;
+            }
+        }
+
+        return null;
     }
 }

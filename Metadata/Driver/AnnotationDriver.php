@@ -111,24 +111,18 @@ class AnnotationDriver implements DriverInterface
             if (null !== $subResourceAnnotation) {
 
                 $propertyMetadata->setSubResource(true);
-                if (null !== $subResourceAnnotation->listRight) {
-                    $propertyMetadata->setSubResourceListRight($subResourceAnnotation->listRight);
-                }
 
                 if (null !== $subResourceAnnotation->path) {
                     $propertyMetadata->setSubResourcePath($subResourceAnnotation->path);
                 }
 
-                if (null !== $subResourceAnnotation->postRight) {
-                    $propertyMetadata->setSubResourcePostRight($subResourceAnnotation->postRight);
-                }
-
-                if (null !== $subResourceAnnotation->putRight) {
-                    $propertyMetadata->setSubResourcePutRight($subResourceAnnotation->putRight);
-                }
-
-                if (null !== $subResourceAnnotation->deleteRight) {
-                    $propertyMetadata->setSubResourceDeleteRight($subResourceAnnotation->deleteRight);
+                if (null !== $subResourceAnnotation->methods) {
+                    $methods = [];
+                    $methodAnnotations = $subResourceAnnotation->methods;
+                    foreach ($methodAnnotations as $methodAnnotation) {
+                        $methods[$methodAnnotation->name] = $methodAnnotation;
+                    }
+                    $propertyMetadata->setMethods($methods);
                 }
             }
 

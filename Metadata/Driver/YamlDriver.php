@@ -81,7 +81,7 @@ class YamlDriver extends AbstractFileDriver
         /* Parse unbacked field definitions */
         foreach ($fieldConfigs as $name => $fieldConfig) {
             $propertyMetadata = $this->getOrCreatePropertymetadata($classMetadata, $name);
-            $this->parseFieldConfig($propertyName, $fieldConfig, $propertyMetadata);
+            $this->parseFieldConfig($name, $fieldConfig, $propertyMetadata);
             $classMetadata->addPropertyMetadata($propertyMetadata);
         }
 

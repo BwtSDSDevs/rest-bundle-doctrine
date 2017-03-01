@@ -69,9 +69,12 @@ class SecuredEntity
      * @ORM\OneToMany(targetEntity="SubResourceEntity", mappedBy="parentEntity")
      * @REST\Includable()
      * @REST\SubResource(
-     *     postRight=@REST\Right(attributes={"ROLE_ADMIN"}),
-     *     putRight=@REST\Right(attributes={"ROLE_ADMIN"}),
-     *     deleteRight=@REST\Right(attributes={"ROLE_ADMIN"})
+     *      methods={
+     *          @REST\Method(name="LIST", right=@REST\Right(attributes={"ROLE_USER"})),
+     *          @REST\Method(name="POST", right=@REST\Right(attributes={"ROLE_ADMIN"})),
+     *          @REST\Method(name="PUT", right=@REST\Right(attributes={"ROLE_ADMIN"})),
+     *          @REST\Method(name="DELETE", right=@REST\Right(attributes={"ROLE_ADMIN"}))
+     *      }
      * )
      *
      * @var SubResourceEntity[]|Collection
