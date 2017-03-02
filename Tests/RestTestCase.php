@@ -50,13 +50,21 @@ abstract class RestTestCase extends WebTestCase
         return $decodedContent;
     }
 
+    protected function assertHasKeyAndUnset($key, array &$data, $notNull = false)
+    {
+        $this->assertArrayHasKey($key, $data);
+        if ($notNull) {
+            $this->assertNotNull($data[$key]);
+        }
+        unset($data[$key]);
+    }
+
     /**
      * @param array $data
      */
     protected function assertLinksAndUnset(array &$data)
     {
-        $this->assertArrayHasKey('_links', $data);
-        unset($data['_links']);
+        $this->assertHasKeyAndUnset('_links', $data);
     }
 
     /**
@@ -137,8 +145,7 @@ abstract class RestTestCase extends WebTestCase
         array $parameters = [],
         array $headers = [],
         array $content = []
-    )
-    {
+    ) {
         $client->request(
             Request::METHOD_PUT,
             $url,

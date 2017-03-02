@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *      pathPrefix="secured",
  *      methods={
  *          @REST\Method(name="LIST", right=@REST\Right(attributes={"ROLE_USER"})),
- *          @REST\Method(name="POST", right=@REST\Right(attributes={"ROLE_ADMIN"})),
+ *          @REST\Method(name="POST", right=@REST\Right(attributes={"ROLE_ADMIN"}), defaultIncludes={"details"}),
  *          @REST\Method(name="DELETE", right=@REST\Right(attributes={"ROLE_ADMIN"})),
  *          @REST\Method(name="GET", right=@REST\Right(attributes={"ROLE_USER"}), defaultIncludes={"details"}),
  *          @REST\Method(name="PUT", right=@REST\Right(attributes={"ROLE_ADMIN"}), defaultIncludes={"details"})

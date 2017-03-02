@@ -49,6 +49,40 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $content = $this->assertJsonResponse($response, Response::HTTP_UNAUTHORIZED);
     }
 
+    public function testPost()
+    {
+        /** @var AccessToken $accessToken */
+        $accessToken = $this->referenceRepository->getReference('token-user-admin');
+        $client = $this->makeClient();
+
+        $response = $this->performPost(
+            $client,
+            '/rest/secured',
+            [],
+            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()],
+            [
+                'integerField' => 23,
+            ]
+        );
+        $content = $this->assertJsonResponse($response, Response::HTTP_CREATED);
+        $this->assertHasKeyAndUnset('id', $content, true);
+        $this->assertHasKeyAndUnset('uuid', $content, true);
+        $this->assertContentEquals(
+            [
+                'dateField'      => null,
+                'dateTimeField'  => null,
+                'embeddedEntity' => [
+                    'fieldString'  => null,
+                    'fieldInteger' => null
+                ],
+                'integerField'   => 23,
+                'timeField'      => null,
+            ],
+            $content,
+            false
+        );
+    }
+
     public function testPostInvalid()
     {
         /** @var AccessToken $accessToken */
