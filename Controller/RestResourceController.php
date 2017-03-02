@@ -367,23 +367,17 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
     protected function assertPutGranted($entity)
     {
         $method = $this->getClassMetadata()->getMethod(Method::PUT);
-        $right = $method->right;
-        if (null === $right) {
-            throw new AccessDeniedException();
+        if ($method !== null && null !== $right = $method->right) {
+            $this->assertRightGranted($entity, $right);
         }
-
-        $this->assertRightGranted($entity, $right);
     }
 
     protected function assertDeleteGranted($entity)
     {
         $method = $this->getClassMetadata()->getMethod(Method::POST);
-        $right = $method->right;
-        if (null === $right) {
-            throw new AccessDeniedException();
+        if ($method !== null && null !== $right = $method->right) {
+            $this->assertRightGranted($entity, $right);
         }
-
-        $this->assertRightGranted($entity, $right);
     }
 
     protected function assertSubresourceListGranted($entity, $subresource)
@@ -420,12 +414,9 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         /** @var PropertyMetadata $propertyMetadata */
         $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
         $method = $propertyMetadata->getMethod(Method::PUT);
-        $right = $method->right;
-        if (null === $right) {
-            throw new AccessDeniedException();
+        if (null !== $right = $method->right) {
+            $this->assertRightGranted($entity, $right);
         }
-
-        $this->assertRightGranted($entity, $right);
     }
 
     protected function assertSubresourceDeleteGranted($entity, $subresource)
@@ -433,13 +424,10 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         $classMetadata = $this->getClassMetadata();
         /** @var PropertyMetadata $propertyMetadata */
         $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
-        $method = $propertyMetadata->getMethod(Method::DELETE);
-        $right = $method->right;
-        if (null === $right) {
-            throw new AccessDeniedException();
+        $method = $propertyMetadata->getMethod(Method::PUT);
+        if (null !== $right = $method->right) {
+            $this->assertRightGranted($entity, $right);
         }
-
-        $this->assertRightGranted($entity, $right);
     }
 
     /**

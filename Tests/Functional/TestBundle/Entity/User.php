@@ -2,7 +2,10 @@
 
 namespace Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -10,6 +13,11 @@ use Symfony\Component\Security\Core\User\UserInterface;
  *
  * @ORM\Entity(
  *     repositoryClass="Dontdrinkandroot\Service\DoctrineCrudService"
+ * )
+ * @REST\RootResource(
+ *     methods = {
+ *         @REST\Method(name="GET", defaultIncludes={"supervisor"})
+ *     }
  * )
  */
 class User implements UserInterface
@@ -39,10 +47,60 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", nullable=false)
+     * @REST\Excluded()
      *
      * @var string
      */
     private $role;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="subordinates")
+     * @ORM\JoinColumn(nullable=true)
+     * @REST\SubResource(
+     *     methods = {
+     *         @REST\Method("PUT"),
+     *         @REST\Method("DELETE")
+     *     }
+     * )
+     * @REST\Includable()
+     *
+     * @var User|null
+     */
+    private $supervisor;
+
+    /**
+     * @ORM\OneToMany(targetEntity="User", mappedBy="supervisor")
+     * @REST\SubResource(
+     *     methods = {
+     *         @REST\Method("PUT"),
+     *         @REST\Method("DELETE")
+     *     }
+     * )
+     * @REST\Includable()
+     *
+     * @var Collection|User[]
+     */
+    private $subordinates;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Group", mappedBy="users")
+     * @REST\Includable()
+     * @REST\SubResource(
+     *     methods = {
+     *         @REST\Method("PUT"),
+     *         @REST\Method("DELETE")
+     *     }
+     * )
+     *
+     * @var Collection|Group[]
+     */
+    private $groups;
+
+    function __construct()
+    {
+        $this->groups = new ArrayCollection();
+        $this->subordinates = new ArrayCollection();
+    }
 
     /**
      * {@inheritdoc}
@@ -105,5 +163,37 @@ class User implements UserInterface
     public function setRole(string $role)
     {
         $this->role = $role;
+    }
+
+    /**
+     * @return Collection|Group[]
+     */
+    public function getGroups()
+    {
+        return $this->groups;
+    }
+
+    /**
+     * @return User|null
+     */
+    public function getSupervisor()
+    {
+        return $this->supervisor;
+    }
+
+    /**
+     * @param User|null $supervisor
+     */
+    public function setSupervisor($supervisor)
+    {
+        $this->supervisor = $supervisor;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getSubordinates()
+    {
+        return $this->subordinates;
     }
 }

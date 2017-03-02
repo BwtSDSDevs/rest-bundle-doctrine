@@ -2,6 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
 
@@ -35,6 +36,11 @@ class MinimalEntity
      * @var string
      */
     private $defaultIncludedField = 'detail';
+
+    function __construct()
+    {
+        $this->ownerManyToManys = new ArrayCollection();
+    }
 
     public function getId(): int
     {
