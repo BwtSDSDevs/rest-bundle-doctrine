@@ -171,7 +171,7 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
             $request,
             $this->getSubResourceEntityClass($subresource)
         );
-        $entity = $this->postProcessSubResourcePostedEntity($subresource, $entity, $parent);
+        $entity = $this->postProcessSubResourcePostedEntity($parent, $subresource, $entity);
 
         $errors = $this->getValidator()->validate($entity);
 
@@ -262,13 +262,13 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
     }
 
     /**
-     * @param string $subresource
      * @param object $parent
+     * @param string $subresource
      * @param object $entity
      *
      * @return object
      */
-    protected function postProcessSubResourcePostedEntity($subresource, $entity, $parent)
+    protected function postProcessSubResourcePostedEntity($parent, $subresource, $entity)
     {
         return $entity;
     }
@@ -371,7 +371,7 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
 
     protected function assertDeleteGranted($entity)
     {
-        $method = $this->getClassMetadata()->getMethod(Method::POST);
+        $method = $this->getClassMetadata()->getMethod(Method::DELETE);
         if ($method !== null && null !== $right = $method->right) {
             $this->assertRightGranted($entity, $right);
         }
