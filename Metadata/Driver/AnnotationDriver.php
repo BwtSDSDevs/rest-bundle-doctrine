@@ -84,14 +84,28 @@ class AnnotationDriver implements DriverInterface
                 $propertyMetadata = new PropertyMetadata($class->getName(), $reflectionProperty->getName());
             }
 
-            $puttableAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Puttable::class);
-            if (null !== $puttableAnnotation) {
+            /** @var Puttable $puttableAnnotation */
+            if (null !== $puttableAnnotation = $this->reader->getPropertyAnnotation(
+                    $reflectionProperty,
+                    Puttable::class
+                )
+            ) {
                 $propertyMetadata->setPuttable(true);
+                if (null !== $puttableAnnotation->right) {
+                    $propertyMetadata->setPuttableRight($puttableAnnotation->right);
+                }
             }
 
-            $postableAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Postable::class);
-            if (null !== $postableAnnotation) {
+            /** @Var Postable $postableAnnotation */
+            if (null !== $postableAnnotation = $this->reader->getPropertyAnnotation(
+                    $reflectionProperty,
+                    Postable::class
+                )
+            ) {
                 $propertyMetadata->setPostable(true);
+                if (null !== $postableAnnotation->right) {
+                    $propertyMetadata->setPostableRight($postableAnnotation->right);
+                }
             }
 
             $includableAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Includable::class);

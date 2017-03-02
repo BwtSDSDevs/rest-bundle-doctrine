@@ -3,6 +3,7 @@
 namespace Dontdrinkandroot\RestBundle\Metadata;
 
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Metadata\MergeableInterface;
 use Metadata\PropertyMetadata as BasePropertyMetadata;
 
@@ -37,6 +38,16 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
      * @var bool
      */
     private $postable;
+
+    /**
+     * @var Right|null
+     */
+    private $postableRight;
+
+    /**
+     * @var Right|null
+     */
+    private $puttableRight;
 
     /**
      * @var bool
@@ -202,6 +213,26 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         $this->methods = $methods;
     }
 
+    public function getPostableRight(): ?Right
+    {
+        return $this->postableRight;
+    }
+
+    public function getPuttableRight(): ?Right
+    {
+        return $this->puttableRight;
+    }
+
+    public function setPostableRight(?Right $postableRight)
+    {
+        $this->postableRight = $postableRight;
+    }
+
+    public function setPuttableRight(?Right $puttableRight)
+    {
+        $this->puttableRight = $puttableRight;
+    }
+
     public function merge(MergeableInterface $other)
     {
         if (!$other instanceof PropertyMetadata) {
@@ -221,6 +252,8 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         $this->subResourcePath = $this->mergeField($other->subResourcePath, $this->subResourcePath);
         $this->methods = $this->mergeField($other->methods, $this->methods);
         $this->virtual = $this->mergeField($other->virtual, $this->virtual);
+        $this->postableRight = $this->mergeField($other->postableRight, $this->postableRight);
+        $this->puttableRight = $this->mergeField($other->puttableRight, $this->puttableRight);
 
         return $this;
     }

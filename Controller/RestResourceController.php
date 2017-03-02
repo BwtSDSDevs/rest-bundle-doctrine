@@ -348,12 +348,9 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
     protected function assertPostGranted()
     {
         $method = $this->getClassMetadata()->getMethod(Method::POST);
-        $right = $method->right;
-        if (null === $right) {
-            throw new AccessDeniedException();
+        if ($method !== null && null !== $right = $method->right) {
+            $this->denyAccessUnlessGranted($right->attributes);
         }
-
-        $this->denyAccessUnlessGranted($right->attributes);
     }
 
     protected function assertGetGranted($entity)

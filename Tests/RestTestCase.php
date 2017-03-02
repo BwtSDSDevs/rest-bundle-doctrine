@@ -72,7 +72,7 @@ abstract class RestTestCase extends WebTestCase
      * @param array $actual
      * @param bool  $linksExpected
      */
-    protected function assertContentEquals(array $expected, array $actual, $linksExpected = true)
+    protected function assertContentEquals(array $expected, array $actual, $linksExpected = false)
     {
         if ($linksExpected) {
             $this->assertLinksAndUnset($actual);

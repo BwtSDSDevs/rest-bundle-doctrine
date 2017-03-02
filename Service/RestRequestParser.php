@@ -4,10 +4,12 @@ namespace Dontdrinkandroot\RestBundle\Service;
 
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Types\Type;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\MetadataFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class RestRequestParser
 {
@@ -21,10 +23,19 @@ class RestRequestParser
      */
     private $propertyAccessor;
 
-    public function __construct(MetadataFactory $ddrRestMetadataFactory, PropertyAccessor $propertyAccessor)
-    {
+    /**
+     * @var AuthorizationCheckerInterface
+     */
+    private $authorizationChecker;
+
+    public function __construct(
+        MetadataFactory $ddrRestMetadataFactory,
+        PropertyAccessor $propertyAccessor,
+        AuthorizationCheckerInterface $authorizationChecker
+    ) {
         $this->ddrRestMetadataFactory = $ddrRestMetadataFactory;
         $this->propertyAccessor = $propertyAccessor;
+        $this->authorizationChecker = $authorizationChecker;
     }
 
     /**
@@ -91,7 +102,7 @@ class RestRequestParser
             }
             /** @var PropertyMetadata $propertyMetadata */
             $propertyMetadata = $classMetadata->propertyMetadata[$key];
-            if ($this->isUpdateable($method, $propertyMetadata)) {
+            if ($this->isUpdateable($object, $method, $propertyMetadata)) {
                 $this->updateProperty($object, $method, $key, $value, $propertyMetadata);
             }
         }
@@ -111,23 +122,6 @@ class RestRequestParser
         $value,
         PropertyMetadata $propertyMetadata
     ) {
-
-        // TODO: Reenable embedded
-//        if (array_key_exists($propertyName, $doctrineClassMetadata->embeddedClasses)) {
-//            $embeddedClass = $doctrineClassMetadata->embeddedClasses[$propertyName]['class'];
-//            $this->updatePropertyObject($object, $method, $embeddedClass, $propertyName, $value);
-//
-//            return;
-//        }
-
-        //TODO: Reenable associations
-//        if (array_key_exists($propertyName, $doctrineClassMetadata->associationMappings)) {
-//            $associatedClass = $doctrineClassMetadata->associationMappings[$propertyName]['targetEntity'];
-//            $this->updatePropertyObject($object, $method, $associatedClass, $propertyName, $value);
-//
-//            return;
-//        }
-
         if (array_key_exists($propertyMetadata->getType(), Type::getTypesMap())) {
             $convertedValue = $this->convert($propertyMetadata->getType(), $value);
             $this->propertyAccessor->setValue($object, $propertyMetadata->name, $convertedValue);
@@ -154,22 +148,49 @@ class RestRequestParser
 
     /**
      * @param string           $method
+     * @param object           $object
      * @param PropertyMetadata $propertyMetadata
      *
      * @return bool
      */
     protected function isUpdateable(
+        $object,
         $method,
         PropertyMetadata $propertyMetadata
     ) {
-        if (Request::METHOD_PUT === $method || Request::METHOD_PATCH === $method) {
-            return $propertyMetadata->isPuttable();
+        if ((Request::METHOD_PUT === $method || Request::METHOD_PATCH === $method) && $propertyMetadata->isPuttable()) {
+            return $this->isGranted($object, $propertyMetadata->getPuttableRight());
         }
-        if (Request:: METHOD_POST === $method) {
-            return $propertyMetadata->isPostable();
+        if (Request:: METHOD_POST === $method && $propertyMetadata->isPostable()) {
+            return $this->isGranted($object, $propertyMetadata->getPostableRight());
         }
 
         return false;
+    }
+
+    private function isGranted($object, ?Right $right)
+    {
+        if (null === $right) {
+            return true;
+        }
+
+        $propertyPath = $right->propertyPath;
+        if (null === $propertyPath) {
+            return $this->authorizationChecker->isGranted($right->attributes);
+        } else {
+            $subject = $this->resolveSubject($object, $propertyPath);
+
+            return $this->authorizationChecker->isGranted($right->attributes, $subject);
+        }
+    }
+
+    private function resolveSubject($entity, $propertyPath)
+    {
+        if ('this' === $propertyPath) {
+            return $entity;
+        }
+
+        return $this->propertyAccessor->getValue($entity, $propertyPath);
     }
 
     private function convert(?string $type, $value)

@@ -8,4 +8,8 @@ namespace Dontdrinkandroot\RestBundle\Metadata\Annotation;
  */
 class Puttable
 {
+    /**
+     * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Right
+     */
+    public $right;
 }

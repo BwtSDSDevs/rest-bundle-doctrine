@@ -10,4 +10,8 @@ use Doctrine\ORM\Mapping\Annotation;
  */
 class Postable
 {
+    /**
+     * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Right
+     */
+    public $right;
 }
