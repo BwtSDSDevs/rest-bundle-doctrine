@@ -162,7 +162,7 @@ class ClassMetadata extends MergeableClassMetadata
     }
 
     /**
-     * @return Method[]
+     * @return Method[]|null
      */
     public function getMethods()
     {
@@ -172,7 +172,7 @@ class ClassMetadata extends MergeableClassMetadata
     /**
      * @param string[] $methods
      */
-    public function setMethods(array $methods)
+    public function setMethods($methods)
     {
         $this->methods = $methods;
     }
