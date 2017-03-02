@@ -141,7 +141,7 @@ class Normalizer
             return $normalizedData;
         }
 
-        return null;
+        return $data;
     }
 
     private function isIncluded($currentPath, array $paths, ?array $includes): bool

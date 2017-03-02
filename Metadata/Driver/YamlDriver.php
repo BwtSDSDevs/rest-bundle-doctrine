@@ -101,6 +101,10 @@ class YamlDriver extends AbstractFileDriver
             $propertyMetadata->setExcluded($value);
         }
 
+        if (null !== $value = $this->getBool('virtual', $fieldConfig)) {
+            $propertyMetadata->setVirtual($value);
+        }
+
         if (null !== $subResourceConfig = $fieldConfig['subResource'] ?? null) {
             $propertyMetadata->setSubResource(true);
             $propertyMetadata->setMethods($this->parseMethods($subResourceConfig));

@@ -5,7 +5,7 @@ use Doctrine\ORM\Mapping\Annotation;
 
 /**
  * @Annotation
- * @Target({"PROPERTY"})
+ * @Target({"PROPERTY", "METHOD"})
  */
 class Includable
 {

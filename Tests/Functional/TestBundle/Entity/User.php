@@ -103,6 +103,9 @@ class User implements UserInterface
     }
 
     /**
+     * @REST\Virtual()
+     * @REST\Includable()
+     *
      * {@inheritdoc}
      */
     public function getRoles()

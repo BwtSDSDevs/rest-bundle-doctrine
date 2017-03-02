@@ -69,101 +69,80 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
     private $collection;
 
     /**
+     * @var bool
+     */
+    private $virtual;
+
+    /**
      * @var string|null
      */
     private $subResourcePath;
 
-    /**
-     * @return boolean
-     */
-    public function isPuttable()
+    public function isPuttable(): bool
     {
         return $this->getBool($this->puttable, false);
     }
 
-    /**
-     * @param boolean $puttable
-     */
-    public function setPuttable($puttable)
+    public function setPuttable(bool $puttable)
     {
         $this->puttable = $puttable;
     }
 
-    /**
-     * @return boolean
-     */
-    public function isPostable()
+    public function isPostable(): bool
     {
         return $this->getBool($this->postable, false);
     }
 
-    /**
-     * @param boolean $postable
-     */
-    public function setPostable($postable)
+    public function setPostable(bool $postable)
     {
         $this->postable = $postable;
     }
 
-    /**
-     * @return boolean
-     */
-    public function isIncludable()
+    public function isIncludable(): bool
     {
         return $this->getBool($this->includable, false);
     }
 
-    /**
-     * @param boolean $includable
-     */
-    public function setIncludable($includable)
+    public function isVirtual(): bool
+    {
+        return $this->getBool($this->virtual, false);
+    }
+
+    public function setVirtual(bool $virtual)
+    {
+        $this->virtual = $virtual;
+    }
+
+    public function setIncludable(bool $includable)
     {
         $this->includable = $includable;
     }
 
-    /**
-     * @return boolean
-     */
-    public function isSubResource()
+    public function isSubResource(): bool
     {
         return $this->getBool($this->subResource, false);
     }
 
-    /**
-     * @param boolean $subResource
-     */
-    public function setSubResource($subResource)
+    public function setSubResource(bool $subResource)
     {
         $this->subResource = $subResource;
     }
 
-    /**
-     * @return null|string
-     */
-    public function getSubResourcePath()
+    public function getSubResourcePath(): ?string
     {
         return $this->subResourcePath;
     }
 
-    /**
-     * @param null|string $subResourcePath
-     */
-    public function setSubResourcePath($subResourcePath)
+    public function setSubResourcePath(string $subResourcePath)
     {
         $this->subResourcePath = $subResourcePath;
     }
 
-    /**
-     * @return bool
-     */
     public function isExcluded(): bool
     {
         return $this->getBool($this->excluded, false);
     }
 
-    /**
-     * @param bool $excluded
-     */
     public function setExcluded(bool $excluded)
     {
         $this->excluded = $excluded;
@@ -185,33 +164,21 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         $this->includablePaths = $includablePaths;
     }
 
-    /**
-     * @return bool
-     */
     public function isAssociation(): bool
     {
         return $this->getBool($this->association, false);
     }
 
-    /**
-     * @param bool $association
-     */
     public function setAssociation(bool $association)
     {
         $this->association = $association;
     }
 
-    /**
-     * @return bool
-     */
     public function isCollection(): bool
     {
         return $this->getBool($this->collection, false);
     }
 
-    /**
-     * @param bool $collection
-     */
     public function setCollection(bool $collection)
     {
         $this->collection = $collection;
@@ -253,6 +220,7 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         $this->collection = $this->mergeField($other->collection, $this->collection);
         $this->subResourcePath = $this->mergeField($other->subResourcePath, $this->subResourcePath);
         $this->methods = $this->mergeField($other->methods, $this->methods);
+        $this->virtual = $this->mergeField($other->virtual, $this->virtual);
 
         return $this;
     }

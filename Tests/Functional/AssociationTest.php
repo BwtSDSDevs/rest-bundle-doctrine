@@ -20,9 +20,14 @@ class AssociationTest extends FunctionalTestCase
         $user = $this->referenceRepository->getReference(Users::EMPLOYEE_2);
         $client = $this->makeClient();
 
-        $response = $this->performGet($client, sprintf('/rest/users/%s', $user->getId()));
+        /* Also Testing for Virtual/Includable roles */
+        $response = $this->performGet($client, sprintf('/rest/users/%s', $user->getId()), ['include' => 'roles']);
         $content = $this->assertJsonResponse($response);
         $this->assertNull($content['supervisor']);
+
+        $this->assertNotNull($content['roles']);
+        $this->assertCount(1, $content['roles']);
+        $this->assertEquals('ROLE_USER', $content['roles'][0]);
 
         $response = $this->performPut(
             $client,
