@@ -10,6 +10,9 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
 
+/**
+ * @author Philip Washington Sorst <philip@sorst.net>
+ */
 class KernelExceptionListener
 {
     /**

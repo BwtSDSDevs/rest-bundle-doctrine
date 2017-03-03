@@ -142,6 +142,7 @@ class AnnotationDriver implements DriverInterface
         }
 
         foreach ($class->getMethods() as $reflectionMethod) {
+            /** @var Virtual $virtualAnnotation */
             $virtualAnnotation = $this->reader->getMethodAnnotation($reflectionMethod, Virtual::class);
             if (null !== $virtualAnnotation) {
 
