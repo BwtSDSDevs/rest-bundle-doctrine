@@ -7,6 +7,8 @@ use Doctrine\Common\Annotations\Annotation\Required;
 /**
  * @Annotation
  * @Target({"ANNOTATION"})
+ *
+ * @author Philip Washington Sorst <philip@sorst.net>
  */
 class Right
 {
@@ -20,4 +22,17 @@ class Right
      * @var string
      */
     public $propertyPath;
+
+    public static function parse(?array $config): ?Right
+    {
+        if (null === $config) {
+            return null;
+        }
+
+        $right = new Right();
+        $right->attributes = ParseUtils::parseStringArray($config['attributes'] ?? null);
+        $right->propertyPath = ParseUtils::parseString($config['propertyPath'] ?? null);
+
+        return $right;
+    }
 }

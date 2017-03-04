@@ -170,7 +170,7 @@ class ClassMetadata extends MergeableClassMetadata
     }
 
     /**
-     * @param string[] $methods
+     * @param Method[]|null $methods
      */
     public function setMethods($methods)
     {

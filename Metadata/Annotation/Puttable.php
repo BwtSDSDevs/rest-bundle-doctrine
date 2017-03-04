@@ -5,11 +5,13 @@ namespace Dontdrinkandroot\RestBundle\Metadata\Annotation;
 /**
  * @Annotation
  * @Target({"PROPERTY"})
+ *
+ * @author Philip Washington Sorst <philip@sorst.net>
  */
-class Puttable
+class Puttable extends Writeable
 {
-    /**
-     * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Right
-     */
-    public $right;
+    public static function parse($config): ?Puttable
+    {
+        return parent::parseInstance($config, new Puttable());
+    }
 }

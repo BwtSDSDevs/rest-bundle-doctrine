@@ -11,6 +11,18 @@ Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\SubResourceEntity
             right:
                 attributes:
                     - 'ROLE_USER'
+        POST:
+            defaultIncludes:
+                - 'creator'
+            right:
+                attributes:
+                    - 'ROLE_ADMIN'
+        PUT:
+            defaultIncludes:
+                - 'creator'
+            right:
+                attributes:
+                    - 'ROLE_ADMIN'
 
     fields:
         parentEntity:
@@ -25,3 +37,9 @@ Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\SubResourceEntity
                         right:
                             attributes:
                                 - 'ROLE_ADMIN'
+        creator:
+            includable: true
+            postable:
+                byReference: true
+            puttable:
+                byReference: true

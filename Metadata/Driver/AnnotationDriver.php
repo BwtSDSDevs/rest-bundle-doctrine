@@ -15,6 +15,9 @@ use Metadata\Driver\DriverInterface;
 
 class AnnotationDriver implements DriverInterface
 {
+    /**
+     * @var Reader
+     */
     private $reader;
 
     /**
@@ -84,37 +87,24 @@ class AnnotationDriver implements DriverInterface
                 $propertyMetadata = new PropertyMetadata($class->getName(), $reflectionProperty->getName());
             }
 
-            /** @var Puttable $puttableAnnotation */
-            if (null !== $puttableAnnotation = $this->reader->getPropertyAnnotation(
-                    $reflectionProperty,
-                    Puttable::class
-                )
-            ) {
-                $propertyMetadata->setPuttable(true);
-                if (null !== $puttableAnnotation->right) {
-                    $propertyMetadata->setPuttableRight($puttableAnnotation->right);
-                }
+            /** @var Puttable $puttable */
+            if (null !== $puttable = $this->reader->getPropertyAnnotation($reflectionProperty, Puttable::class)) {
+                $propertyMetadata->setPuttable($puttable);
             }
 
-            /** @Var Postable $postableAnnotation */
-            if (null !== $postableAnnotation = $this->reader->getPropertyAnnotation(
-                    $reflectionProperty,
-                    Postable::class
-                )
-            ) {
-                $propertyMetadata->setPostable(true);
-                if (null !== $postableAnnotation->right) {
-                    $propertyMetadata->setPostableRight($postableAnnotation->right);
-                }
+            /** @var Postable $postable */
+            if (null !== $postable = $this->reader->getPropertyAnnotation($reflectionProperty, Postable::class)) {
+                $propertyMetadata->setPostable($postable);
             }
 
-            $includableAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Includable::class);
-            if (null !== $includableAnnotation) {
-                $this->parseIncludable($propertyMetadata, $includableAnnotation);
+            /** @var Includable $includable */
+            $includable = $this->reader->getPropertyAnnotation($reflectionProperty, Includable::class);
+            if (null !== $includable) {
+                $this->parseIncludable($propertyMetadata, $includable);
             }
 
-            $excludedAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Excluded::class);
-            if (null !== $excludedAnnotation) {
+            $excluded = $this->reader->getPropertyAnnotation($reflectionProperty, Excluded::class);
+            if (null !== $excluded) {
                 $propertyMetadata->setExcluded(true);
             }
 
@@ -155,12 +145,12 @@ class AnnotationDriver implements DriverInterface
                 $propertyMetadata->setVirtual(true);
 
                 /** @var Includable|null $includableAnnotation */
-                if (null !== $includableAnnotation = $this->reader->getMethodAnnotation(
+                if (null !== $includable = $this->reader->getMethodAnnotation(
                         $reflectionMethod,
                         Includable::class
                     )
                 ) {
-                    $this->parseIncludable($propertyMetadata, $includableAnnotation);
+                    $this->parseIncludable($propertyMetadata, $includable);
                 }
 
                 $ddrRestClassMetadata->addPropertyMetadata($propertyMetadata);

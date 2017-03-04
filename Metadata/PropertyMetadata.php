@@ -3,7 +3,8 @@
 namespace Dontdrinkandroot\RestBundle\Metadata;
 
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Postable;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Puttable;
 use Metadata\MergeableInterface;
 use Metadata\PropertyMetadata as BasePropertyMetadata;
 
@@ -27,27 +28,17 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
     /**
      * @var bool
      */
-    private $puttable;
-
-    /**
-     * @var bool
-     */
     private $excluded;
 
     /**
-     * @var bool
+     * @var Postable|null
      */
     private $postable;
 
     /**
-     * @var Right|null
+     * @var Puttable|null
      */
-    private $postableRight;
-
-    /**
-     * @var Right|null
-     */
-    private $puttableRight;
+    private $puttable;
 
     /**
      * @var bool
@@ -91,22 +82,32 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
 
     public function isPuttable(): bool
     {
-        return $this->getBool($this->puttable, false);
+        return null !== $this->puttable;
     }
 
-    public function setPuttable(bool $puttable)
+    public function setPuttable(?Puttable $puttable)
     {
         $this->puttable = $puttable;
     }
 
-    public function isPostable(): bool
+    public function getPuttable(): ?Puttable
     {
-        return $this->getBool($this->postable, false);
+        return $this->puttable;
     }
 
-    public function setPostable(bool $postable)
+    public function isPostable(): bool
+    {
+        return null !== $this->postable;
+    }
+
+    public function setPostable(?Postable $postable)
     {
         $this->postable = $postable;
+    }
+
+    public function getPostable(): ?Postable
+    {
+        return $this->postable;
     }
 
     public function isIncludable(): bool
@@ -213,26 +214,6 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         $this->methods = $methods;
     }
 
-    public function getPostableRight(): ?Right
-    {
-        return $this->postableRight;
-    }
-
-    public function getPuttableRight(): ?Right
-    {
-        return $this->puttableRight;
-    }
-
-    public function setPostableRight(?Right $postableRight)
-    {
-        $this->postableRight = $postableRight;
-    }
-
-    public function setPuttableRight(?Right $puttableRight)
-    {
-        $this->puttableRight = $puttableRight;
-    }
-
     public function merge(MergeableInterface $other)
     {
         if (!$other instanceof PropertyMetadata) {
@@ -252,8 +233,6 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         $this->subResourcePath = $this->mergeField($other->subResourcePath, $this->subResourcePath);
         $this->methods = $this->mergeField($other->methods, $this->methods);
         $this->virtual = $this->mergeField($other->virtual, $this->virtual);
-        $this->postableRight = $this->mergeField($other->postableRight, $this->postableRight);
-        $this->puttableRight = $this->mergeField($other->puttableRight, $this->puttableRight);
 
         return $this;
     }

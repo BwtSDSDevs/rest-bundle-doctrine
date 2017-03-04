@@ -31,6 +31,14 @@ class SubResourceEntity
     private $parentEntity;
 
     /**
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(nullable=true)
+     *
+     * @var User|null
+     */
+    private $creator;
+
+    /**
      * @return int
      */
     public function getId(): int
@@ -46,5 +54,21 @@ class SubResourceEntity
     public function getParentEntity(): ?SecuredEntity
     {
         return $this->parentEntity;
+    }
+
+    /**
+     * @return User|null
+     */
+    public function getCreator()
+    {
+        return $this->creator;
+    }
+
+    /**
+     * @param User|null $creator
+     */
+    public function setCreator($creator)
+    {
+        $this->creator = $creator;
     }
 }

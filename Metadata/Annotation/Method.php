@@ -33,4 +33,21 @@ class Method
      * @var array<string>
      */
     public $defaultIncludes;
+
+    public static function parse($name, $config): ?Method
+    {
+        assert(in_array($name, [self::LIST, self::POST, self::GET, self::PUT, self::DELETE]));
+        assert(is_string($name));
+
+        $method = new Method();
+        $method->name = $name;
+        if (is_bool($config) && true === $config) {
+            return $method;
+        }
+
+        $method->right = Right::parse($config['right']?? null);
+        $method->defaultIncludes = ParseUtils::parseStringArray($config['defaultIncludes'] ?? null);
+
+        return $method;
+    }
 }

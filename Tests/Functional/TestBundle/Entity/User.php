@@ -14,11 +14,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @ORM\Entity(
  *     repositoryClass="Dontdrinkandroot\Service\DoctrineCrudService"
  * )
- * @REST\RootResource(
- *     methods = {
- *         @REST\Method(name="GET", defaultIncludes={"supervisor"})
- *     }
- * )
  */
 class User implements UserInterface
 {
@@ -47,7 +42,6 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", nullable=false)
-     * @REST\Excluded()
      *
      * @var string
      */
@@ -56,13 +50,6 @@ class User implements UserInterface
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="subordinates")
      * @ORM\JoinColumn(nullable=true)
-     * @REST\SubResource(
-     *     methods = {
-     *         @REST\Method("PUT"),
-     *         @REST\Method("DELETE")
-     *     }
-     * )
-     * @REST\Includable()
      *
      * @var User|null
      */
@@ -70,13 +57,6 @@ class User implements UserInterface
 
     /**
      * @ORM\OneToMany(targetEntity="User", mappedBy="supervisor")
-     * @REST\SubResource(
-     *     methods = {
-     *         @REST\Method("PUT"),
-     *         @REST\Method("DELETE")
-     *     }
-     * )
-     * @REST\Includable()
      *
      * @var Collection|User[]
      */
@@ -84,13 +64,6 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToMany(targetEntity="Group", mappedBy="users")
-     * @REST\Includable()
-     * @REST\SubResource(
-     *     methods = {
-     *         @REST\Method("PUT"),
-     *         @REST\Method("DELETE")
-     *     }
-     * )
      *
      * @var Collection|Group[]
      */

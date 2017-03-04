@@ -7,11 +7,13 @@ use Doctrine\ORM\Mapping\Annotation;
 /**
  * @Annotation
  * @Target({"PROPERTY"})
+ *
+ * @author Philip Washington Sorst <philip@sorst.net>
  */
-class Postable
+class Postable extends Writeable
 {
-    /**
-     * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Right
-     */
-    public $right;
+    public static function parse($config): ?Postable
+    {
+        return parent::parseInstance($config, new Postable());
+    }
 }

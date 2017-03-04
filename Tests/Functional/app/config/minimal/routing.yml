@@ -7,13 +7,3 @@ rest_inherited_entity:
     resource: "@TestBundle/Entity/InheritedEntity.php"
     type: "ddr_rest"
     prefix:   /rest
-
-rest_user:
-    resource: "@TestBundle/Entity/User.php"
-    type: "ddr_rest"
-    prefix:   /rest
-
-rest_group:
-    resource: "@TestBundle/Entity/Group.php"
-    type: "ddr_rest"
-    prefix:   /rest

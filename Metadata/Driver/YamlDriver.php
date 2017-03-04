@@ -3,7 +3,8 @@
 namespace Dontdrinkandroot\RestBundle\Metadata\Driver;
 
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Postable;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Puttable;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\Driver\AbstractFileDriver;
@@ -89,13 +90,8 @@ class YamlDriver extends AbstractFileDriver
 
     protected function parseFieldConfig(string $name, array $fieldConfig, PropertyMetadata $propertyMetadata): void
     {
-        if (null !== $value = $this->getBool('postable', $fieldConfig)) {
-            $propertyMetadata->setPostable($value);
-        }
-
-        if (null !== $value = $this->getBool('puttable', $fieldConfig)) {
-            $propertyMetadata->setPuttable($value);
-        }
+        $propertyMetadata->setPostable(Postable::parse($fieldConfig['postable'] ?? null));
+        $propertyMetadata->setPuttable(Puttable::parse($fieldConfig['puttable'] ?? null));
 
         if (null !== $value = $this->getBool('excluded', $fieldConfig)) {
             $propertyMetadata->setExcluded($value);
@@ -183,28 +179,10 @@ class YamlDriver extends AbstractFileDriver
         $methods = [];
         $methodsConfig = $config['methods'];
         foreach ($methodsConfig as $name => $config) {
-            $method = new Method();
-            $method->name = $name;
-            if (null !== $config) {
-                if (array_key_exists('right', $config)) {
-                    $method->right = $this->parseRight($config['right']);
-                }
-                if (array_key_exists('defaultIncludes', $config)) {
-                    $method->defaultIncludes = $config['defaultIncludes'];
-                }
-            }
+            $method = Method::parse($name, $config);
             $methods[$method->name] = $method;
         }
 
         return $methods;
-    }
-
-    private function parseRight(array $config): Right
-    {
-        $right = new Right();
-        $right->attributes = $this->getArrayValue('attributes', $config);
-        $right->propertyPath = $this->getArrayValue('propertyPath', $config);
-
-        return $right;
     }
 }

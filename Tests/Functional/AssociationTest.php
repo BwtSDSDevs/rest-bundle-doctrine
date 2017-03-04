@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AssociationTest extends FunctionalTestCase
 {
-    protected $environment = 'minimal';
+    protected $environment = 'secured';
 
     public function testAddManyToOne()
     {
@@ -22,7 +22,7 @@ class AssociationTest extends FunctionalTestCase
 
         /* Also Testing for Virtual/Includable roles */
         $response = $this->performGet($client, sprintf('/rest/users/%s', $user->getId()), ['include' => 'roles']);
-        $content = $this->assertJsonResponse($response);
+        $content = $this->assertJsonResponse($response, 200, true);
         $this->assertNull($content['supervisor']);
 
         $this->assertNotNull($content['roles']);
