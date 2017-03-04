@@ -279,7 +279,7 @@ class RestResourceLoader extends Loader
      */
     protected function getController(ClassMetadata $classMetadata)
     {
-        $controller = 'DdrRestBundle:RestResource';
+        $controller = 'DdrRestBundle:ContainerAwareRestResource';
         if (null !== $classMetadata->getController()) {
             $controller = $classMetadata->getController();
         }

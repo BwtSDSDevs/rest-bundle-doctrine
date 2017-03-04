@@ -2,7 +2,6 @@
 
 namespace Dontdrinkandroot\RestBundle\Controller;
 
-use Doctrine\Common\Util\Inflector;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
@@ -13,8 +12,6 @@ use Dontdrinkandroot\RestBundle\Service\Normalizer;
 use Dontdrinkandroot\RestBundle\Service\RestRequestParser;
 use Dontdrinkandroot\Service\CrudServiceInterface;
 use Metadata\MetadataFactoryInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -27,10 +24,11 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class RestResourceController implements ContainerAwareInterface, RestResourceControllerInterface
+/**
+ * @author Philip Washington Sorst <philip@sorst.net>
+ */
+abstract class AbstractRestResourceController implements RestResourceControllerInterface
 {
-    use ContainerAwareTrait;
-
     /**
      * {@inheritdoc}
      */
@@ -210,35 +208,6 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
     }
 
     /**
-     * @return CrudServiceInterface
-     */
-    protected function getService(): CrudServiceInterface
-    {
-        $serviceId = $this->getServiceId();
-        if (null === $serviceId) {
-            $entityClass = $this->getEntityClass();
-            if (null === $entityClass) {
-                throw new \RuntimeException('No service or entity class given');
-            }
-            /** @var EntityManagerInterface $entityManager */
-            $entityManager = $this->container->get('doctrine.orm.entity_manager');
-            $repository = $entityManager->getRepository($entityClass);
-            if (!$repository instanceof CrudServiceInterface) {
-                throw new \RuntimeException(
-                    'Your Entity Repository needs to be an instance of ' . CrudServiceInterface::class . '.'
-                );
-            }
-
-            return $repository;
-        } else {
-            /** @var CrudServiceInterface $service */
-            $service = $this->container->get($serviceId);
-
-            return $service;
-        }
-    }
-
-    /**
      * @param object $entity
      *
      * @return object
@@ -270,6 +239,11 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         return $entity;
     }
 
+    /**
+     * @param int|string $id
+     *
+     * @return object
+     */
     protected function fetchEntity($id)
     {
         $entity = $this->getService()->find($id);
@@ -291,11 +265,21 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         return $this->getService()->findAllPaginated($page, $perPage);
     }
 
+    /**
+     * @param object $entity
+     *
+     * @return object
+     */
     protected function createEntity($entity)
     {
         return $this->getService()->create($entity);
     }
 
+    /**
+     * @param object $entity
+     *
+     * @return object
+     */
     protected function updateEntity($entity)
     {
         return $this->getService()->update($entity);
@@ -330,9 +314,12 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         return $this->getCurrentRequest()->attributes->get('_entityClass');
     }
 
-    protected function getShortName()
+    protected function getSubResourceEntityClass($subresource)
     {
-        return Inflector::tableize($this->getClassMetadata()->reflection->getShortName());
+        /** @var PropertyMetadata $propertyMetadata */
+        $propertyMetadata = $this->getClassMetadata()->propertyMetadata[$subresource];
+
+        return $propertyMetadata->getType();
     }
 
     protected function getServiceId()
@@ -447,14 +434,6 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         return $classMetaData;
     }
 
-    protected function getSubResourceEntityClass($subresource)
-    {
-        /** @var PropertyMetadata $propertyMetadata */
-        $propertyMetadata = $this->getClassMetadata()->propertyMetadata[$subresource];
-
-        return $propertyMetadata->getType();
-    }
-
     protected function resolveSubject($entity, $propertyPath)
     {
         if ('this' === $propertyPath) {
@@ -492,14 +471,6 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         return $this->getService()->create($entity);
     }
 
-    /**
-     * @return string|null
-     */
-    protected function getSubresource()
-    {
-        return $this->getCurrentRequest()->attributes->get('_subresource');
-    }
-
     protected function parseIncludes(Request $request)
     {
         $defaultIncludes = $request->attributes->get('_defaultincludes');
@@ -517,7 +488,14 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         return array_merge($defaultIncludes, $includes);
     }
 
-    private function parseConstraintViolations(ConstraintViolationListInterface $errors)
+    protected function denyAccessUnlessGranted($attributes, $object = null, $message = 'Access Denied.')
+    {
+        if (!$this->getAuthorizationChecker()->isGranted($attributes, $object)) {
+            throw new AccessDeniedException($message);
+        }
+    }
+
+    protected function parseConstraintViolations(ConstraintViolationListInterface $errors)
     {
         $data = [];
         /** @var ConstraintViolationInterface $error */
@@ -532,7 +510,7 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         return $data;
     }
 
-    private function addPaginationHeaders(Response $response, int $page, int $perPage, int $total)
+    protected function addPaginationHeaders(Response $response, int $page, int $perPage, int $total)
     {
         $response->headers->add(
             [
@@ -544,66 +522,48 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
         );
     }
 
-    protected function denyAccessUnlessGranted($attributes, $object = null, $message = 'Access Denied.')
-    {
-        if (!$this->getAuthorizationChecker()->isGranted($attributes, $object)) {
-            throw new AccessDeniedException($message);
-        }
-    }
+    /**
+     * @return CrudServiceInterface
+     */
+    abstract protected function getService();
 
     /**
      * @return Normalizer
      */
-    protected function getNormalizer()
-    {
-        return $this->container->get('ddr_rest.normalizer');
-    }
+    abstract protected function getNormalizer();
 
     /**
      * @return ValidatorInterface
      */
-    protected function getValidator()
-    {
-        return $this->container->get('validator');
-    }
+    abstract protected function getValidator();
 
     /**
      * @return RestRequestParser
      */
-    protected function getRequestParser()
-    {
-        return $this->container->get('ddr.rest.parser.request');
-    }
+    abstract protected function getRequestParser();
 
     /**
      * @return RequestStack
      */
-    protected function getRequestStack()
-    {
-        return $this->container->get('request_stack');
-    }
+    abstract protected function getRequestStack();
 
     /**
      * @return MetadataFactoryInterface
      */
-    protected function getMetadataFactory()
-    {
-        return $this->container->get('ddr_rest.metadata.factory');
-    }
+    abstract protected function getMetadataFactory();
 
     /**
      * @return PropertyAccessorInterface
      */
-    protected function getPropertyAccessor()
-    {
-        return $this->container->get('property_accessor');
-    }
+    abstract protected function getPropertyAccessor();
 
     /**
      * @return AuthorizationCheckerInterface
      */
-    protected function getAuthorizationChecker()
-    {
-        return $this->container->get('security.authorization_checker');
-    }
+    abstract protected function getAuthorizationChecker();
+
+    /**
+     * @return EntityManagerInterface
+     */
+    abstract protected function getEntityManager();
 }
