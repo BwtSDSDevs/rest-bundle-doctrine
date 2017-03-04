@@ -14,6 +14,6 @@ class Postable extends Writeable
 {
     public static function parse($config): ?Postable
     {
-        return parent::parseInstance($config, new Postable());
+        return self::parseInstance($config, new Postable());
     }
 }

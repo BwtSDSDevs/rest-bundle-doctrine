@@ -12,6 +12,6 @@ class Puttable extends Writeable
 {
     public static function parse($config): ?Puttable
     {
-        return parent::parseInstance($config, new Puttable());
+        return self::parseInstance($config, new Puttable());
     }
 }

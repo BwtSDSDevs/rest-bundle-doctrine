@@ -57,9 +57,7 @@ class ClassMetadata extends MergeableClassMetadata
      */
     public function merge(MergeableInterface $object)
     {
-        if (!$object instanceof MergeableClassMetadata) {
-            throw new \InvalidArgumentException('$object must be an instance of MergeableClassMetadata.');
-        }
+        assert($object instanceof ClassMetadata);
 
         $this->name = $object->name;
         $this->reflection = $object->reflection;
@@ -193,6 +191,8 @@ class ClassMetadata extends MergeableClassMetadata
      */
     protected function mergePropertyMetadata(MergeableInterface $object): array
     {
+        assert($object instanceof ClassMetadata);
+
         /** @var ClassMetadata $object */
         /** @var PropertyMetadata[] $mergedMetadata */
         $mergedMetadata = $this->propertyMetadata;

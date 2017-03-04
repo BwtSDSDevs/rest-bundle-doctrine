@@ -161,7 +161,7 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
     }
 
     /**
-     * @return null|\string[]
+     * @return null|string[]
      */
     public function getIncludablePaths(): ?array
     {
@@ -169,7 +169,7 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
     }
 
     /**
-     * @param null|\string[] $includablePaths
+     * @param null|string[] $includablePaths
      */
     public function setIncludablePaths(?array $includablePaths)
     {

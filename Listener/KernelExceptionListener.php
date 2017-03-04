@@ -25,7 +25,7 @@ class KernelExceptionListener
      */
     private $debug = false;
 
-    function __construct(array $paths)
+    public function __construct(array $paths)
     {
         $this->paths = $paths;
     }
