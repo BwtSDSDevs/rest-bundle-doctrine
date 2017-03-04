@@ -165,7 +165,11 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
     {
         $parent = $this->fetchEntity($id);
         $this->assertSubresourcePostGranted($parent, $subresource);
-        $entity = $this->getRequestParser()->parseEntity($request, $this->getSubResourceEntityClass($subresource));
+
+        $restRequestParser = $this->getRequestParser();
+        $entity = $this->createAssociation($parent, $subresource);
+        $entity = $restRequestParser->parseEntity($request, $this->getSubResourceEntityClass($subresource), $entity);
+
         $entity = $this->postProcessSubResourcePostedEntity($parent, $subresource, $entity);
 
         $errors = $this->getValidator()->validate($entity);
@@ -295,6 +299,17 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
     protected function updateEntity($entity)
     {
         return $this->getService()->update($entity);
+    }
+
+    /**
+     * @param object $parent
+     * @param string $subresource
+     *
+     * @return object
+     */
+    protected function createAssociation($parent, string $subresource)
+    {
+        return $this->getService()->createAssociation($parent, $subresource);
     }
 
     /**
@@ -470,11 +485,11 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
      * @param string $subresource
      * @param object $entity
      *
-     * @return
+     * @return object
      */
     protected function createSubResource($parent, $subresource, $entity)
     {
-        return $this->getService()->createAssociation($parent, $subresource, $entity);
+        return $this->getService()->create($entity);
     }
 
     /**

@@ -190,7 +190,7 @@ class RestRequestParser
         return false;
     }
 
-    private function isGranted($object, ?Right $right): BOOL
+    private function isGranted($object, ?Right $right): bool
     {
         if (null === $right) {
             return true;
