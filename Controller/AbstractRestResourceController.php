@@ -37,7 +37,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
         $page = $request->query->get('page', 1);
         $perPage = $request->query->get('perPage', 50);
 
-        $this->assertListGranted();
+        $this->assertMethodGranted(Method::LIST);
 
         $listResult = $this->listEntities($page, $perPage);
 
@@ -63,7 +63,8 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
      */
     public function postAction(Request $request)
     {
-        $this->assertPostGranted();
+        $this->assertMethodGranted(Method::POST);
+
         $entity = $this->getRequestParser()->parseEntity($request, $this->getEntityClass());
         $entity = $this->postProcessPostedEntity($entity);
 
@@ -85,7 +86,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     public function getAction(Request $request, $id)
     {
         $entity = $this->fetchEntity($id);
-        $this->assertGetGranted($entity);
+        $this->assertMethodGranted(Method::GET, $entity);
 
         $content = $this->getNormalizer()->normalize($entity, $this->parseIncludes($request));
 
@@ -98,7 +99,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     public function putAction(Request $request, $id)
     {
         $entity = $this->fetchEntity($id);
-        $this->assertPutGranted($entity);
+        $this->assertMethodGranted(Method::PUT, $entity);
         $entity = $this->getRequestParser()->parseEntity($request, $this->getEntityClass(), $entity);
         $entity = $this->postProcessPuttedEntity($entity);
 
@@ -120,7 +121,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     public function deleteAction(Request $request, $id)
     {
         $entity = $this->fetchEntity($id);
-        $this->assertDeleteGranted($entity);
+        $this->assertMethodGranted(Method::DELETE, $entity);
         $this->getService()->remove($entity);
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
@@ -135,7 +136,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
         $perPage = $request->query->get('perPage', 50);
 
         $entity = $this->fetchEntity($id);
-        $this->assertSubresourceListGranted($entity, $subresource);
+        $this->assertSubResourceMethodGranted(Method::LIST, $entity, $subresource);
 
         $listResult = $this->listSubresource($entity, $subresource, $page, $perPage);
 
@@ -162,7 +163,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     public function postSubresourceAction(Request $request, $id, string $subresource)
     {
         $parent = $this->fetchEntity($id);
-        $this->assertSubresourcePostGranted($parent, $subresource);
+        $this->assertSubResourceMethodGranted(Method::POST, $parent, $subresource);
 
         $restRequestParser = $this->getRequestParser();
         $entity = $this->createAssociation($parent, $subresource);
@@ -189,7 +190,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     public function putSubresourceAction(Request $request, $id, string $subresource, $subId)
     {
         $parent = $this->fetchEntity($id);
-        $this->assertSubresourcePutGranted($parent, $subresource);
+        $this->assertSubResourceMethodGranted(Method::PUT, $parent, $subresource);
         $this->getService()->addAssociation($parent, $subresource, $subId);
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
@@ -201,7 +202,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     public function deleteSubresourceAction(Request $request, $id, string $subresource, $subId = null)
     {
         $parent = $this->fetchEntity($id);
-        $this->assertSubresourceDeleteGranted($parent, $subresource);
+        $this->assertSubResourceMethodGranted(Method::DELETE, $parent, $subresource);
         $this->getService()->removeAssociation($parent, $subresource, $subId);
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
@@ -332,93 +333,27 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
         return $this->getRequestStack()->getCurrentRequest();
     }
 
-    protected function assertListGranted()
+    protected function assertMethodGranted(string $methodName, $entity = null)
     {
-        $method = $this->getClassMetadata()->getMethod(Method::LIST);
+        $method = $this->getClassMetadata()->getMethod($methodName);
         if ($method !== null && null !== $right = $method->right) {
-            $this->denyAccessUnlessGranted($right->attributes);
+            $this->assertRightGranted($right, $entity);
         }
     }
 
-    protected function assertPostGranted()
-    {
-        $method = $this->getClassMetadata()->getMethod(Method::POST);
-        if ($method !== null && null !== $right = $method->right) {
-            $this->denyAccessUnlessGranted($right->attributes);
-        }
-    }
-
-    protected function assertGetGranted($entity)
-    {
-        $method = $this->getClassMetadata()->getMethod(Method::GET);
-        if ($method !== null && null !== $right = $method->right) {
-            $this->assertRightGranted($entity, $right);
-        }
-    }
-
-    protected function assertPutGranted($entity)
-    {
-        $method = $this->getClassMetadata()->getMethod(Method::PUT);
-        if ($method !== null && null !== $right = $method->right) {
-            $this->assertRightGranted($entity, $right);
-        }
-    }
-
-    protected function assertDeleteGranted($entity)
-    {
-        $method = $this->getClassMetadata()->getMethod(Method::DELETE);
-        if ($method !== null && null !== $right = $method->right) {
-            $this->assertRightGranted($entity, $right);
-        }
-    }
-
-    protected function assertSubresourceListGranted($entity, $subresource)
+    /**
+     * @param string $methodName
+     * @param object $entity
+     * @param string $subresource
+     */
+    protected function assertSubResourceMethodGranted($methodName, $entity, string $subresource): void
     {
         $classMetadata = $this->getClassMetadata();
         /** @var PropertyMetadata $propertyMetadata */
         $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
-        $method = $propertyMetadata->getMethod(Method::LIST);
-        $right = $method->right;
-        if (null === $right) {
-            return;
-        }
-
-        $this->assertRightGranted($entity, $right);
-    }
-
-    protected function assertSubresourcePostGranted($entity, $subresource)
-    {
-        $classMetadata = $this->getClassMetadata();
-        /** @var PropertyMetadata $propertyMetadata */
-        $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
-        $method = $propertyMetadata->getMethod(Method::POST);
-        $right = $method->right;
-        if (null === $right) {
-            throw new AccessDeniedException();
-        }
-
-        $this->assertRightGranted($entity, $right);
-    }
-
-    protected function assertSubresourcePutGranted($entity, $subresource)
-    {
-        $classMetadata = $this->getClassMetadata();
-        /** @var PropertyMetadata $propertyMetadata */
-        $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
-        $method = $propertyMetadata->getMethod(Method::PUT);
+        $method = $propertyMetadata->getMethod($methodName);
         if (null !== $right = $method->right) {
-            $this->assertRightGranted($entity, $right);
-        }
-    }
-
-    protected function assertSubresourceDeleteGranted($entity, $subresource)
-    {
-        $classMetadata = $this->getClassMetadata();
-        /** @var PropertyMetadata $propertyMetadata */
-        $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
-        $method = $propertyMetadata->getMethod(Method::PUT);
-        if (null !== $right = $method->right) {
-            $this->assertRightGranted($entity, $right);
+            $this->assertRightGranted($right, $entity);
         }
     }
 
@@ -445,13 +380,13 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     }
 
     /**
-     * @param object $entity
      * @param Right  $right
+     * @param object $entity
      */
-    protected function assertRightGranted($entity, Right $right)
+    protected function assertRightGranted(Right $right, $entity = null)
     {
         $propertyPath = $right->propertyPath;
-        if (null === $propertyPath) {
+        if (null === $propertyPath || null == $entity) {
             $this->denyAccessUnlessGranted($right->attributes);
         } else {
             $subject = $this->resolveSubject($entity, $propertyPath);
