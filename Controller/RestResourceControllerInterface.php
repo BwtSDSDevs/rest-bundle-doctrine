@@ -15,11 +15,11 @@ interface RestResourceControllerInterface
 
     public function deleteAction(Request $request, $id);
 
-    public function listSubresourceAction(Request $request, $id);
+    public function listSubresourceAction(Request $request, $id, string $subresource);
 
-    public function postSubresourceAction(Request $request, $id);
+    public function postSubresourceAction(Request $request, $id, string $subresource);
 
-    public function putSubresourceAction(Request $request, $id, $subId);
+    public function putSubresourceAction(Request $request, $id, string $subresource, $subId);
 
-    public function deleteSubresourceAction(Request $request, $id, $subId);
+    public function deleteSubresourceAction(Request $request, $id, string $subresource, $subId);
 }

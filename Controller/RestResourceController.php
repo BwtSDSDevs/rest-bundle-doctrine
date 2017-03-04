@@ -131,12 +131,11 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
     /**
      * {@inheritdoc}
      */
-    public function listSubresourceAction(Request $request, $id)
+    public function listSubresourceAction(Request $request, $id, string $subresource)
     {
         $page = $request->query->get('page', 1);
         $perPage = $request->query->get('perPage', 50);
 
-        $subresource = $this->getSubresource();
         $entity = $this->fetchEntity($id);
         $this->assertSubresourceListGranted($entity, $subresource);
 
@@ -162,15 +161,11 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
     /**
      * {@inheritdoc}
      */
-    public function postSubresourceAction(Request $request, $id)
+    public function postSubresourceAction(Request $request, $id, string $subresource)
     {
-        $subresource = $this->getSubresource();
         $parent = $this->fetchEntity($id);
         $this->assertSubresourcePostGranted($parent, $subresource);
-        $entity = $this->getRequestParser()->parseEntity(
-            $request,
-            $this->getSubResourceEntityClass($subresource)
-        );
+        $entity = $this->getRequestParser()->parseEntity($request, $this->getSubResourceEntityClass($subresource));
         $entity = $this->postProcessSubResourcePostedEntity($parent, $subresource, $entity);
 
         $errors = $this->getValidator()->validate($entity);
@@ -189,9 +184,8 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
     /**
      * {@inheritdoc}
      */
-    public function putSubresourceAction(Request $request, $id, $subId)
+    public function putSubresourceAction(Request $request, $id, string $subresource, $subId)
     {
-        $subresource = $this->getSubresource();
         $parent = $this->fetchEntity($id);
         $this->assertSubresourcePutGranted($parent, $subresource);
         $this->getService()->addAssociation($parent, $subresource, $subId);
@@ -202,9 +196,8 @@ class RestResourceController implements ContainerAwareInterface, RestResourceCon
     /**
      * {@inheritdoc}
      */
-    public function deleteSubresourceAction(Request $request, $id, $subId = null)
+    public function deleteSubresourceAction(Request $request, $id, string $subresource, $subId = null)
     {
-        $subresource = $this->getSubresource();
         $parent = $this->fetchEntity($id);
         $this->assertSubresourceDeleteGranted($parent, $subresource);
         $this->getService()->removeAssociation($parent, $subresource, $subId);

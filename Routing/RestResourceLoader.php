@@ -151,7 +151,7 @@ class RestResourceLoader extends Loader
                                     $defaults,
                                     [
                                         '_controller'      => $controller . ':listSubresource',
-                                        '_subresource'     => $propertyMetadata->name,
+                                        'subresource'      => $propertyMetadata->name,
                                         '_defaultincludes' => $method->defaultIncludes
                                     ]
                                 )
@@ -168,7 +168,7 @@ class RestResourceLoader extends Loader
                                     $defaults,
                                     [
                                         '_controller'      => $controller . ':postSubresource',
-                                        '_subresource'     => $propertyMetadata->name,
+                                        'subresource'      => $propertyMetadata->name,
                                         '_defaultincludes' => $method->defaultIncludes
                                     ]
                                 )
@@ -185,7 +185,7 @@ class RestResourceLoader extends Loader
                                     $defaults,
                                     [
                                         '_controller'      => $controller . ':putSubresource',
-                                        '_subresource'     => $propertyMetadata->name,
+                                        'subresource'      => $propertyMetadata->name,
                                         '_defaultincludes' => $method->defaultIncludes
                                     ]
                                 )
@@ -205,8 +205,8 @@ class RestResourceLoader extends Loader
                                 array_merge(
                                     $defaults,
                                     [
-                                        '_controller'  => $controller . ':deleteSubresource',
-                                        '_subresource' => $propertyMetadata->name,
+                                        '_controller' => $controller . ':deleteSubresource',
+                                        'subresource' => $propertyMetadata->name,
                                     ]
                                 )
                             );
