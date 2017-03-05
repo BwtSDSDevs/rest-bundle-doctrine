@@ -269,4 +269,12 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
 
         return null;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function unserialize($str)
+    {
+        list($this->class, $this->name) = unserialize($str);
+    }
 }
