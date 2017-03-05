@@ -1,0 +1,17 @@
+imports:
+    - { resource: ../config.yml }
+    - { resource: services.yml }
+
+framework:
+    router: { resource: "%kernel.root_dir%/config/secured/routing.yml" }
+    validation: { enable_annotations: true }
+
+ddr_rest:
+    paths:
+        - '/rest'
+    metadata:
+        directories:
+            secured:
+                namespace_prefix: 'Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity'
+                path: '%kernel.root_dir%/config/secured/metadata'
+

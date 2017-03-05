@@ -5,8 +5,12 @@ use Doctrine\ORM\Mapping\Annotation;
 
 /**
  * @Annotation
- * @Target({"PROPERTY"})
+ * @Target({"PROPERTY", "METHOD"})
  */
 class Includable
 {
+    /**
+     * @var array<string>
+     */
+    public $paths;
 }

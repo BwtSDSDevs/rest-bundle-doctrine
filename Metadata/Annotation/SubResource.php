@@ -11,20 +11,10 @@ class SubResource
     /**
      * @var string
      */
-    public $entityClass;
-
-    /**
-     * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Right
-     */
-    public $listRight;
-
-    /**
-     * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Right
-     */
-    public $postRight;
-
-    /**
-     * @var string
-     */
     public $path;
+
+    /**
+     * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Method[]
+     */
+    public $methods;
 }

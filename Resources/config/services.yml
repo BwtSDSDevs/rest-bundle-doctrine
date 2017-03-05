@@ -2,41 +2,34 @@ parameters:
 
 services:
 
-    ddr.rest.repository.access_token:
-        class: Dontdrinkandroot\RestBundle\Repository\AccessTokenRepository
-        factory: ['@doctrine.orm.entity_manager', getRepository]
-        arguments: [ '%ddr.rest.access_token_class%' ]
-
-    ddr.rest.service.access_token:
-        class: Dontdrinkandroot\RestBundle\Service\AccessTokenService
-        arguments:
-            - '@ddr.rest.repository.access_token'
-            - '%ddr.rest.access_token_class%'
-            - '@security.authentication.manager'
-            - '%ddr.rest.authentication_provider_key%'
-
-    ddr.rest.security.access_token_authenticator:
-        class: Dontdrinkandroot\RestBundle\Security\DefaultAccessTokenAuthenticator
-        arguments:
-            - '@ddr.rest.repository.access_token'
-        calls:
-            - ['setTokenRequired', [false]]
-
     ddr_rest.metadata.file_locator:
         class: Metadata\Driver\FileLocator
         arguments:
 
-    ddr_rest.metadata.driver.yaml:
-        class: Dontdrinkandroot\RestBundle\Metadata\YamlDriver
+    ddr_rest.metadata.driver.doctrine:
+        class: Dontdrinkandroot\RestBundle\Metadata\Driver\DoctrineDriver
         arguments:
-            - '@ddr_rest.metadata.file_locator'
+            - '@doctrine.orm.entity_manager'
 
     ddr_rest.metadata.driver.annotation:
-        class: Dontdrinkandroot\RestBundle\Metadata\AnnotationDriver
+        class: Dontdrinkandroot\RestBundle\Metadata\Driver\AnnotationDriver
         arguments:
             - '@annotation_reader'
+            - '@ddr_rest.metadata.driver.doctrine'
 
-    ddr_rest.metadata.driver_chain:
+    ddr_rest.metadata.driver.yaml:
+        class: Dontdrinkandroot\RestBundle\Metadata\Driver\YamlDriver
+        arguments:
+            - '@ddr_rest.metadata.file_locator'
+            - '@ddr_rest.metadata.driver.doctrine'
+
+    ddr_rest.metadata.cache:
+        class: Metadata\Cache\DoctrineCacheAdapter
+        arguments:
+            - 'ddr_rest'
+            - '@doctrine.orm.default_metadata_cache'
+
+    ddr_rest.metadata.driver.chain:
         class: Metadata\Driver\DriverChain
         arguments:
             - ['@ddr_rest.metadata.driver.yaml', '@ddr_rest.metadata.driver.annotation']
@@ -44,42 +37,38 @@ services:
     ddr_rest.metadata.factory:
         class: Metadata\MetadataFactory
         arguments:
-            - '@ddr_rest.metadata.driver_chain'
+            - '@ddr_rest.metadata.driver.chain'
+        calls:
+            - ['setCache',['@ddr_rest.metadata.cache']]
 
     ddr.rest.parser.request:
         class: Dontdrinkandroot\RestBundle\Service\RestRequestParser
         arguments:
             - '@ddr_rest.metadata.factory'
             - '@property_accessor'
+            - '@security.authorization_checker'
             - '@doctrine.orm.entity_manager'
 
-    # We do not want serialization into underscored properties
-    ddr.serializer.naming_strategy.identical_property_naming:
-        class: 'JMS\Serializer\Naming\IdenticalPropertyNamingStrategy'
-        public: false
-
-    # Wrapping naming strategy into cached naming strategy for speed
-    jms_serializer.naming_strategy:
-        class: 'JMS\Serializer\Naming\CacheNamingStrategy'
-        arguments:
-            - '@ddr.serializer.naming_strategy.identical_property_naming'
-
     ddr_rest.routing.rest_entity_loader:
-        class: Dontdrinkandroot\RestBundle\Routing\RestEntityLoader
+        class: Dontdrinkandroot\RestBundle\Routing\RestResourceLoader
         arguments:
             - '@file_locator'
             - '@ddr_rest.metadata.factory'
         tags:
             - { name: routing.loader }
 
-    fos_rest.serializer.jms:
-        class: Dontdrinkandroot\RestBundle\Serialization\JMSSerializerAdapter
+    ddr_rest.listener.kernel_exception:
+        class: Dontdrinkandroot\RestBundle\Listener\KernelExceptionListener
         arguments:
-            - '@jms_serializer.serializer'
-            - '@ddr_rest.serialization.exclusion_strategy.includes'
+            - '%ddr.rest.paths%'
+        calls:
+            - ['setDebug', ['%kernel.debug%']]
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
 
-    ddr_rest.serialization.exclusion_strategy.includes:
-        class: Dontdrinkandroot\RestBundle\Serialization\IncludesExclusionStrategy
+    ddr_rest.normalizer:
+        class: Dontdrinkandroot\RestBundle\Service\Normalizer
         arguments:
-            - '@request_stack'
             - '@ddr_rest.metadata.factory'
+            - '@property_accessor'
+            - '@router'

@@ -29,32 +29,12 @@ class RootResource
     public $controller;
 
     /**
-     * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Right
+     * @var string
      */
-    public $postRight;
+    public $idField;
 
     /**
-     * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Right
-     */
-    public $putRight;
-
-    /**
-     * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Right
-     */
-    public $deleteRight;
-
-    /**
-     * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Right
-     */
-    public $listRight;
-
-    /**
-     * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Right
-     */
-    public $getRight;
-
-    /**
-     * @var string[]
+     * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Method[]
      */
     public $methods;
 }

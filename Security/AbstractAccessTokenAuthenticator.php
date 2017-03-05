@@ -46,7 +46,7 @@ abstract class AbstractAccessTokenAuthenticator
 
         $user = $this->findUserByToken($tokenString);
 
-        if (null === $user) {
+        if (null === $user || !$user instanceof UserInterface) {
             throw new AuthenticationException('Invalid Access Token');
         }
 

@@ -1,0 +1,4 @@
+rest_secured:
+    resource: "@TestBundle/Entity/"
+    type: "ddr_rest"
+    prefix:   /rest

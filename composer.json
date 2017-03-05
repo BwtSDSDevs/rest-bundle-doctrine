@@ -1,8 +1,11 @@
 {
     "name": "dontdrinkandroot/rest-bundle",
-    "description": "Symfony bundle that provides REST utitilies",
+    "description": "Symfony bundle that enables you to easily expose your Doctrine Entities via REST",
     "type": "symfony-bundle",
-    "keywords": ["REST", "Utils"],
+    "keywords": [
+        "REST",
+        "Doctrine"
+    ],
     "license": "Apache-2.0",
     "authors": [
         {
@@ -13,21 +16,24 @@
     ],
     "require": {
         "php": ">=7.1",
-        "symfony/framework-bundle": "^2.8|^3.0",
-        "symfony/validator": "^2.8|^3.0",
-        "symfony/security": "^2.8|^3.0",
-        "friendsofsymfony/rest-bundle": "^2.1",
-        "dontdrinkandroot/utils": "0.5.x-dev",
-        "dontdrinkandroot/utils-bundle": "0.3.x-dev",
-        "dontdrinkandroot/doctrine": "0.1.x-dev",
-        "dontdrinkandroot/doctrine-bundle": "0.2.x-dev",
-        "jms/serializer-bundle": "^1.1"
+        "symfony/framework-bundle": "^3.0",
+        "symfony/security": "^3.0",
+        "symfony/validator": "^3.0",
+        "symfony/finder": "^3.0",
+        "doctrine/annotations": "^1.2",
+        "jms/metadata": "^1.3",
+        "dontdrinkandroot/doctrine": "dev-master"
     },
     "require-dev": {
-        "phpunit/phpunit": "^4.0"
-    },
-    "suggest": {
-        "liip/functional-test-bundle": "To use RestTestCase"
+        "liip/functional-test-bundle": "^1.7",
+        "phpunit/phpunit": "^5.7",
+        "doctrine/doctrine-bundle": "^1.6",
+        "doctrine/doctrine-cache-bundle": "^1.2",
+        "doctrine/doctrine-fixtures-bundle": "^2.3",
+        "symfony/security-bundle": "^3.0",
+        "scrutinizer/ocular": "^1.1",
+        "fzaninotto/faker": "^1.6",
+        "ramsey/uuid": "^3.5"
     },
     "autoload": {
         "psr-4": {

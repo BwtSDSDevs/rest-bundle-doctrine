@@ -2,11 +2,11 @@
 
 namespace Dontdrinkandroot\RestBundle\Repository;
 
-use Dontdrinkandroot\Repository\EntityRepositoryInterface;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Dontdrinkandroot\RestBundle\Entity\AccessToken;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-interface AccessTokenRepositoryInterface extends EntityRepositoryInterface
+interface AccessTokenRepositoryInterface extends ObjectRepository
 {
     /**
      * @param string $token

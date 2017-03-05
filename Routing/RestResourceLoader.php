@@ -2,7 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Routing;
 
-use Doctrine\Common\Util\Inflector;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\MetadataFactoryInterface;
@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
-class RestEntityLoader extends Loader
+class RestResourceLoader extends Loader
 {
     /**
      * @var FileLocatorInterface
@@ -59,44 +59,64 @@ class RestEntityLoader extends Loader
             $classMetadata = $this->metadataFactory->getMetadataForClass($class);
             if ($classMetadata->isRestResource()) {
 
-                $methods = $classMetadata->getMethods();
-                $namePrefix = $this->getNamePrefix($classMetadata);
-                $pathPrefix = $this->getPathPrefix($classMetadata);
+                $namePrefix = $classMetadata->getNamePrefix();
+                $pathPrefix = $classMetadata->getPathPrefix();
                 $controller = $this->getController($classMetadata);
 
                 $defaults = [
                     '_entityClass' => $class,
+                    '_format'      => 'json'
                 ];
 
                 if (null !== $classMetadata->getService()) {
                     $defaults['_service'] = $classMetadata->getService();
                 }
 
-                if (in_array('LIST', $methods)) {
+                if (null !== $method = $classMetadata->getMethod(Method::LIST)) {
                     $listRoute = new Route($pathPrefix);
                     $listRoute->setMethods(Request::METHOD_GET);
-                    $listRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':list']));
+                    $listRoute->setDefaults(
+                        array_merge(
+                            $defaults,
+                            ['_controller' => $controller . ':list', '_defaultincludes' => $method->defaultIncludes]
+                        )
+                    );
                     $routes->add($namePrefix . '.list', $listRoute);
                 }
 
-                if (in_array('POST', $methods)) {
+                if (null !== $method = $classMetadata->getMethod(Method::POST)) {
                     $postRoute = new Route($pathPrefix);
                     $postRoute->setMethods(Request::METHOD_POST);
-                    $postRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':post']));
+                    $postRoute->setDefaults(
+                        array_merge(
+                            $defaults,
+                            ['_controller' => $controller . ':post', '_defaultincludes' => $method->defaultIncludes]
+                        )
+                    );
                     $routes->add($namePrefix . '.post', $postRoute);
                 }
 
-                if (in_array('GET', $methods)) {
+                if (null !== $method = $classMetadata->getMethod(Method::GET)) {
                     $getRoute = new Route($pathPrefix . '/{id}');
                     $getRoute->setMethods(Request::METHOD_GET);
-                    $getRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':get']));
+                    $getRoute->setDefaults(
+                        array_merge(
+                            $defaults,
+                            ['_controller' => $controller . ':get', '_defaultincludes' => $method->defaultIncludes]
+                        )
+                    );
                     $routes->add($namePrefix . '.get', $getRoute);
                 }
 
-                if (in_array('PUT', $methods)) {
+                if (null !== $method = $classMetadata->getMethod(Method::PUT)) {
                     $putRoute = new Route($pathPrefix . '/{id}');
                     $putRoute->setMethods(Request::METHOD_PUT);
-                    $putRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':put']));
+                    $putRoute->setDefaults(
+                        array_merge(
+                            $defaults,
+                            ['_controller' => $controller . ':put', '_defaultincludes' => $method->defaultIncludes]
+                        )
+                    );
                     $routes->add($namePrefix . '.put', $putRoute);
 
                     $patchRoute = new Route($pathPrefix . '/{id}');
@@ -105,36 +125,46 @@ class RestEntityLoader extends Loader
                     $routes->add($namePrefix . '.patch', $patchRoute);
                 }
 
-                if (in_array('DELETE', $methods)) {
+                if (null !== $method = $classMetadata->getMethod(Method::DELETE)) {
                     $deleteRoute = new Route($pathPrefix . '/{id}');
                     $deleteRoute->setMethods(Request::METHOD_DELETE);
-                    $deleteRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':delete']));
+                    $deleteRoute->setDefaults(
+                        array_merge(
+                            $defaults,
+                            ['_controller' => $controller . ':delete', '_defaultincludes' => $method->defaultIncludes]
+                        )
+                    );
                     $routes->add($namePrefix . '.delete', $deleteRoute);
                 }
 
                 /** @var PropertyMetadata $propertyMetadata */
                 foreach ($classMetadata->propertyMetadata as $propertyMetadata) {
                     if ($propertyMetadata->isSubResource()) {
-                        $subResourcePath = $propertyMetadata->name;
+
+                        $subResourcePath = strtolower($propertyMetadata->name);
                         if (null !== $propertyMetadata->getSubResourcePath()) {
                             $subResourcePath = $propertyMetadata->getSubResourcePath();
                         }
-                        $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath;
-                        $subResourceRoute = new Route($subResourceFullPath);
-                        $subResourceRoute->setMethods(Request::METHOD_GET);
-                        $subResourceRoute->setDefaults(
-                            array_merge(
-                                $defaults,
-                                [
-                                    '_controller'  => $controller . ':listSubresource',
-                                    '_subresource' => $propertyMetadata->name,
-                                ]
-                            )
-                        );
-                        $routes->add($namePrefix . '.' . $propertyMetadata->name . '.list', $subResourceRoute);
 
-                        $postRight = $propertyMetadata->getSubResourcePostRight();
-                        if (null !== $postRight) {
+                        $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath;
+
+                        if (null !== $method = $propertyMetadata->getMethod(Method::LIST)) {
+                            $subResourceRoute = new Route($subResourceFullPath);
+                            $subResourceRoute->setMethods(Request::METHOD_GET);
+                            $subResourceRoute->setDefaults(
+                                array_merge(
+                                    $defaults,
+                                    [
+                                        '_controller'      => $controller . ':listSubresource',
+                                        'subresource'      => $propertyMetadata->name,
+                                        '_defaultincludes' => $method->defaultIncludes
+                                    ]
+                                )
+                            );
+                            $routes->add($namePrefix . '.' . $propertyMetadata->name . '.list', $subResourceRoute);
+                        }
+
+                        if (null !== $method = $propertyMetadata->getMethod(Method::POST)) {
                             $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath;
                             $subResourceRoute = new Route($subResourceFullPath);
                             $subResourceRoute->setMethods(Request::METHOD_POST);
@@ -142,12 +172,50 @@ class RestEntityLoader extends Loader
                                 array_merge(
                                     $defaults,
                                     [
-                                        '_controller'  => $controller . ':postSubresource',
-                                        '_subresource' => $propertyMetadata->name,
+                                        '_controller'      => $controller . ':postSubresource',
+                                        'subresource'      => $propertyMetadata->name,
+                                        '_defaultincludes' => $method->defaultIncludes
                                     ]
                                 )
                             );
                             $routes->add($namePrefix . '.' . $propertyMetadata->name . '.post', $subResourceRoute);
+                        }
+
+                        if (null !== $method = $propertyMetadata->getMethod(Method::PUT)) {
+                            $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath . '/{subId}';
+                            $subResourceRoute = new Route($subResourceFullPath);
+                            $subResourceRoute->setMethods(Request::METHOD_PUT);
+                            $subResourceRoute->setDefaults(
+                                array_merge(
+                                    $defaults,
+                                    [
+                                        '_controller'      => $controller . ':putSubresource',
+                                        'subresource'      => $propertyMetadata->name,
+                                        '_defaultincludes' => $method->defaultIncludes
+                                    ]
+                                )
+                            );
+                            $routes->add($namePrefix . '.' . $propertyMetadata->name . '.put', $subResourceRoute);
+                        }
+
+                        if (null !== $method = $propertyMetadata->getMethod(Method::DELETE)) {
+                            if ($propertyMetadata->isCollection()) {
+                                $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath . '/{subId}';
+                            } else {
+                                $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath;
+                            }
+                            $subResourceRoute = new Route($subResourceFullPath);
+                            $subResourceRoute->setMethods(Request::METHOD_DELETE);
+                            $subResourceRoute->setDefaults(
+                                array_merge(
+                                    $defaults,
+                                    [
+                                        '_controller' => $controller . ':deleteSubresource',
+                                        'subresource' => $propertyMetadata->name,
+                                    ]
+                                )
+                            );
+                            $routes->add($namePrefix . '.' . $propertyMetadata->name . '.delete', $subResourceRoute);
                         }
                     }
                 }
@@ -214,37 +282,9 @@ class RestEntityLoader extends Loader
      *
      * @return string
      */
-    private function getNamePrefix(ClassMetadata $classMetadata)
-    {
-        if (null !== $classMetadata->getNamePrefix()) {
-            return $classMetadata->getNamePrefix();
-        }
-
-        return Inflector::tableize($classMetadata->reflection->getShortName());
-    }
-
-    /**
-     * @param ClassMetadata $classMetadata
-     *
-     * @return string
-     */
-    private function getPathPrefix(ClassMetadata $classMetadata)
-    {
-        if (null !== $classMetadata->getPathPrefix()) {
-            return $classMetadata->getPathPrefix();
-        }
-
-        return Inflector::pluralize(strtolower($classMetadata->reflection->getShortName()));
-    }
-
-    /**
-     * @param ClassMetadata $classMetadata
-     *
-     * @return string
-     */
     protected function getController(ClassMetadata $classMetadata)
     {
-        $controller = 'DdrRestBundle:Entity';
+        $controller = 'DdrRestBundle:ContainerAwareRestResource';
         if (null !== $classMetadata->getController()) {
             $controller = $classMetadata->getController();
         }

@@ -1,6 +1,12 @@
 Dontdrinkandroot\RestBundle\Entity\AccessToken:
     repositoryClass: Dontdrinkandroot\RestBundle\Repository\AccessTokenRepository
     type: mappedSuperclass
+    id:
+        id:
+            type: bigint
+            id: true
+            generator:
+                strategy: AUTO
     fields:
         token:
             length: 64

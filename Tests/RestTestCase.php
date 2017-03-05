@@ -16,18 +16,11 @@ abstract class RestTestCase extends WebTestCase
      */
     protected $referenceRepository;
 
-    /**
-     * @var Client
-     */
-    protected $client;
-
     protected function setUp()
     {
         /** @var ORMExecutor $executor */
         $executor = $this->loadFixtures($this->getFixtureClasses());
         $this->referenceRepository = $executor->getReferenceRepository();
-
-        $this->client = static::createClient();
     }
 
     /**
@@ -36,14 +29,8 @@ abstract class RestTestCase extends WebTestCase
      *
      * @return array
      */
-    protected function assertJsonResponse(Response $response, $statusCode = 200)
+    protected function assertJsonResponse(Response $response, $statusCode = 200, $detailedOutput = false)
     {
-        $content = $response->getContent();
-        $this->assertEquals(
-            $statusCode,
-            $response->getStatusCode(),
-            $content
-        );
         if (Response::HTTP_NO_CONTENT !== $statusCode) {
             $this->assertTrue(
                 $response->headers->contains('Content-Type', 'application/json'),
@@ -51,7 +38,25 @@ abstract class RestTestCase extends WebTestCase
             );
         }
 
-        return json_decode($content, true);
+        $content = $response->getContent();
+
+        $decodedContent = json_decode($content, true);
+        if ($detailedOutput && $statusCode !== $response->getStatusCode()) {
+            var_dump($decodedContent);
+        }
+
+        $this->assertEquals($statusCode, $response->getStatusCode());
+
+        return $decodedContent;
+    }
+
+    protected function assertHasKeyAndUnset($key, array &$data, $notNull = false)
+    {
+        $this->assertArrayHasKey($key, $data);
+        if ($notNull) {
+            $this->assertNotNull($data[$key]);
+        }
+        unset($data[$key]);
     }
 
     /**
@@ -59,37 +64,22 @@ abstract class RestTestCase extends WebTestCase
      */
     protected function assertLinksAndUnset(array &$data)
     {
-        $this->assertArrayHasKey('_links', $data);
-        unset($data['_links']);
+        $this->assertHasKeyAndUnset('_links', $data);
     }
 
     /**
-     * @deprecated
-     *
-     * @param string $url
-     * @param string $method
-     * @param array  $parameters
-     * @param array  $headers
-     * @param array  $files
-     *
-     * @return Response
+     * @param array $expected
+     * @param array $actual
+     * @param bool  $linksExpected
      */
-    protected function requestJson(
-        $url,
-        $method = 'GET',
-        array $parameters = [],
-        array $headers = [],
-        array $files = []
-    ) {
-        $mergedHeaders = [
-            'HTTP_ACCEPT' => 'application/json',
-        ];
-        foreach ($headers as $key => $value) {
-            $mergedHeaders['HTTP_' . $key] = $value;
+    protected function assertContentEquals(array $expected, array $actual, $linksExpected = false)
+    {
+        if ($linksExpected) {
+            $this->assertLinksAndUnset($actual);
         }
-        $this->client->request($method, $url, $parameters, $files, $mergedHeaders);
-
-        return $this->client->getResponse();
+        ksort($expected);
+        ksort($actual);
+        $this->assertEquals($expected, $actual, 'The content does not match');
     }
 
     /**
@@ -99,9 +89,9 @@ abstract class RestTestCase extends WebTestCase
      *
      * @return null|Response
      */
-    protected function doGetCall($url, array $parameters = [], array $headers = [])
+    protected function performGet(Client $client, $url, array $parameters = [], array $headers = [])
     {
-        $this->client->request(
+        $client->request(
             Request::METHOD_GET,
             $url,
             $parameters,
@@ -109,7 +99,7 @@ abstract class RestTestCase extends WebTestCase
             $this->transformHeaders($headers)
         );
 
-        return $this->client->getResponse();
+        return $client->getResponse();
     }
 
     /**
@@ -121,14 +111,15 @@ abstract class RestTestCase extends WebTestCase
      *
      * @return null|Response
      */
-    protected function doPostCall(
+    protected function performPost(
+        Client $client,
         $url,
         array $parameters = [],
         array $headers = [],
         array $content = [],
         array $files = []
     ) {
-        $this->client->request(
+        $client->request(
             Request::METHOD_POST,
             $url,
             $parameters,
@@ -137,20 +128,25 @@ abstract class RestTestCase extends WebTestCase
             json_encode($content)
         );
 
-        return $this->client->getResponse();
+        return $client->getResponse();
     }
 
     /**
-     * @param string      $url
-     * @param array       $parameters
-     * @param array       $headers
-     * @param string|null $content
+     * @param string $url
+     * @param array  $parameters
+     * @param array  $headers
+     * @param array  $content
      *
      * @return null|Response
      */
-    protected function doPutCall($url, array $parameters = [], array $headers = [], array $content = [])
-    {
-        $this->client->request(
+    protected function performPut(
+        Client $client,
+        $url,
+        array $parameters = [],
+        array $headers = [],
+        array $content = []
+    ) {
+        $client->request(
             Request::METHOD_PUT,
             $url,
             $parameters,
@@ -159,7 +155,7 @@ abstract class RestTestCase extends WebTestCase
             json_encode($content)
         );
 
-        return $this->client->getResponse();
+        return $client->getResponse();
     }
 
     /**
@@ -169,9 +165,9 @@ abstract class RestTestCase extends WebTestCase
      *
      * @return null|Response
      */
-    protected function doDeleteCall($url, array $parameters = [], array $headers = [])
+    protected function performDelete(Client $client, $url, array $parameters = [], array $headers = [])
     {
-        $this->client->request(
+        $client->request(
             Request::METHOD_DELETE,
             $url,
             $parameters,
@@ -179,7 +175,7 @@ abstract class RestTestCase extends WebTestCase
             $this->transformHeaders($headers)
         );
 
-        return $this->client->getResponse();
+        return $client->getResponse();
     }
 
     /**

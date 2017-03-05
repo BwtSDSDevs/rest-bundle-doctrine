@@ -2,176 +2,271 @@
 
 namespace Dontdrinkandroot\RestBundle\Metadata;
 
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Postable;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Puttable;
+use Metadata\MergeableInterface;
 use Metadata\PropertyMetadata as BasePropertyMetadata;
 
-class PropertyMetadata extends BasePropertyMetadata
+class PropertyMetadata extends BasePropertyMetadata implements MergeableInterface
 {
+    public function __construct($class, $name)
+    {
+        try {
+            parent::__construct($class, $name);
+        } catch (\ReflectionException $e) {
+            /* Ignore missing property definition as they might just be overridden and therefore only exist in the
+              parent class. They will be accessible after merging. */
+        }
+    }
+
     /**
-     * @var bool
+     * @var string|null
      */
-    private $puttable = false;
+    private $type;
 
     /**
      * @var bool
      */
-    private $postable = false;
+    private $excluded;
+
+    /**
+     * @var Postable|null
+     */
+    private $postable;
+
+    /**
+     * @var Puttable|null
+     */
+    private $puttable;
 
     /**
      * @var bool
      */
-    private $includable = false;
+    private $includable;
+
+    /**
+     * @var string[]|null
+     */
+    private $includablePaths;
 
     /**
      * @var bool
      */
-    private $subResource = false;
+    private $subResource;
+
+    /**
+     * @var Method[]|null
+     */
+    private $methods;
+
+    /**
+     * @var bool
+     */
+    private $association;
+
+    /**
+     * @var bool
+     */
+    private $collection;
+
+    /**
+     * @var bool
+     */
+    private $virtual;
 
     /**
      * @var string|null
      */
     private $subResourcePath;
 
-    /**
-     * @var Right|null
-     */
-    private $subResourceListRight;
-
-    /**
-     * @var Right|null
-     */
-    private $subResourcePostRight;
-
-    /**
-     * @var string|null
-     */
-    private $subResourceEntityClass;
-
-    /**
-     * @return boolean
-     */
-    public function isPuttable()
+    public function isPuttable(): bool
     {
-        return $this->puttable;
+        return null !== $this->puttable;
     }
 
-    /**
-     * @param boolean $puttable
-     */
-    public function setPuttable($puttable)
+    public function setPuttable(?Puttable $puttable)
     {
         $this->puttable = $puttable;
     }
 
-    /**
-     * @return boolean
-     */
-    public function isPostable()
+    public function getPuttable(): ?Puttable
     {
-        return $this->postable;
+        return $this->puttable;
     }
 
-    /**
-     * @param boolean $postable
-     */
-    public function setPostable($postable)
+    public function isPostable(): bool
+    {
+        return null !== $this->postable;
+    }
+
+    public function setPostable(?Postable $postable)
     {
         $this->postable = $postable;
     }
 
-    /**
-     * @return boolean
-     */
-    public function isIncludable()
+    public function getPostable(): ?Postable
     {
-        return $this->includable;
+        return $this->postable;
     }
 
-    /**
-     * @param boolean $includable
-     */
-    public function setIncludable($includable)
+    public function isIncludable(): bool
+    {
+        return $this->getBool($this->includable, false);
+    }
+
+    public function isVirtual(): bool
+    {
+        return $this->getBool($this->virtual, false);
+    }
+
+    public function setVirtual(bool $virtual)
+    {
+        $this->virtual = $virtual;
+    }
+
+    public function setIncludable(bool $includable)
     {
         $this->includable = $includable;
     }
 
-    /**
-     * @return boolean
-     */
-    public function isSubResource()
+    public function isSubResource(): bool
     {
-        return $this->subResource;
+        return $this->getBool($this->subResource, false);
     }
 
-    /**
-     * @param boolean $subResource
-     */
-    public function setSubResource($subResource)
+    public function setSubResource(bool $subResource)
     {
         $this->subResource = $subResource;
     }
 
-    /**
-     * @return Right|null
-     */
-    public function getSubResourceListRight()
-    {
-        return $this->subResourceListRight;
-    }
-
-    /**
-     * @param Right|null $subResourceListRight
-     */
-    public function setSubResourceListRight($subResourceListRight)
-    {
-        $this->subResourceListRight = $subResourceListRight;
-    }
-
-    /**
-     * @return Right|null
-     */
-    public function getSubResourcePostRight()
-    {
-        return $this->subResourcePostRight;
-    }
-
-    /**
-     * @param Right|null $subResourcePostRight
-     */
-    public function setSubResourcePostRight($subResourcePostRight)
-    {
-        $this->subResourcePostRight = $subResourcePostRight;
-    }
-
-    /**
-     * @return null|string
-     */
-    public function getSubResourceEntityClass()
-    {
-        return $this->subResourceEntityClass;
-    }
-
-    /**
-     * @param null|string $subResourceEntityClass
-     */
-    public function setSubResourceEntityClass($subResourceEntityClass)
-    {
-        $this->subResourceEntityClass = $subResourceEntityClass;
-    }
-
-    /**
-     * @return null|string
-     */
-    public function getSubResourcePath()
+    public function getSubResourcePath(): ?string
     {
         return $this->subResourcePath;
     }
 
-    /**
-     * @param null|string $subResourcePath
-     */
-    public function setSubResourcePath($subResourcePath)
+    public function setSubResourcePath(string $subResourcePath)
     {
         $this->subResourcePath = $subResourcePath;
+    }
+
+    public function isExcluded(): bool
+    {
+        return $this->getBool($this->excluded, false);
+    }
+
+    public function setExcluded(bool $excluded)
+    {
+        $this->excluded = $excluded;
+    }
+
+    /**
+     * @return null|string[]
+     */
+    public function getIncludablePaths(): ?array
+    {
+        return $this->includablePaths;
+    }
+
+    /**
+     * @param null|string[] $includablePaths
+     */
+    public function setIncludablePaths(?array $includablePaths)
+    {
+        $this->includablePaths = $includablePaths;
+    }
+
+    public function isAssociation(): bool
+    {
+        return $this->getBool($this->association, false);
+    }
+
+    public function setAssociation(bool $association)
+    {
+        $this->association = $association;
+    }
+
+    public function isCollection(): bool
+    {
+        return $this->getBool($this->collection, false);
+    }
+
+    public function setCollection(bool $collection)
+    {
+        $this->collection = $collection;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(?string $type)
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @param Method[] $methods
+     */
+    public function setMethods(array $methods)
+    {
+        $this->methods = $methods;
+    }
+
+    public function merge(MergeableInterface $other)
+    {
+        if (!$other instanceof PropertyMetadata) {
+            throw new \InvalidArgumentException('$object must be an instance of PropertyMetadata.');
+        }
+
+        $this->reflection = $this->mergeField($other->reflection, $this->reflection);
+        $this->type = $this->mergeField($other->type, $this->type);
+        $this->puttable = $this->mergeField($other->puttable, $this->puttable);
+        $this->postable = $this->mergeField($other->postable, $this->postable);
+        $this->excluded = $this->mergeField($other->excluded, $this->excluded);
+        $this->includable = $this->mergeField($other->includable, $this->includable);
+        $this->subResource = $this->mergeField($other->subResource, $this->subResource);
+        $this->includablePaths = $this->mergeField($other->includablePaths, $this->includablePaths);
+        $this->association = $this->mergeField($other->association, $this->association);
+        $this->collection = $this->mergeField($other->collection, $this->collection);
+        $this->subResourcePath = $this->mergeField($other->subResourcePath, $this->subResourcePath);
+        $this->methods = $this->mergeField($other->methods, $this->methods);
+        $this->virtual = $this->mergeField($other->virtual, $this->virtual);
+
+        return $this;
+    }
+
+    protected function getBool(?bool $value, bool $default)
+    {
+        if (null === $value) {
+            return $default;
+        }
+
+        return $value;
+    }
+
+    private function mergeField($thisValue, $otherValue)
+    {
+        if (null !== $thisValue) {
+            return $thisValue;
+        }
+
+        return $otherValue;
+    }
+
+    public function getMethod(string $methodName): ?Method
+    {
+        if (null === $this->methods) {
+            return null;
+        }
+
+        foreach ($this->methods as $method) {
+            if ($methodName === $method->name) {
+                return $method;
+            }
+        }
+
+        return null;
     }
 }
