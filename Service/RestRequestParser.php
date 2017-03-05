@@ -140,15 +140,19 @@ class RestRequestParser
 
     private function updateByReference(&$object, PropertyMetadata $propertyMetadata, $value)
     {
-        $type = $propertyMetadata->getType();
-        $classMetadata = $this->entityManager->getClassMetadata($type);
-        $identifiers = $classMetadata->getIdentifier();
-        $id = [];
-        foreach ($identifiers as $idName) {
-            $id[$idName] = $value[$idName];
+        if (null === $value) {
+            $this->propertyAccessor->setValue($object, $propertyMetadata->name, null);
+        } else {
+            $type = $propertyMetadata->getType();
+            $classMetadata = $this->entityManager->getClassMetadata($type);
+            $identifiers = $classMetadata->getIdentifier();
+            $id = [];
+            foreach ($identifiers as $idName) {
+                $id[$idName] = $value[$idName];
+            }
+            $reference = $this->entityManager->getReference($type, $id);
+            $this->propertyAccessor->setValue($object, $propertyMetadata->name, $reference);
         }
-        $reference = $this->entityManager->getReference($type, $id);
-        $this->propertyAccessor->setValue($object, $propertyMetadata->name, $reference);
     }
 
     protected function updatePropertyObject(
