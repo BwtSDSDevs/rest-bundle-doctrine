@@ -33,6 +33,21 @@ class ClassMetadataTest extends FunctionalTestCase
         $this->assertEquals(['ROLE_ADMIN'], $method->right->attributes);
     }
 
+    public function testUserSerialization()
+    {
+        /** @var MetadataFactory $metadataFactory */
+        $metadataFactory = $this->getContainer()->get('ddr_rest.metadata.factory');
+        /** @var ClassMetadata $classMetadata */
+        $classMetadata = $metadataFactory->getMetadataForClass(User::class);
+
+        $serialized = $classMetadata->serialize();
+
+        $unserializedClassMetadata = new ClassMetadata(User::class);
+        $unserializedClassMetadata->unserialize($serialized);
+
+        $this->assertEquals($classMetadata, $unserializedClassMetadata);
+    }
+
     public function testSubResourceEntity()
     {
         /** @var MetadataFactory $metadataFactory */
@@ -49,6 +64,21 @@ class ClassMetadataTest extends FunctionalTestCase
         $this->assertTrue($propertyMetadata->getPostable()->byReference);
         $this->assertTrue($propertyMetadata->isPuttable());
         $this->assertTrue($propertyMetadata->getPuttable()->byReference);
+    }
+
+    public function testSubResourceEntitySerialization()
+    {
+        /** @var MetadataFactory $metadataFactory */
+        $metadataFactory = $this->getContainer()->get('ddr_rest.metadata.factory');
+        /** @var ClassMetadata $classMetadata */
+        $classMetadata = $metadataFactory->getMetadataForClass(SubResourceEntity::class);
+
+        $serialized = $classMetadata->serialize();
+
+        $unserializedClassMetadata = new ClassMetadata(SubResourceEntity::class);
+        $unserializedClassMetadata->unserialize($serialized);
+
+        $this->assertEquals($classMetadata, $unserializedClassMetadata);
     }
 
     /**

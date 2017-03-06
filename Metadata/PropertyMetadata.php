@@ -15,8 +15,8 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         try {
             parent::__construct($class, $name);
         } catch (\ReflectionException $e) {
-            /* Ignore missing property definition as they might just be overridden and therefore only exist in the
-              parent class. They will be accessible after merging. */
+            /* Ignore missing property definition as they might just be overridden or virtual and therefore only exist
+            in the parent class. They will be accessible after merging. */
         }
     }
 
@@ -31,14 +31,14 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
     private $excluded;
 
     /**
-     * @var Postable|null
-     */
-    private $postable;
-
-    /**
      * @var Puttable|null
      */
     private $puttable;
+
+    /**
+     * @var Postable|null
+     */
+    private $postable;
 
     /**
      * @var bool
@@ -273,8 +273,55 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
     /**
      * {@inheritdoc}
      */
+    public function serialize()
+    {
+        return serialize(
+            [
+                $this->class,
+                $this->name,
+                $this->type,
+                $this->excluded,
+                $this->puttable,
+                $this->postable,
+                $this->includable,
+                $this->includablePaths,
+                $this->subResource,
+                $this->methods,
+                $this->association,
+                $this->collection,
+                $this->virtual,
+                $this->subResourcePath,
+            ]
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function unserialize($str)
     {
-        list($this->class, $this->name) = unserialize($str);
+        list(
+            $this->class,
+            $this->name,
+            $this->type,
+            $this->excluded,
+            $this->puttable,
+            $this->postable,
+            $this->includable,
+            $this->includablePaths,
+            $this->subResource,
+            $this->methods,
+            $this->association,
+            $this->collection,
+            $this->virtual,
+            $this->subResourcePath
+            ) = unserialize($str);
+        try {
+            $this->reflection = new \ReflectionProperty($this->class, $this->name);
+            $this->reflection->setAccessible(true);
+        } catch (\ReflectionException $e) {
+            /* Ignore missing property definition as they might just be overridden or virtual and therefore only exist
+            in the parent class. They will be accessible after merging. */
+        }
     }
 }

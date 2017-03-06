@@ -246,4 +246,50 @@ class ClassMetadata extends MergeableClassMetadata
 
         return $default;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
+    {
+        return serialize(
+            [
+                $this->name,
+                $this->methodMetadata,
+                $this->propertyMetadata,
+                $this->fileResources,
+                $this->createdAt,
+                $this->restResource,
+                $this->namePrefix,
+                $this->pathPrefix,
+                $this->idField,
+                $this->service,
+                $this->controller,
+                $this->methods
+            ]
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function unserialize($str)
+    {
+        list(
+            $this->name,
+            $this->methodMetadata,
+            $this->propertyMetadata,
+            $this->fileResources,
+            $this->createdAt,
+            $this->restResource,
+            $this->namePrefix,
+            $this->pathPrefix,
+            $this->idField,
+            $this->service,
+            $this->controller,
+            $this->methods
+            ) = unserialize($str);
+
+        $this->reflection = new \ReflectionClass($this->name);
+    }
 }
