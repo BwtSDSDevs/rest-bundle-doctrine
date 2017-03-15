@@ -6,7 +6,7 @@ use Dontdrinkandroot\Service\CrudServiceInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class ContainerAwareRestResourceController extends AbstractRestResourceController implements ContainerAwareInterface
+class ContainerAwareRestResourceController extends CrudServiceRestResourceController implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 

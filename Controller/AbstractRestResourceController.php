@@ -10,7 +10,6 @@ use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Dontdrinkandroot\RestBundle\Service\Normalizer;
 use Dontdrinkandroot\RestBundle\Service\RestRequestParser;
-use Dontdrinkandroot\Service\CrudServiceInterface;
 use Metadata\MetadataFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -122,7 +121,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     {
         $entity = $this->fetchEntity($id);
         $this->assertMethodGranted(Method::DELETE, $entity);
-        $this->getService()->remove($entity);
+        $this->removeEntity($entity);
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
@@ -191,7 +190,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     {
         $parent = $this->fetchEntity($id);
         $this->assertSubResourceMethodGranted(Method::PUT, $parent, $subresource);
-        $this->getService()->addAssociation($parent, $subresource, $subId);
+        $this->addAssociation($parent, $subresource, $subId);
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
@@ -203,7 +202,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     {
         $parent = $this->fetchEntity($id);
         $this->assertSubResourceMethodGranted(Method::DELETE, $parent, $subresource);
-        $this->getService()->removeAssociation($parent, $subresource, $subId);
+        $this->removeAssociation($parent, $subresource, $subId);
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
@@ -240,76 +239,6 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
         return $entity;
     }
 
-    /**
-     * @param int|string $id
-     *
-     * @return object
-     */
-    protected function fetchEntity($id)
-    {
-        $entity = $this->getService()->find($id);
-        if (null === $entity) {
-            throw new NotFoundHttpException();
-        }
-
-        return $entity;
-    }
-
-    /**
-     * @param int $page
-     * @param int $perPage
-     *
-     * @return Paginator|array
-     */
-    protected function listEntities(int $page = 1, int $perPage = 50)
-    {
-        return $this->getService()->findAllPaginated($page, $perPage);
-    }
-
-    /**
-     * @param object $entity
-     *
-     * @return object
-     */
-    protected function createEntity($entity)
-    {
-        return $this->getService()->create($entity);
-    }
-
-    /**
-     * @param object $entity
-     *
-     * @return object
-     */
-    protected function updateEntity($entity)
-    {
-        return $this->getService()->update($entity);
-    }
-
-    /**
-     * @param object $parent
-     * @param string $subresource
-     *
-     * @return object
-     */
-    protected function createAssociation($parent, string $subresource)
-    {
-        return $this->getService()->createAssociation($parent, $subresource);
-    }
-
-    /**
-     * @param object $entity
-     * @param string $property
-     * @param int    $page
-     * @param int    $perPage
-     *
-     * @return Paginator|array
-     */
-    protected function listSubresource($entity, string $property, int $page = 1, int $perPage = 50)
-    {
-        return $this->getService()->findAssociationPaginated($entity, $property, $page, $perPage);
-    }
-
     protected function getEntityClass()
     {
         return $this->getCurrentRequest()->attributes->get('_entityClass');
@@ -321,11 +250,6 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
         $propertyMetadata = $this->getClassMetadata()->propertyMetadata[$subresource];
 
         return $propertyMetadata->getType();
-    }
-
-    protected function getServiceId()
-    {
-        return $this->getCurrentRequest()->attributes->get('_service');
     }
 
     protected function getCurrentRequest()
@@ -394,18 +318,6 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
         }
     }
 
-    /**
-     * @param object $parent
-     * @param string $subresource
-     * @param object $entity
-     *
-     * @return object
-     */
-    protected function createSubResource($parent, $subresource, $entity)
-    {
-        return $this->getService()->create($entity);
-    }
-
     protected function parseIncludes(Request $request)
     {
         $defaultIncludes = $request->attributes->get('_defaultincludes');
@@ -458,9 +370,89 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     }
 
     /**
-     * @return CrudServiceInterface
+     * @param int $page
+     * @param int $perPage
+     *
+     * @return Paginator|array
      */
-    abstract protected function getService();
+    abstract protected function listEntities(int $page = 1, int $perPage = 50);
+
+    /**
+     * @param int|string $id
+     *
+     * @return object
+     *
+     * @throws NotFoundHttpException Thrown if entity with the given id could not be found.
+     */
+    abstract protected function fetchEntity($id);
+
+    /**
+     * @param object $entity
+     *
+     * @return object
+     */
+    abstract protected function createEntity($entity);
+
+    /**
+     * @param object $entity
+     *
+     * @return object
+     *
+     * @throws NotFoundHttpException Thrown if entity with the given id could not be found.
+     */
+    abstract protected function updateEntity($entity);
+
+    /**
+     * @param $entity
+     *
+     * @throws NotFoundHttpException Thrown if entity with the given id could not be found.
+     */
+    abstract protected function removeEntity($entity);
+
+    /**
+     * @param object $entity
+     * @param string $property
+     * @param int    $page
+     * @param int    $perPage
+     *
+     * @return Paginator|array
+     */
+    abstract protected function listSubresource($entity, string $property, int $page = 1, int $perPage = 50);
+
+    /**
+     * @param object $parent
+     * @param string $subresource
+     *
+     * @return object
+     */
+    abstract protected function createAssociation($parent, string $subresource);
+
+    /**
+     * @param object $parent
+     * @param string $subresource
+     * @param object $entity
+     *
+     * @return object
+     */
+    abstract protected function createSubResource($parent, $subresource, $entity);
+
+    /**
+     * @param object     $parent
+     * @param string     $subresource
+     * @param int|string $subId
+     *
+     * @return object
+     */
+    abstract protected function addAssociation($parent, string $subresource, $subId);
+
+    /**
+     * @param object          $parent
+     * @param string          $subresource
+     * @param int|string|null $subId
+     *
+     * @return mixed
+     */
+    abstract protected function removeAssociation($parent, string $subresource, $subId = null);
 
     /**
      * @return Normalizer
