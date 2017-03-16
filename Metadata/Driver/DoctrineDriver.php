@@ -2,8 +2,9 @@
 
 namespace Dontdrinkandroot\RestBundle\Metadata\Driver;
 
+use Doctrine\Common\Persistence\Mapping\MappingException as CommonMappingException;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\MappingException as OrmMappingException;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\Driver\DriverInterface;
@@ -28,7 +29,10 @@ class DoctrineDriver implements DriverInterface
         $ddrRestClassMetadata = new ClassMetadata($class->getName());
         try {
             $doctrineClassMetadata = $this->entityManager->getClassMetadata($class->getName());
-        } catch (MappingException $e) {
+        } catch (CommonMappingException $e) {
+            /* If this is not a doctrine entity just generate a fresh metaclass */
+            return $ddrRestClassMetadata;
+        } catch (OrmMappingException $e) {
             /* If this is not a doctrine entity just generate a fresh metaclass */
             return $ddrRestClassMetadata;
         }

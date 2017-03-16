@@ -2,6 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Routing;
 
+use Dontdrinkandroot\RestBundle\Controller\ContainerAwareRestResourceController;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
@@ -78,7 +79,9 @@ class RestResourceLoader extends Loader
                     $listRoute->setDefaults(
                         array_merge(
                             $defaults,
-                            ['_controller' => $controller . ':list', '_defaultincludes' => $method->defaultIncludes]
+                            ['_controller'      => $controller . ':listAction',
+                             '_defaultincludes' => $method->defaultIncludes
+                            ]
                         )
                     );
                     $routes->add($namePrefix . '.list', $listRoute);
@@ -90,7 +93,9 @@ class RestResourceLoader extends Loader
                     $postRoute->setDefaults(
                         array_merge(
                             $defaults,
-                            ['_controller' => $controller . ':post', '_defaultincludes' => $method->defaultIncludes]
+                            ['_controller'      => $controller . ':postAction',
+                             '_defaultincludes' => $method->defaultIncludes
+                            ]
                         )
                     );
                     $routes->add($namePrefix . '.post', $postRoute);
@@ -102,7 +107,9 @@ class RestResourceLoader extends Loader
                     $getRoute->setDefaults(
                         array_merge(
                             $defaults,
-                            ['_controller' => $controller . ':get', '_defaultincludes' => $method->defaultIncludes]
+                            ['_controller'      => $controller . ':getAction',
+                             '_defaultincludes' => $method->defaultIncludes
+                            ]
                         )
                     );
                     $routes->add($namePrefix . '.get', $getRoute);
@@ -114,7 +121,9 @@ class RestResourceLoader extends Loader
                     $putRoute->setDefaults(
                         array_merge(
                             $defaults,
-                            ['_controller' => $controller . ':put', '_defaultincludes' => $method->defaultIncludes]
+                            ['_controller'      => $controller . ':putAction',
+                             '_defaultincludes' => $method->defaultIncludes
+                            ]
                         )
                     );
                     $routes->add($namePrefix . '.put', $putRoute);
@@ -131,7 +140,9 @@ class RestResourceLoader extends Loader
                     $deleteRoute->setDefaults(
                         array_merge(
                             $defaults,
-                            ['_controller' => $controller . ':delete', '_defaultincludes' => $method->defaultIncludes]
+                            ['_controller'      => $controller . ':deleteAction',
+                             '_defaultincludes' => $method->defaultIncludes
+                            ]
                         )
                     );
                     $routes->add($namePrefix . '.delete', $deleteRoute);
@@ -146,16 +157,15 @@ class RestResourceLoader extends Loader
                             $subResourcePath = $propertyMetadata->getSubResourcePath();
                         }
 
-                        $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath;
-
                         if (null !== $method = $propertyMetadata->getMethod(Method::LIST)) {
+                            $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath;
                             $subResourceRoute = new Route($subResourceFullPath);
                             $subResourceRoute->setMethods(Request::METHOD_GET);
                             $subResourceRoute->setDefaults(
                                 array_merge(
                                     $defaults,
                                     [
-                                        '_controller'      => $controller . ':listSubresource',
+                                        '_controller'      => $controller . ':listSubresourceAction',
                                         'subresource'      => $propertyMetadata->name,
                                         '_defaultincludes' => $method->defaultIncludes
                                     ]
@@ -172,7 +182,7 @@ class RestResourceLoader extends Loader
                                 array_merge(
                                     $defaults,
                                     [
-                                        '_controller'      => $controller . ':postSubresource',
+                                        '_controller'      => $controller . ':postSubresourceAction',
                                         'subresource'      => $propertyMetadata->name,
                                         '_defaultincludes' => $method->defaultIncludes
                                     ]
@@ -189,7 +199,7 @@ class RestResourceLoader extends Loader
                                 array_merge(
                                     $defaults,
                                     [
-                                        '_controller'      => $controller . ':putSubresource',
+                                        '_controller'      => $controller . ':putSubresourceAction',
                                         'subresource'      => $propertyMetadata->name,
                                         '_defaultincludes' => $method->defaultIncludes
                                     ]
@@ -210,7 +220,7 @@ class RestResourceLoader extends Loader
                                 array_merge(
                                     $defaults,
                                     [
-                                        '_controller' => $controller . ':deleteSubresource',
+                                        '_controller' => $controller . ':deleteSubresourceAction',
                                         'subresource' => $propertyMetadata->name,
                                     ]
                                 )
@@ -284,9 +294,13 @@ class RestResourceLoader extends Loader
      */
     protected function getController(ClassMetadata $classMetadata)
     {
-        $controller = 'DdrRestBundle:ContainerAwareRestResource';
+        $controller = ContainerAwareRestResourceController::class;
         if (null !== $classMetadata->getController()) {
             $controller = $classMetadata->getController();
+        }
+
+        if (strpos($controller, '\\') !== false) {
+            $controller .= ':';
         }
 
         return $controller;

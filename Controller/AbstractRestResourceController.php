@@ -2,7 +2,6 @@
 
 namespace Dontdrinkandroot\RestBundle\Controller;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
@@ -488,9 +487,4 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
      * @return AuthorizationCheckerInterface
      */
     abstract protected function getAuthorizationChecker();
-
-    /**
-     * @return EntityManagerInterface
-     */
-    abstract protected function getEntityManager();
 }

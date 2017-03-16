@@ -31,14 +31,13 @@ abstract class RestTestCase extends WebTestCase
      */
     protected function assertJsonResponse(Response $response, $statusCode = 200, $detailedOutput = false)
     {
+        $content = $response->getContent();
         if (Response::HTTP_NO_CONTENT !== $statusCode) {
             $this->assertTrue(
                 $response->headers->contains('Content-Type', 'application/json'),
                 sprintf('JSON content type missing, given: %s', $response->headers->get('Content-Type'))
             );
         }
-
-        $content = $response->getContent();
 
         $decodedContent = json_decode($content, true);
         if ($detailedOutput && $statusCode !== $response->getStatusCode()) {
