@@ -39,7 +39,7 @@ class AccessTokenRepository extends EntityRepository implements AccessTokenRepos
                 }
 
                 if ($this->isExpired($accessToken)) {
-                    $this->getEntityManager()->remove($accessToken);
+                    $this->remove($accessToken);
 
                     return null;
                 }
