@@ -12,6 +12,9 @@ use Metadata\MetadataFactoryInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+/**
+ * @author Philip Washington Sorst <philip@sorst.net>
+ */
 class Normalizer
 {
     /**

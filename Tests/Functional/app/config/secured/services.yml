@@ -1,3 +1,6 @@
+parameters:
+    'ddr_rest.security.enabled': false
+
 services:
 
     ddr_rest.test.service.inherited_entity:

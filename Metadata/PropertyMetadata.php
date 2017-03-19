@@ -8,6 +8,9 @@ use Dontdrinkandroot\RestBundle\Metadata\Annotation\Puttable;
 use Metadata\MergeableInterface;
 use Metadata\PropertyMetadata as BasePropertyMetadata;
 
+/**
+ * @author Philip Washington Sorst <philip@sorst.net>
+ */
 class PropertyMetadata extends BasePropertyMetadata implements MergeableInterface
 {
     public function __construct($class, $name)

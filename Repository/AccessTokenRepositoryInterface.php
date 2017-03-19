@@ -6,6 +6,9 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Dontdrinkandroot\RestBundle\Entity\AccessToken;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+/**
+ * @author Philip Washington Sorst <philip@sorst.net>
+ */
 interface AccessTokenRepositoryInterface extends ObjectRepository
 {
     /**
@@ -19,4 +22,8 @@ interface AccessTokenRepositoryInterface extends ObjectRepository
      * @return AccessToken[]
      */
     public function findExpiredTokens();
+
+    public function persist(AccessToken $accessToken): AccessToken;
+
+    public function remove(AccessToken $accessToken);
 }

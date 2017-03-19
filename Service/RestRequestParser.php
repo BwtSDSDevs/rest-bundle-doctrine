@@ -13,6 +13,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
+/**
+ * @author Philip Washington Sorst <philip@sorst.net>
+ */
 class RestRequestParser
 {
     /**
@@ -26,7 +29,7 @@ class RestRequestParser
     private $propertyAccessor;
 
     /**
-     * @var AuthorizationCheckerInterface
+     * @var AuthorizationCheckerInterface|null
      */
     private $authorizationChecker;
 
@@ -38,12 +41,10 @@ class RestRequestParser
     public function __construct(
         MetadataFactory $metadataFactory,
         PropertyAccessor $propertyAccessor,
-        AuthorizationCheckerInterface $authorizationChecker,
         EntityManagerInterface $entityManager
     ) {
         $this->metadataFactory = $metadataFactory;
         $this->propertyAccessor = $propertyAccessor;
-        $this->authorizationChecker = $authorizationChecker;
         $this->entityManager = $entityManager;
     }
 
@@ -200,6 +201,11 @@ class RestRequestParser
             return true;
         }
 
+        /* If no Security is enabled always deny access */
+        if (null === $this->authorizationChecker) {
+            return false;
+        }
+
         $propertyPath = $right->propertyPath;
         if (null === $propertyPath) {
             return $this->authorizationChecker->isGranted($right->attributes);
@@ -252,5 +258,13 @@ class RestRequestParser
         }
 
         return false;
+    }
+
+    /**
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     */
+    public function setAuthorizationChecker(AuthorizationCheckerInterface $authorizationChecker)
+    {
+        $this->authorizationChecker = $authorizationChecker;
     }
 }

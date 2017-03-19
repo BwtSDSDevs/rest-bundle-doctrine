@@ -4,6 +4,9 @@ namespace Dontdrinkandroot\RestBundle\Security;
 
 use Dontdrinkandroot\RestBundle\Repository\AccessTokenRepositoryInterface;
 
+/**
+ * @author Philip Washington Sorst <philip@sorst.net>
+ */
 class DefaultAccessTokenAuthenticator extends AbstractAccessTokenAuthenticator
 {
     private $service;

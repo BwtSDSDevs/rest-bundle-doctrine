@@ -41,26 +41,28 @@ services:
         calls:
             - ['setCache',['@ddr_rest.metadata.cache']]
 
-    ddr.rest.parser.request:
+    ddr_rest.parser.request:
         class: Dontdrinkandroot\RestBundle\Service\RestRequestParser
         arguments:
             - '@ddr_rest.metadata.factory'
             - '@property_accessor'
-            - '@security.authorization_checker'
             - '@doctrine.orm.entity_manager'
+        calls:
+            - [setAuthorizationChecker, ['@?security.authorization_checker']]
 
     ddr_rest.routing.rest_entity_loader:
         class: Dontdrinkandroot\RestBundle\Routing\RestResourceLoader
         arguments:
             - '@file_locator'
             - '@ddr_rest.metadata.factory'
+            - 'ddr_rest.security.enabled'
         tags:
             - { name: routing.loader }
 
     ddr_rest.listener.kernel_exception:
         class: Dontdrinkandroot\RestBundle\Listener\KernelExceptionListener
         arguments:
-            - '%ddr.rest.paths%'
+            - '%ddr_rest.paths%'
         calls:
             - ['setDebug', ['%kernel.debug%']]
         tags:

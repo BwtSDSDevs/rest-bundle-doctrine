@@ -9,6 +9,9 @@ use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProvid
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+/**
+ * @author Philip Washington Sorst <philip@sorst.net>
+ */
 class AccessTokenService implements AccessTokenServiceInterface
 {
     /**
@@ -46,6 +49,14 @@ class AccessTokenService implements AccessTokenServiceInterface
         $this->accessTokenClass = $accessTokenClass;
         $this->authenticationManager = $authenticationManager;
         $this->authenticationProviderKey = $authenticationProviderKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByToken(string $token): ?AccessToken
+    {
+        return $this->accessTokenRepository->findOneBy(['token' => $token]);
     }
 
     /**
@@ -104,6 +115,14 @@ class AccessTokenService implements AccessTokenServiceInterface
         }
 
         return count($accessTokens);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove(AccessToken $accessToken)
+    {
+        $this->accessTokenRepository->remove($accessToken);
     }
 
     /**

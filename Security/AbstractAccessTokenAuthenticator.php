@@ -13,6 +13,9 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Security\Http\Authentication\SimplePreAuthenticatorInterface;
 
+/**
+ * @author Philip Washington Sorst <philip@sorst.net>
+ */
 abstract class AbstractAccessTokenAuthenticator
     implements SimplePreAuthenticatorInterface, AuthenticationFailureHandlerInterface
 {

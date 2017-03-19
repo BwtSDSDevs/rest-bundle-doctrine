@@ -37,7 +37,6 @@ class ReferenceTest extends FunctionalTestCase
             [
                 'creator' => [
                     'id'       => $creator->getId(),
-                    'password' => null,
                     'username' => 'employee1',
                     'roles'    => [
                         'ROLE_USER'
@@ -74,7 +73,6 @@ class ReferenceTest extends FunctionalTestCase
             [
                 'creator' => [
                     'id'       => $creator->getId(),
-                    'password' => null,
                     'username' => 'employee1',
                     'roles'    => [
                         'ROLE_USER'

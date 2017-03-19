@@ -4,48 +4,37 @@ namespace Dontdrinkandroot\RestBundle\Model;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * @author Philip Washington Sorst <philip@sorst.net>
+ */
 class UserCredentials
 {
     /**
-     * @Assert\NotBlank()
-     * @var string
+     * @var string|null
      */
     private $username;
 
     /**
-     * @Assert\NotBlank()
-     * @var string
+     * @var string|null
      */
     private $password;
 
-    /**
-     * @return string
-     */
-    public function getUsername()
+    public function getUsername(): ?string
     {
         return $this->username;
     }
 
-    /**
-     * @param string $username
-     */
-    public function setUsername($username)
+    public function setUsername(?string $username)
     {
         $this->username = $username;
     }
 
-    /**
-     * @return string
-     */
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return $this->password;
     }
 
-    /**
-     * @param string $password
-     */
-    public function setPassword($password)
+    public function setPassword(?string $password)
     {
         $this->password = $password;
     }

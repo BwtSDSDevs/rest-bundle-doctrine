@@ -6,9 +6,32 @@ framework:
     router: { resource: "%kernel.root_dir%/config/secured/routing.yml" }
     validation: { enable_annotations: true }
 
+security:
+
+    encoders:
+        Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\User: bcrypt
+
+    providers:
+        doctrine_provider:
+            entity:
+                class: TestBundle:User
+                property: username
+
+    firewalls:
+        rest:
+             pattern: ^/rest
+             simple_preauth:
+                authenticator: ddr_rest.security.access_token_authenticator
+             anonymous: true
+             stateless: true
+             http_basic: ~
+
 ddr_rest:
     paths:
         - '/rest'
+    security:
+        access_token_class: 'Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\AccessToken'
+        authentication_provider_key: 'rest'
     metadata:
         directories:
             secured:

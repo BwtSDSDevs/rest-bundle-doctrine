@@ -8,7 +8,7 @@ use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\Puttabl
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\Users;
 use Symfony\Component\HttpFoundation\Response;
 
-class AssociationTest extends FunctionalTestCase
+class PuttablePostableTest extends FunctionalTestCase
 {
     protected $environment = 'secured';
 

@@ -13,6 +13,9 @@ use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\Driver\DriverInterface;
 
+/**
+ * @author Philip Washington Sorst <philip@sorst.net>
+ */
 class AnnotationDriver implements DriverInterface
 {
     /**

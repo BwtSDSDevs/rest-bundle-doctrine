@@ -4,6 +4,9 @@ namespace Dontdrinkandroot\RestBundle\Entity;
 
 use Symfony\Component\Security\Core\User\UserInterface;
 
+/**
+ * @author Philip Washington Sorst <philip@sorst.net>
+ */
 abstract class AccessToken
 {
     /**

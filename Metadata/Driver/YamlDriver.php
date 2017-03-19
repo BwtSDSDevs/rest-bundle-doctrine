@@ -105,6 +105,10 @@ class YamlDriver extends AbstractFileDriver
         $propertyMetadata->setPostable(Postable::parse($fieldConfig['postable'] ?? null));
         $propertyMetadata->setPuttable(Puttable::parse($fieldConfig['puttable'] ?? null));
 
+        if (null !== $value = $fieldConfig['type'] ?? null) {
+            $propertyMetadata->setType($value);
+        }
+
         if (null !== $value = $this->getBool('excluded', $fieldConfig)) {
             $propertyMetadata->setExcluded($value);
         }

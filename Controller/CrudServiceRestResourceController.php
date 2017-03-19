@@ -5,6 +5,9 @@ namespace Dontdrinkandroot\RestBundle\Controller;
 use Dontdrinkandroot\Service\CrudServiceInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * @author Philip Washington Sorst <philip@sorst.net>
+ */
 abstract class CrudServiceRestResourceController extends AbstractRestResourceController
 {
     /**

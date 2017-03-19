@@ -9,6 +9,8 @@ Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\User:
     fields:
         role:
             excluded: true
+        password:
+            excluded: true
         supervisor:
             includable: true
             subResource:

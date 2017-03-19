@@ -141,6 +141,11 @@ class User implements UserInterface
         $this->role = $role;
     }
 
+    public function setPassword(string $password)
+    {
+        $this->password = $password;
+    }
+
     /**
      * @return Collection|Group[]
      */

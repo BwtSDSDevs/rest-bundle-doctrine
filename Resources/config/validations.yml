@@ -1,0 +1,6 @@
+Dontdrinkandroot\RestBundle\Model\UserCredentials:
+    properties:
+        username:
+            - NotBlank: ~
+        password:
+            - NotBlank: ~

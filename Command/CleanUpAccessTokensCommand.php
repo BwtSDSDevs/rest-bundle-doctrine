@@ -7,7 +7,10 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CleanUpAccessKeysCommand extends ContainerAwareCommand
+/**
+ * @author Philip Washington Sorst <philip@sorst.net>
+ */
+class CleanUpAccessTokensCommand extends ContainerAwareCommand
 {
     /**
      * {@inheritdoc}

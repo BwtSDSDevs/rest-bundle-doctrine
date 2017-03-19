@@ -1,21 +1,29 @@
 services:
 
-    ddr.rest.repository.access_token:
+    ddr_rest.repository.access_token:
         class: Dontdrinkandroot\RestBundle\Repository\AccessTokenRepository
         factory: ['@doctrine.orm.entity_manager', getRepository]
-        arguments: [ '%ddr.rest.access_token_class%' ]
+        arguments: [ '%ddr_rest.access_token_class%' ]
 
-    ddr.rest.service.access_token:
+    ddr_rest.service.access_token:
         class: Dontdrinkandroot\RestBundle\Service\AccessTokenService
         arguments:
-            - '@ddr.rest.repository.access_token'
-            - '%ddr.rest.access_token_class%'
+            - '@ddr_rest.repository.access_token'
+            - '%ddr_rest.access_token_class%'
             - '@security.authentication.manager'
-            - '%ddr.rest.authentication_provider_key%'
+            - '%ddr_rest.authentication_provider_key%'
 
-    ddr.rest.security.access_token_authenticator:
+    ddr_rest.security.access_token_authenticator:
         class: Dontdrinkandroot\RestBundle\Security\DefaultAccessTokenAuthenticator
         arguments:
-            - '@ddr.rest.repository.access_token'
+            - '@ddr_rest.repository.access_token'
         calls:
             - ['setTokenRequired', [false]]
+
+    ddr_rest.controller.access_token:
+        class: Dontdrinkandroot\RestBundle\Controller\AccessTokenController
+        arguments:
+            - '@ddr_rest.service.access_token'
+            - '@ddr_rest.parser.request'
+            - '@ddr_rest.normalizer'
+            - '@security.token_storage'

@@ -7,6 +7,9 @@ use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Metadata\MergeableClassMetadata;
 use Metadata\MergeableInterface;
 
+/**
+ * @author Philip Washington Sorst <philip@sorst.net>
+ */
 class ClassMetadata extends MergeableClassMetadata
 {
     /**

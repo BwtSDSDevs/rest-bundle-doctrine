@@ -6,6 +6,9 @@ use Dontdrinkandroot\Service\CrudServiceInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
+/**
+ * @author Philip Washington Sorst <philip@sorst.net>
+ */
 class ContainerAwareRestResourceController extends CrudServiceRestResourceController implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
@@ -59,7 +62,7 @@ class ContainerAwareRestResourceController extends CrudServiceRestResourceContro
      */
     protected function getRequestParser()
     {
-        return $this->container->get('ddr.rest.parser.request');
+        return $this->container->get('ddr_rest.parser.request');
     }
 
     /**

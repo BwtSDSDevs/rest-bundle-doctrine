@@ -12,6 +12,7 @@ Dontdrinkandroot\RestBundle\Entity\AccessToken:
             length: 64
             type: string
             nullable: false
+            unique: true
         expiry:
             type: datetime
             nullable: true

@@ -12,21 +12,3 @@ doctrine:
         auto_generate_proxy_classes: "%kernel.debug%"
         auto_mapping: true
 
-security:
-
-    providers:
-        doctrine_provider:
-            entity:
-                class: TestBundle:User
-                property: username
-
-    firewalls:
-        rest:
-             pattern: ^/rest
-             simple_preauth:
-                authenticator: ddr.rest.security.access_token_authenticator
-             anonymous: true
-             stateless: true
-
-ddr_rest:
-    access_token_class: 'Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\AccessToken'

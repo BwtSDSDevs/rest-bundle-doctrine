@@ -6,6 +6,9 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use Dontdrinkandroot\RestBundle\Entity\AccessToken;
 
+/**
+ * @author Philip Washington Sorst <philip@sorst.net>
+ */
 class AccessTokenRepository extends EntityRepository implements AccessTokenRepositoryInterface
 {
     /**
@@ -70,5 +73,25 @@ class AccessTokenRepository extends EntityRepository implements AccessTokenRepos
         }
 
         return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function persist(AccessToken $accessToken): AccessToken
+    {
+        $this->getEntityManager()->persist($accessToken);
+        $this->getEntityManager()->flush($accessToken);
+
+        return $accessToken;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove(AccessToken $accessToken)
+    {
+        $this->getEntityManager()->remove($accessToken);
+        $this->getEntityManager()->flush($accessToken);
     }
 }

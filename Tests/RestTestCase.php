@@ -29,7 +29,7 @@ abstract class RestTestCase extends WebTestCase
      *
      * @return array
      */
-    protected function assertJsonResponse(Response $response, $statusCode = 200, $detailedOutput = false)
+    protected function assertJsonResponse(Response $response, $statusCode = 200, $detailedOutput = true)
     {
         $content = $response->getContent();
         if (Response::HTTP_NO_CONTENT !== $statusCode) {
@@ -49,7 +49,7 @@ abstract class RestTestCase extends WebTestCase
         return $decodedContent;
     }
 
-    protected function assertHasKeyAndUnset($key, array &$data, $notNull = false)
+    protected function assertHasKeyAndUnset($key, array &$data, $notNull = true)
     {
         $this->assertArrayHasKey($key, $data);
         if ($notNull) {

@@ -3,6 +3,11 @@ namespace Dontdrinkandroot\RestBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Interface RestResourceControllerInterface
+ *
+ * @package Dontdrinkandroot\RestBundle\Controller
+ */
 interface RestResourceControllerInterface
 {
     public function listAction(Request $request);

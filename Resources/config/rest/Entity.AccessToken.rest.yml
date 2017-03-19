@@ -1,0 +1,4 @@
+Dontdrinkandroot\RestBundle\Entity\AccessToken:
+    fields:
+        id:
+            excluded: true

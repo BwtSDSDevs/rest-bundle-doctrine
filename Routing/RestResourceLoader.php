@@ -15,6 +15,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
+/**
+ * @author Philip Washington Sorst <philip@sorst.net>
+ */
 class RestResourceLoader extends Loader
 {
     /**
@@ -27,10 +30,19 @@ class RestResourceLoader extends Loader
      */
     private $metadataFactory;
 
-    public function __construct(FileLocatorInterface $fileLocator, MetadataFactoryInterface $metadataFactory)
-    {
+    /**
+     * @var bool
+     */
+    private $securityEnabled;
+
+    public function __construct(
+        FileLocatorInterface $fileLocator,
+        MetadataFactoryInterface $metadataFactory,
+        bool $securityEnabled
+    ) {
         $this->fileLocator = $fileLocator;
         $this->metadataFactory = $metadataFactory;
+        $this->securityEnabled = $securityEnabled;
     }
 
     /**
@@ -51,6 +63,11 @@ class RestResourceLoader extends Loader
         }
 
         $routes = new RouteCollection();
+
+        if ($this->securityEnabled) {
+            $this->loadAccessTokenController($routes);
+        }
+
         foreach ($files as $file) {
             $class = $this->findClass($file);
             if (false === $class) {
@@ -79,8 +96,9 @@ class RestResourceLoader extends Loader
                     $listRoute->setDefaults(
                         array_merge(
                             $defaults,
-                            ['_controller'      => $controller . ':listAction',
-                             '_defaultincludes' => $method->defaultIncludes
+                            [
+                                '_controller'      => $controller . ':listAction',
+                                '_defaultincludes' => $method->defaultIncludes
                             ]
                         )
                     );
@@ -93,8 +111,9 @@ class RestResourceLoader extends Loader
                     $postRoute->setDefaults(
                         array_merge(
                             $defaults,
-                            ['_controller'      => $controller . ':postAction',
-                             '_defaultincludes' => $method->defaultIncludes
+                            [
+                                '_controller'      => $controller . ':postAction',
+                                '_defaultincludes' => $method->defaultIncludes
                             ]
                         )
                     );
@@ -107,8 +126,9 @@ class RestResourceLoader extends Loader
                     $getRoute->setDefaults(
                         array_merge(
                             $defaults,
-                            ['_controller'      => $controller . ':getAction',
-                             '_defaultincludes' => $method->defaultIncludes
+                            [
+                                '_controller'      => $controller . ':getAction',
+                                '_defaultincludes' => $method->defaultIncludes
                             ]
                         )
                     );
@@ -121,8 +141,9 @@ class RestResourceLoader extends Loader
                     $putRoute->setDefaults(
                         array_merge(
                             $defaults,
-                            ['_controller'      => $controller . ':putAction',
-                             '_defaultincludes' => $method->defaultIncludes
+                            [
+                                '_controller'      => $controller . ':putAction',
+                                '_defaultincludes' => $method->defaultIncludes
                             ]
                         )
                     );
@@ -140,8 +161,9 @@ class RestResourceLoader extends Loader
                     $deleteRoute->setDefaults(
                         array_merge(
                             $defaults,
-                            ['_controller'      => $controller . ':deleteAction',
-                             '_defaultincludes' => $method->defaultIncludes
+                            [
+                                '_controller'      => $controller . ':deleteAction',
+                                '_defaultincludes' => $method->defaultIncludes
                             ]
                         )
                     );
@@ -304,5 +326,26 @@ class RestResourceLoader extends Loader
         }
 
         return $controller;
+    }
+
+    private function loadAccessTokenController(RouteCollection $routes)
+    {
+        $route = new Route('accesstokens');
+        $route->setMethods('POST');
+        $route->setDefault('_controller', 'ddr_rest.controller.access_token:createAction');
+        $route->setDefault('_format', 'json');
+        $routes->add('ddr_rest.accesstoken.create', $route);
+
+        $route = new Route('accesstokens');
+        $route->setMethods('GET');
+        $route->setDefault('_controller', 'ddr_rest.controller.access_token:listAction');
+        $route->setDefault('_format', 'json');
+        $routes->add('ddr_rest.accesstoken.list', $route);
+
+        $route = new Route('accesstokens/{token}');
+        $route->setMethods('DELETE');
+        $route->setDefault('_controller', 'ddr_rest.controller.access_token:deleteAction');
+        $route->setDefault('_format', 'json');
+        $routes->add('ddr_rest.accesstoken.delete', $route);
     }
 }
