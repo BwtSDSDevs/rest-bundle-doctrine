@@ -321,6 +321,10 @@ class RestResourceLoader extends Loader
             $controller = $classMetadata->getController();
         }
 
+        if (strpos($controller, ':') !== false) {
+            throw new \RuntimeException(sprintf('Short controller notation is not permitted for "%s"', $controller));
+        }
+
         if (strpos($controller, '\\') !== false) {
             $controller .= ':';
         }
