@@ -5,7 +5,6 @@ namespace Dontdrinkandroot\RestBundle\Service;
 use Dontdrinkandroot\RestBundle\Entity\AccessToken;
 use Dontdrinkandroot\RestBundle\Repository\AccessTokenRepositoryInterface;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
-use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -30,7 +29,7 @@ class AccessTokenService implements AccessTokenServiceInterface
     private $defaultExpirationDuration = '+1 month';
 
     /**
-     * @var AuthenticationProviderInterface
+     * @var AuthenticationManagerInterface
      */
     private $authenticationManager;
 

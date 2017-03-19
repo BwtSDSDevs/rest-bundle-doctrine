@@ -2,18 +2,21 @@
 
 namespace Dontdrinkandroot\RestBundle\Security;
 
-use Dontdrinkandroot\RestBundle\Repository\AccessTokenRepositoryInterface;
+use Dontdrinkandroot\RestBundle\Repository\AccessTokenRepository;
 
 /**
  * @author Philip Washington Sorst <philip@sorst.net>
  */
 class DefaultAccessTokenAuthenticator extends AbstractAccessTokenAuthenticator
 {
-    private $service;
+    /**
+     * @var AccessTokenRepository
+     */
+    private $repository;
 
-    public function __construct(AccessTokenRepositoryInterface $service)
+    public function __construct(AccessTokenRepository $repository)
     {
-        $this->service = $service;
+        $this->repository = $repository;
     }
 
     /**
@@ -21,6 +24,6 @@ class DefaultAccessTokenAuthenticator extends AbstractAccessTokenAuthenticator
      */
     protected function findUserByToken($token)
     {
-        return $this->service->findUserByToken($token);
+        return $this->repository->findUserByToken($token);
     }
 }

@@ -2,8 +2,11 @@
 
 namespace Dontdrinkandroot\RestBundle\Repository;
 
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Query;
+use Dontdrinkandroot\Repository\TransactionManager;
 use Dontdrinkandroot\RestBundle\Entity\AccessToken;
 
 /**
@@ -12,11 +15,22 @@ use Dontdrinkandroot\RestBundle\Entity\AccessToken;
 class AccessTokenRepository extends EntityRepository implements AccessTokenRepositoryInterface
 {
     /**
+     * @var TransactionManager
+     */
+    private $transactionManager;
+
+    public function __construct(EntityManager $em, Mapping\ClassMetadata $class)
+    {
+        parent::__construct($em, $class);
+        $this->transactionManager = new TransactionManager($em);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function findUserByToken($token)
     {
-        return $this->getEntityManager()->transactional(
+        return $this->transactionManager->transactional(
             function () use ($token) {
                 /** @var AccessToken $accessToken */
                 $accessToken = $this->createFindUserByTokenQuery($token)->getOneOrNullResult();
@@ -61,12 +75,7 @@ class AccessTokenRepository extends EntityRepository implements AccessTokenRepos
         return $queryBuilder->getQuery()->getResult();
     }
 
-    /**
-     * @param AccessToken $accessToken
-     *
-     * @return bool
-     */
-    private function isExpired(AccessToken $accessToken)
+    private function isExpired(AccessToken $accessToken): bool
     {
         if (null !== $accessToken->getExpiry()) {
             return $accessToken->getExpiry() < new \DateTime();
@@ -80,8 +89,11 @@ class AccessTokenRepository extends EntityRepository implements AccessTokenRepos
      */
     public function persist(AccessToken $accessToken): AccessToken
     {
-        $this->getEntityManager()->persist($accessToken);
-        $this->getEntityManager()->flush($accessToken);
+        $this->transactionManager->transactional(
+            function () use ($accessToken) {
+                $this->getEntityManager()->persist($accessToken);
+            }
+        );
 
         return $accessToken;
     }
@@ -91,7 +103,10 @@ class AccessTokenRepository extends EntityRepository implements AccessTokenRepos
      */
     public function remove(AccessToken $accessToken)
     {
-        $this->getEntityManager()->remove($accessToken);
-        $this->getEntityManager()->flush($accessToken);
+        $this->transactionManager->transactional(
+            function () use ($accessToken) {
+                $this->getEntityManager()->remove($accessToken);
+            }
+        );
     }
 }

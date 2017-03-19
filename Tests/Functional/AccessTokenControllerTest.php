@@ -52,7 +52,7 @@ class AccessTokenControllerTest extends FunctionalTestCase
             [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
         );
         $content = $this->assertJsonResponse($response);
-        $this->assertCount(1, $content);
+        $this->assertCount(2, $content);
         $this->assertEquals('user-user', $content[0]['token']);
     }
 
