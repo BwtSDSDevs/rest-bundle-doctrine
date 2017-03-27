@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @author Philip Washington Sorst <philip@sorst.net>
  *
  * @ORM\Entity(
- *     repositoryClass="Dontdrinkandroot\Service\DoctrineCrudService"
+ *     repositoryClass="Dontdrinkandroot\Service\TransactionalDoctrineCrudService"
  * )
  * @REST\RootResource(
  *      pathPrefix="secured",
