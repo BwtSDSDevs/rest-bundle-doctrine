@@ -2,6 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Listener;
 
+use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -47,15 +48,7 @@ class KernelExceptionListener
             ];
         }
 
-        $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
-
-        if ($exception instanceof InsufficientAuthenticationException) {
-            $statusCode = Response::HTTP_UNAUTHORIZED;
-        }
-
-        if ($exception instanceof BadCredentialsException) {
-            $statusCode = Response::HTTP_UNAUTHORIZED;
-        }
+        $statusCode = $this->resolveStatusCode($exception);
 
         $response = new JsonResponse($data);
 
@@ -99,5 +92,27 @@ class KernelExceptionListener
     public function setDebug(bool $debug)
     {
         $this->debug = $debug;
+    }
+
+    /**
+     * @param $exception
+     *
+     * @return int
+     */
+    protected function resolveStatusCode($exception): int
+    {
+        if ($exception instanceof InsufficientAuthenticationException) {
+            return Response::HTTP_UNAUTHORIZED;
+        }
+
+        if ($exception instanceof BadCredentialsException) {
+            return Response::HTTP_UNAUTHORIZED;
+        }
+
+        if ($exception instanceof OptimisticLockException) {
+            return Response::HTTP_PRECONDITION_FAILED;
+        }
+
+        return Response::HTTP_INTERNAL_SERVER_ERROR;
     }
 }
