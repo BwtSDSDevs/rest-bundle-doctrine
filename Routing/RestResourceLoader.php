@@ -137,7 +137,7 @@ class RestResourceLoader extends Loader
 
                 if (null !== $method = $classMetadata->getMethod(Method::PUT)) {
                     $putRoute = new Route($pathPrefix . '/{id}');
-                    $putRoute->setMethods(Request::METHOD_PUT);
+                    $putRoute->setMethods([Request::METHOD_PUT, Request::METHOD_PATCH]);
                     $putRoute->setDefaults(
                         array_merge(
                             $defaults,
@@ -148,11 +148,6 @@ class RestResourceLoader extends Loader
                         )
                     );
                     $routes->add($namePrefix . '.put', $putRoute);
-
-                    $patchRoute = new Route($pathPrefix . '/{id}');
-                    $patchRoute->setMethods(Request::METHOD_PATCH);
-                    $patchRoute->setDefaults(array_merge($defaults, ['_controller' => $controller . ':put']));
-                    $routes->add($namePrefix . '.patch', $patchRoute);
                 }
 
                 if (null !== $method = $classMetadata->getMethod(Method::DELETE)) {
