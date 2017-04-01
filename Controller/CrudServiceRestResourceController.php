@@ -58,9 +58,9 @@ abstract class CrudServiceRestResourceController extends AbstractRestResourceCon
     /**
      * {@inheritdoc}
      */
-    protected function listSubresource($entity, string $property, int $page = 1, int $perPage = 50)
+    protected function listSubresource($entity, string $subresource, int $page = 1, int $perPage = 50)
     {
-        return $this->getService()->findAssociationPaginated($entity, $property, $page, $perPage);
+        return $this->getService()->findAssociationPaginated($entity, $subresource, $page, $perPage);
     }
 
     /**

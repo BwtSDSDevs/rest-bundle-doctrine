@@ -410,13 +410,13 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
 
     /**
      * @param object $entity
-     * @param string $property
+     * @param string $subresource
      * @param int    $page
      * @param int    $perPage
      *
      * @return Paginator|array
      */
-    abstract protected function listSubresource($entity, string $property, int $page = 1, int $perPage = 50);
+    abstract protected function listSubresource($entity, string $subresource, int $page = 1, int $perPage = 50);
 
     /**
      * @param object $parent
