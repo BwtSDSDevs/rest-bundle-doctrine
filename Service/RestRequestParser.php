@@ -16,7 +16,7 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 /**
  * @author Philip Washington Sorst <philip@sorst.net>
  */
-class RestRequestParser
+class RestRequestParser implements RestRequestParserInterface
 {
     /**
      * @var MetadataFactory
@@ -49,23 +49,11 @@ class RestRequestParser
     }
 
     /**
-     * @param Request     $request
-     * @param string      $entityClass
-     * @param object|null $entity
-     *
-     * @return object
+     * {@inheritdoc}
      */
-    public function parseEntity(
-        Request $request,
-        $entityClass,
-        $entity = null
-    ) {
+    public function parseEntity(Request $request, $entityClass, $entity = null)
+    {
         $method = $request->getMethod();
-        $format = $request->getRequestFormat();
-
-        if ('json' !== $format) {
-            throw new \RuntimeException(sprintf('Unsupported format "%s"', $format));
-        }
 
         $data = $this->getRequestContent($request);
 
@@ -79,12 +67,16 @@ class RestRequestParser
     }
 
     /**
-     * @param Request $request
-     *
-     * @return array
+     * {@inheritdoc}
      */
-    protected function getRequestContent(Request $request)
+    public function getRequestContent(Request $request)
     {
+        $format = $request->getRequestFormat();
+
+        if ('json' !== $format) {
+            throw new \RuntimeException(sprintf('Unsupported format "%s"', $format));
+        }
+
         $content = $request->getContent();
         if ('' !== $content) {
             return json_decode($content, true);
@@ -98,11 +90,8 @@ class RestRequestParser
      * @param string $method
      * @param array  $data
      */
-    protected function updateObject(
-        &$object,
-        $method,
-        $data
-    ) {
+    protected function updateObject(&$object, $method, $data)
+    {
         $classMetadata = $this->metadataFactory->getMetadataForClass(ClassUtils::getClass($object));
 
         foreach ($data as $key => $value) {
@@ -122,12 +111,8 @@ class RestRequestParser
      * @param PropertyMetadata $propertyMetadata
      * @param mixed            $value
      */
-    protected function updateProperty(
-        &$object,
-        string $method,
-        PropertyMetadata $propertyMetadata,
-        $value
-    ) {
+    protected function updateProperty(&$object, string $method, PropertyMetadata $propertyMetadata, $value)
+    {
         $byReference = $this->isUpdateableByReference($propertyMetadata, $method);
         if ($byReference) {
             $this->updateByReference($object, $propertyMetadata, $value);
@@ -156,12 +141,8 @@ class RestRequestParser
         }
     }
 
-    protected function updatePropertyObject(
-        &$object,
-        string $method,
-        PropertyMetadata $propertyMetadata,
-        $value
-    ) {
+    protected function updatePropertyObject(&$object, string $method, PropertyMetadata $propertyMetadata, $value)
+    {
         $propertyObject = $this->propertyAccessor->getValue($object, $propertyMetadata->name);
         if (null === $propertyObject) {
             $type = $propertyMetadata->getType();
@@ -179,11 +160,8 @@ class RestRequestParser
      *
      * @return bool
      */
-    protected function isUpdateable(
-        $object,
-        string $method,
-        PropertyMetadata $propertyMetadata
-    ): bool {
+    protected function isUpdateable($object, string $method, PropertyMetadata $propertyMetadata): bool
+    {
         if ((Request::METHOD_PUT === $method || Request::METHOD_PATCH === $method) && $propertyMetadata->isPuttable()) {
             return $this->isGranted($object, $propertyMetadata->getPuttable()->right);
         }
