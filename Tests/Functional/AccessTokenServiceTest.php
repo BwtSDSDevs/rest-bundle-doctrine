@@ -44,6 +44,12 @@ class AccessTokenServiceTest extends WebTestCase
         $this->referenceRepository = $executor->getReferenceRepository();
     }
 
+    public function testCleanUpAccessTokensCommand()
+    {
+        $output = $this->runCommand('ddr:rest:access-token:cleanup');
+        $this->assertEquals('1 tokens removed', trim($output));
+    }
+
     public function testCleanUpExpiredTokens()
     {
         /** @var User $user */

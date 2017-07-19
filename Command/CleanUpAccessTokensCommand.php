@@ -26,7 +26,7 @@ class CleanUpAccessTokensCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         /** @var AccessTokenServiceInterface $accessTokenService */
-        $accessTokenService = $this->getContainer()->get('ddr.rest.service.access_token');
+        $accessTokenService = $this->getContainer()->get('ddr_rest.service.access_token');
         $numTokensRemoved = $accessTokenService->cleanUpExpiredTokens();
         $output->writeln($numTokensRemoved . ' tokens removed');
     }
