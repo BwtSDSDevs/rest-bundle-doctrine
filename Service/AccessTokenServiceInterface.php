@@ -12,7 +12,7 @@ interface AccessTokenServiceInterface
 {
     public function findByToken(string $token): ?AccessToken;
 
-    public function createAccessToken(string $username, string $password): AccessToken;
+    public function createAccessToken(?string $username, ?string $password): AccessToken;
 
     public function createAccessTokenForUser(UserInterface $user): AccessToken;
 

@@ -6,6 +6,7 @@ use Dontdrinkandroot\RestBundle\Entity\AccessToken;
 use Dontdrinkandroot\RestBundle\Repository\AccessTokenRepositoryInterface;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -61,8 +62,12 @@ class AccessTokenService implements AccessTokenServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function createAccessToken(string $username, string $password): AccessToken
+    public function createAccessToken(?string $username, ?string $password): AccessToken
     {
+        if (null === $username) {
+            throw new BadCredentialsException();
+        }
+
         $usernamePasswordToken = new UsernamePasswordToken($username, $password, $this->authenticationProviderKey);
         $token = $this->authenticationManager->authenticate($usernamePasswordToken);
         $accessToken = $this->createAccessTokenForUser($token->getUser());
