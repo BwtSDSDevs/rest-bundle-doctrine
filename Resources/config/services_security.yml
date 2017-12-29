@@ -20,6 +20,13 @@ services:
         calls:
             - ['setTokenRequired', [false]]
 
+    ddr_rest.command.cleanup_access_tokens:
+        class: Dontdrinkandroot\RestBundle\Command\CleanUpAccessTokensCommand
+        arguments:
+            - '@ddr_rest.service.access_token'
+        tags:
+            - { name: 'console.command', command: 'ddr:rest:access-token:cleanup' }
+
     ddr_rest.controller.access_token:
         class: Dontdrinkandroot\RestBundle\Controller\AccessTokenController
         arguments:
@@ -27,3 +34,4 @@ services:
             - '@ddr_rest.parser.request'
             - '@ddr_rest.normalizer'
             - '@security.token_storage'
+        public: true

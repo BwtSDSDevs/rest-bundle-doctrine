@@ -55,7 +55,7 @@ class AccessTokenServiceTest extends WebTestCase
         /** @var User $user */
         $user = $this->referenceRepository->getReference('user-user');
         /** @var AccessTokenService $accessTokenService */
-        $accessTokenService = $this->getContainer()->get('ddr_rest.service.access_token');
+        $accessTokenService = $this->getContainer()->get('test.container')->get('ddr_rest.service.access_token');
 
         $accessTokens = $accessTokenService->listByUser($user);
         $this->assertCount(2, $accessTokens);
@@ -71,7 +71,7 @@ class AccessTokenServiceTest extends WebTestCase
         /** @var User $user */
         $user = $this->referenceRepository->getReference('user-user');
         /** @var AccessTokenService $accessTokenService */
-        $accessTokenService = $this->getContainer()->get('ddr_rest.service.access_token');
+        $accessTokenService = $this->getContainer()->get('test.container')->get('ddr_rest.service.access_token');
 
         $accessTokens = $accessTokenService->listByUser($user);
         $this->assertCount(2, $accessTokens);

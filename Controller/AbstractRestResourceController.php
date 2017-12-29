@@ -164,8 +164,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
         $this->assertSubResourceMethodGranted(Method::POST, $parent, $subresource);
 
         $restRequestParser = $this->getRequestParser();
-        $entity = $this->createAssociation($parent, $subresource);
-        $entity = $restRequestParser->parseEntity($request, $this->getSubResourceEntityClass($subresource), $entity);
+        $entity = $restRequestParser->parseEntity($request, $this->getSubResourceEntityClass($subresource));
 
         $entity = $this->postProcessSubResourcePostedEntity($parent, $subresource, $entity);
 
@@ -175,7 +174,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
             return new JsonResponse($this->parseConstraintViolations($errors), Response::HTTP_BAD_REQUEST);
         }
 
-        $entity = $this->createSubResource($parent, $subresource, $entity);
+        $entity = $this->createAssociation($parent, $subresource, $entity);
 
         $content = $this->getNormalizer()->normalize($entity, $this->parseIncludes($request));
 
@@ -336,7 +335,12 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
 
     protected function denyAccessUnlessGranted($attributes, $object = null, $message = 'Access Denied.')
     {
-        if (!$this->getAuthorizationChecker()->isGranted($attributes, $object)) {
+        $authorizationChecker = $this->getAuthorizationChecker();
+        if (null === $authorizationChecker) {
+            throw new AccessDeniedException('No authorization checker configured');
+        }
+
+        if (!$authorizationChecker->isGranted($attributes, $object)) {
             throw new AccessDeniedException($message);
         }
     }
@@ -424,16 +428,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
      *
      * @return object
      */
-    abstract protected function createAssociation($parent, string $subresource);
-
-    /**
-     * @param object $parent
-     * @param string $subresource
-     * @param object $entity
-     *
-     * @return object
-     */
-    abstract protected function createSubResource($parent, $subresource, $entity);
+    abstract protected function createAssociation($parent, string $subresource, $entity);
 
     /**
      * @param object     $parent

@@ -2,7 +2,6 @@
 
 namespace Dontdrinkandroot\RestBundle\Routing;
 
-use Dontdrinkandroot\RestBundle\Controller\ContainerAwareRestResourceController;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
@@ -85,10 +84,6 @@ class RestResourceLoader extends Loader
                     '_entityClass' => $class,
                     '_format'      => 'json'
                 ];
-
-                if (null !== $classMetadata->getService()) {
-                    $defaults['_service'] = $classMetadata->getService();
-                }
 
                 if (null !== $method = $classMetadata->getMethod(Method::LIST)) {
                     $listRoute = new Route($pathPrefix);
@@ -311,7 +306,8 @@ class RestResourceLoader extends Loader
      */
     protected function getController(ClassMetadata $classMetadata)
     {
-        $controller = ContainerAwareRestResourceController::class;
+//        $controller = DoctrineRestResourceController::class;
+        $controller = 'ddr_rest.controller.doctrine';
         if (null !== $classMetadata->getController()) {
             $controller = $classMetadata->getController();
         }

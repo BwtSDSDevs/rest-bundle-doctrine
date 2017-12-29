@@ -74,3 +74,17 @@ services:
             - '@ddr_rest.metadata.factory'
             - '@property_accessor'
             - '@router'
+
+    ddr_rest.controller.doctrine:
+        class: Dontdrinkandroot\RestBundle\Controller\DoctrineRestResourceController
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@ddr_rest.parser.request'
+            - '@ddr_rest.normalizer'
+            - '@validator'
+            - '@request_stack'
+            - '@ddr_rest.metadata.factory'
+            - '@property_accessor'
+        calls:
+            - [setAuthorizationChecker, ['@?security.authorization_checker']]
+        public: true

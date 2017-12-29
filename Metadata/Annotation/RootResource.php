@@ -21,11 +21,6 @@ class RootResource
     /**
      * @var string
      */
-    public $service;
-
-    /**
-     * @var string
-     */
     public $controller;
 
     /**

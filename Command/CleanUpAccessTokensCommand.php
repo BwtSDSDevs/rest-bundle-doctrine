@@ -3,21 +3,29 @@
 namespace Dontdrinkandroot\RestBundle\Command;
 
 use Dontdrinkandroot\RestBundle\Service\AccessTokenServiceInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @author Philip Washington Sorst <philip@sorst.net>
  */
-class CleanUpAccessTokensCommand extends ContainerAwareCommand
+class CleanUpAccessTokensCommand extends Command
 {
+    protected static $defaultName = 'ddr:rest:access-token:cleanup';
+
     /**
-     * {@inheritdoc}
+     * @var AccessTokenServiceInterface
      */
-    protected function configure()
+    private $accessTokenService;
+
+    /**
+     * CleanUpAccessTokensCommand constructor.
+     */
+    public function __construct(AccessTokenServiceInterface $accessTokenService)
     {
-        $this->setName('ddr:rest:access-token:cleanup');
+        parent::__construct();
+        $this->accessTokenService = $accessTokenService;
     }
 
     /**
@@ -25,9 +33,7 @@ class CleanUpAccessTokensCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /** @var AccessTokenServiceInterface $accessTokenService */
-        $accessTokenService = $this->getContainer()->get('ddr_rest.service.access_token');
-        $numTokensRemoved = $accessTokenService->cleanUpExpiredTokens();
+        $numTokensRemoved = $this->accessTokenService->cleanUpExpiredTokens();
         $output->writeln($numTokensRemoved . ' tokens removed');
     }
 }

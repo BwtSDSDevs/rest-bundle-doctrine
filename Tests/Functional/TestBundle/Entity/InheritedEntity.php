@@ -7,7 +7,9 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @author Philip Washington Sorst <philip@sorst.net>
  *
- * @ORM\Entity()
+ * @ORM\Entity(
+ *     repositoryClass="Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Service\InheritedEntityService"
+ * )
  */
 class InheritedEntity extends SuperEntity
 {

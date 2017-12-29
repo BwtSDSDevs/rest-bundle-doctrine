@@ -53,9 +53,6 @@ class YamlDriver extends AbstractFileDriver
         if (array_key_exists('rootResource', $config) && true === $config['rootResource']) {
             $classMetadata->setRestResource(true);
         }
-        if (array_key_exists('service', $config)) {
-            $classMetadata->service = $config['service'];
-        }
         if (array_key_exists('controller', $config)) {
             $classMetadata->controller = $config['controller'];
         }

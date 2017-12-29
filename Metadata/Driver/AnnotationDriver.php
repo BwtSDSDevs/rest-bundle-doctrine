@@ -59,10 +59,6 @@ class AnnotationDriver implements DriverInterface
                 $ddrRestClassMetadata->setPathPrefix($restResourceAnnotation->pathPrefix);
             }
 
-            if (null !== $restResourceAnnotation->service) {
-                $ddrRestClassMetadata->setService($restResourceAnnotation->service);
-            }
-
             if (null !== $restResourceAnnotation->controller) {
                 $ddrRestClassMetadata->setController($restResourceAnnotation->controller);
             }

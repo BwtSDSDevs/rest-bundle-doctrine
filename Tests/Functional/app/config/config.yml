@@ -1,5 +1,6 @@
 framework:
     secret: 'test'
+    validation: { enable_annotations: true }
     test: ~
 
 doctrine:
@@ -7,8 +8,8 @@ doctrine:
         driver:   pdo_sqlite
         path:     '/tmp/ddrrestbundle/test.db3'
         charset:  UTF8
+        logging: false
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
         auto_mapping: true
-

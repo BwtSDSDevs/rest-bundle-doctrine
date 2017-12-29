@@ -35,11 +35,6 @@ class ClassMetadata extends MergeableClassMetadata
     /**
      * @var string
      */
-    public $service;
-
-    /**
-     * @var string
-     */
     public $controller;
 
     /**
@@ -78,7 +73,6 @@ class ClassMetadata extends MergeableClassMetadata
         $this->methods = $this->mergeField($this->methods, $object->methods);
         $this->namePrefix = $this->mergeField($this->namePrefix, $object->namePrefix);
         $this->pathPrefix = $this->mergeField($this->pathPrefix, $object->pathPrefix);
-        $this->service = $this->mergeField($this->service, $object->service);
         $this->controller = $this->mergeField($this->controller, $object->controller);
     }
 
@@ -144,22 +138,6 @@ class ClassMetadata extends MergeableClassMetadata
     public function setController($controller)
     {
         $this->controller = $controller;
-    }
-
-    /**
-     * @return string
-     */
-    public function getService()
-    {
-        return $this->service;
-    }
-
-    /**
-     * @param string $service
-     */
-    public function setService($service)
-    {
-        $this->service = $service;
     }
 
     /**
@@ -266,7 +244,6 @@ class ClassMetadata extends MergeableClassMetadata
                 $this->namePrefix,
                 $this->pathPrefix,
                 $this->idField,
-                $this->service,
                 $this->controller,
                 $this->methods
             ]
@@ -288,7 +265,6 @@ class ClassMetadata extends MergeableClassMetadata
             $this->namePrefix,
             $this->pathPrefix,
             $this->idField,
-            $this->service,
             $this->controller,
             $this->methods
             ) = unserialize($str);
