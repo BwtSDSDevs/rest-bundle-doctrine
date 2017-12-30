@@ -90,9 +90,17 @@ abstract class AbstractCrudServiceRestResourceController extends AbstractRestRes
     /**
      * {@inheritdoc}
      */
-    protected function createAssociation($parent, string $subresource, $entity)
+    protected function buildAssociation($parent, string $subresource, $entity)
     {
         return $this->getService()->createAssociation($parent, $subresource, $entity);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createAssociation($associatedEntity)
+    {
+        return $this->getService()->create($associatedEntity);
     }
 
     /**

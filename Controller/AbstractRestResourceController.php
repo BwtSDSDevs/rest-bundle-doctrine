@@ -216,7 +216,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
 
         $restRequestParser = $this->getRequestParser();
         $entity = $restRequestParser->parseEntity($request, $this->getSubResourceEntityClass($subresource));
-
+        $entity = $this->buildAssociation($parent, $subresource, $entity);
         $entity = $this->postProcessSubResourcePostedEntity($parent, $subresource, $entity);
 
         $errors = $this->getValidator()->validate($entity);
@@ -225,7 +225,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
             return new JsonResponse($this->parseConstraintViolations($errors), Response::HTTP_BAD_REQUEST);
         }
 
-        $entity = $this->createAssociation($parent, $subresource, $entity);
+        $entity = $this->createAssociation($entity);
 
         $content = $this->getNormalizer()->normalize($entity, $this->parseIncludes($request));
 
@@ -543,7 +543,14 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
      *
      * @return object
      */
-    abstract protected function createAssociation($parent, string $subresource, $entity);
+    abstract protected function buildAssociation($parent, string $subresource, $entity);
+
+    /**
+     * @param object $associatedEntity
+     *
+     * @return object
+     */
+    abstract protected function createAssociation($associatedEntity);
 
     /**
      * @param object     $parent
