@@ -9,69 +9,35 @@ use Dontdrinkandroot\Service\CrudServiceInterface;
 use Metadata\MetadataFactoryInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @author Philip Washington Sorst <philip@sorst.net>
  */
-class DoctrineRestResourceController extends CrudServiceRestResourceController
+class DoctrineRestResourceController extends AbstractCrudServiceRestResourceController
 {
-    /**
-     * @var Normalizer
-     */
-    private $normalizer;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
-
-    /**
-     * @var RestRequestParserInterface
-     */
-    private $requestParser;
-
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
-
-    /**
-     * @var MetadataFactoryInterface
-     */
-    private $metadataFactory;
-
-    /**
-     * @var PropertyAccessorInterface
-     */
-    private $propertyAccessor;
-
-    /**
-     * @var AuthorizationCheckerInterface
-     */
-    private $authorizationChecker;
-
     /**
      * @var EntityManagerInterface
      */
     private $entityManager;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
         RestRequestParserInterface $requestParser,
         Normalizer $normalizer,
         ValidatorInterface $validator,
         RequestStack $requestStack,
         MetadataFactoryInterface $metadataFactory,
-        PropertyAccessorInterface $propertyAccessor
+        PropertyAccessorInterface $propertyAccessor,
+        EntityManagerInterface $entityManager
     ) {
-        $this->normalizer = $normalizer;
-        $this->validator = $validator;
-        $this->requestParser = $requestParser;
-        $this->requestStack = $requestStack;
-        $this->metadataFactory = $metadataFactory;
-        $this->propertyAccessor = $propertyAccessor;
+        parent::__construct(
+            $requestParser,
+            $normalizer,
+            $validator,
+            $requestStack,
+            $metadataFactory,
+            $propertyAccessor
+        );
         $this->entityManager = $entityManager;
     }
 
@@ -93,70 +59,6 @@ class DoctrineRestResourceController extends CrudServiceRestResourceController
         }
 
         return $repository;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getNormalizer()
-    {
-        return $this->normalizer;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getValidator()
-    {
-        return $this->validator;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getRequestParser()
-    {
-        return $this->requestParser;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getRequestStack()
-    {
-        return $this->requestStack;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getMetadataFactory()
-    {
-        return $this->metadataFactory;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getPropertyAccessor()
-    {
-        return $this->propertyAccessor;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getAuthorizationChecker(): ?AuthorizationCheckerInterface
-    {
-        return $this->authorizationChecker;
-    }
-
-    /**
-     * @param AuthorizationCheckerInterface $authorizationChecker
-     */
-    public function setAuthorizationChecker(AuthorizationCheckerInterface $authorizationChecker): void
-    {
-        $this->authorizationChecker = $authorizationChecker;
     }
 
     /**

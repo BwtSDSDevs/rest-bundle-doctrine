@@ -8,7 +8,7 @@ use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Dontdrinkandroot\RestBundle\Service\Normalizer;
-use Dontdrinkandroot\RestBundle\Service\RestRequestParser;
+use Dontdrinkandroot\RestBundle\Service\RestRequestParserInterface;
 use Metadata\MetadataFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,6 +27,57 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 abstract class AbstractRestResourceController implements RestResourceControllerInterface
 {
+    /**
+     * @var Normalizer
+     */
+    private $normalizer;
+
+    /**
+     * @var ValidatorInterface
+     */
+    private $validator;
+
+    /**
+     * @var RestRequestParserInterface
+     */
+    private $requestParser;
+
+    /**
+     * @var RequestStack
+     */
+    private $requestStack;
+
+    /**
+     * @var MetadataFactoryInterface
+     */
+    private $metadataFactory;
+
+    /**
+     * @var PropertyAccessorInterface
+     */
+    private $propertyAccessor;
+
+    /**
+     * @var AuthorizationCheckerInterface
+     */
+    private $authorizationChecker;
+
+    public function __construct(
+        RestRequestParserInterface $requestParser,
+        Normalizer $normalizer,
+        ValidatorInterface $validator,
+        RequestStack $requestStack,
+        MetadataFactoryInterface $metadataFactory,
+        PropertyAccessorInterface $propertyAccessor
+    ) {
+        $this->requestParser = $requestParser;
+        $this->normalizer = $normalizer;
+        $this->validator = $validator;
+        $this->requestStack = $requestStack;
+        $this->metadataFactory = $metadataFactory;
+        $this->propertyAccessor = $propertyAccessor;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -373,6 +424,70 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function getNormalizer()
+    {
+        return $this->normalizer;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getValidator()
+    {
+        return $this->validator;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getRequestParser()
+    {
+        return $this->requestParser;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getRequestStack()
+    {
+        return $this->requestStack;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getMetadataFactory()
+    {
+        return $this->metadataFactory;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getPropertyAccessor()
+    {
+        return $this->propertyAccessor;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getAuthorizationChecker(): ?AuthorizationCheckerInterface
+    {
+        return $this->authorizationChecker;
+    }
+
+    /**
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     */
+    public function setAuthorizationChecker(AuthorizationCheckerInterface $authorizationChecker): void
+    {
+        $this->authorizationChecker = $authorizationChecker;
+    }
+
+    /**
      * @param int $page
      * @param int $perPage
      *
@@ -447,39 +562,4 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
      * @return mixed
      */
     abstract protected function removeAssociation($parent, string $subresource, $subId = null);
-
-    /**
-     * @return Normalizer
-     */
-    abstract protected function getNormalizer();
-
-    /**
-     * @return ValidatorInterface
-     */
-    abstract protected function getValidator();
-
-    /**
-     * @return RestRequestParser
-     */
-    abstract protected function getRequestParser();
-
-    /**
-     * @return RequestStack
-     */
-    abstract protected function getRequestStack();
-
-    /**
-     * @return MetadataFactoryInterface
-     */
-    abstract protected function getMetadataFactory();
-
-    /**
-     * @return PropertyAccessorInterface
-     */
-    abstract protected function getPropertyAccessor();
-
-    /**
-     * @return AuthorizationCheckerInterface
-     */
-    abstract protected function getAuthorizationChecker();
 }
