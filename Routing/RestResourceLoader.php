@@ -29,19 +29,12 @@ class RestResourceLoader extends Loader
      */
     private $metadataFactory;
 
-    /**
-     * @var bool
-     */
-    private $securityEnabled;
-
     public function __construct(
         FileLocatorInterface $fileLocator,
-        MetadataFactoryInterface $metadataFactory,
-        bool $securityEnabled
+        MetadataFactoryInterface $metadataFactory
     ) {
         $this->fileLocator = $fileLocator;
         $this->metadataFactory = $metadataFactory;
-        $this->securityEnabled = $securityEnabled;
     }
 
     /**
@@ -62,10 +55,6 @@ class RestResourceLoader extends Loader
         }
 
         $routes = new RouteCollection();
-
-        if ($this->securityEnabled) {
-            $this->loadAccessTokenController($routes);
-        }
 
         foreach ($files as $file) {
             $class = $this->findClass($file);
@@ -321,26 +310,5 @@ class RestResourceLoader extends Loader
         }
 
         return $controller;
-    }
-
-    private function loadAccessTokenController(RouteCollection $routes)
-    {
-        $route = new Route('accesstokens');
-        $route->setMethods('POST');
-        $route->setDefault('_controller', 'ddr_rest.controller.access_token:createAction');
-        $route->setDefault('_format', 'json');
-        $routes->add('ddr_rest.accesstoken.create', $route);
-
-        $route = new Route('accesstokens');
-        $route->setMethods('GET');
-        $route->setDefault('_controller', 'ddr_rest.controller.access_token:listAction');
-        $route->setDefault('_format', 'json');
-        $routes->add('ddr_rest.accesstoken.list', $route);
-
-        $route = new Route('accesstokens/{token}');
-        $route->setMethods('DELETE');
-        $route->setDefault('_controller', 'ddr_rest.controller.access_token:deleteAction');
-        $route->setDefault('_format', 'json');
-        $routes->add('ddr_rest.accesstoken.delete', $route);
     }
 }

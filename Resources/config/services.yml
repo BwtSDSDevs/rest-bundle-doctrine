@@ -55,7 +55,6 @@ services:
         arguments:
             - '@file_locator'
             - '@ddr_rest.metadata.factory'
-            - 'ddr_rest.security.enabled'
         tags:
             - { name: routing.loader }
 
