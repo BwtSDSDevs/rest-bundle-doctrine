@@ -82,18 +82,18 @@ class PuttablePostableTest extends FunctionalTestCase
     {
         /** @var PuttablePostableAnnotationEntity $entity */
         $entity = $this->referenceRepository->getReference(PuttablePostableAnnotationEntities::PUTTABLE_POSTABLE_1);
-        $client = $this->makeClient();
-        /** @var AccessToken $accessToken */
-        $accessToken = $this->referenceRepository->getReference('token-user-user');
-
-        /** @var PuttablePostableAnnotationEntity $entity */
-        $entity = $this->referenceRepository->getReference(PuttablePostableAnnotationEntities::PUTTABLE_POSTABLE_1);
-        $client = $this->makeClient();
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'user',
+                'PHP_AUTH_PW'   => 'user',
+            ]
+        );
         $response = $this->performPut(
             $client,
             sprintf('/rest/puttablepostableannotationentities/%s', $entity->getId()),
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()],
+            [],
             [
                 'puttableByAll'   => 'changedPuttableByAll',
                 'puttableByUser'  => 'changedPuttableByUser',
@@ -103,7 +103,7 @@ class PuttablePostableTest extends FunctionalTestCase
                 'postableByAdmin' => 'changedPostableByAdmin',
             ]
         );
-        $content = $this->assertJsonResponse($response, 200, true);
+        $content = $this->assertJsonResponse($response, Response::HTTP_OK, true);
         $this->assertContentEquals(
             [
                 'id'              => $entity->getId(),
@@ -120,15 +120,19 @@ class PuttablePostableTest extends FunctionalTestCase
 
     public function testPostUser()
     {
-        $client = $this->makeClient();
-        /** @var AccessToken $accessToken */
-        $accessToken = $this->referenceRepository->getReference('token-user-user');
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'user',
+                'PHP_AUTH_PW'   => 'user',
+            ]
+        );
 
         $response = $this->performPost(
             $client,
             sprintf('/rest/puttablepostableannotationentities'),
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()],
+            [],
             [
                 'puttableByAll'   => 'puttableByAll',
                 'puttableByUser'  => 'puttableByUser',
@@ -157,18 +161,18 @@ class PuttablePostableTest extends FunctionalTestCase
     {
         /** @var PuttablePostableAnnotationEntity $entity */
         $entity = $this->referenceRepository->getReference(PuttablePostableAnnotationEntities::PUTTABLE_POSTABLE_1);
-        $client = $this->makeClient();
-        /** @var AccessToken $accessToken */
-        $accessToken = $this->referenceRepository->getReference('token-user-admin');
-
-        /** @var PuttablePostableAnnotationEntity $entity */
-        $entity = $this->referenceRepository->getReference(PuttablePostableAnnotationEntities::PUTTABLE_POSTABLE_1);
-        $client = $this->makeClient();
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'admin',
+                'PHP_AUTH_PW'   => 'admin',
+            ]
+        );
         $response = $this->performPut(
             $client,
             sprintf('/rest/puttablepostableannotationentities/%s', $entity->getId()),
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()],
+            [],
             [
                 'puttableByAll'   => 'changedPuttableByAll',
                 'puttableByUser'  => 'changedPuttableByUser',
@@ -195,15 +199,19 @@ class PuttablePostableTest extends FunctionalTestCase
 
     public function testPostAdmin()
     {
-        $client = $this->makeClient();
-        /** @var AccessToken $accessToken */
-        $accessToken = $this->referenceRepository->getReference('token-user-admin');
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'admin',
+                'PHP_AUTH_PW'   => 'admin',
+            ]
+        );
 
         $response = $this->performPost(
             $client,
             sprintf('/rest/puttablepostableannotationentities'),
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()],
+            [],
             [
                 'puttableByAll'   => 'puttableByAll',
                 'puttableByUser'  => 'puttableByUser',

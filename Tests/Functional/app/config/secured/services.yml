@@ -1,4 +1,2 @@
 parameters:
-    'ddr_rest.security.enabled': false
-
 services:

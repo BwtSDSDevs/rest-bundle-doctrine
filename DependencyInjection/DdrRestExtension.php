@@ -39,37 +39,5 @@ class DdrRestExtension extends Extension
         $container
             ->getDefinition('ddr_rest.metadata.file_locator')
             ->setArguments([$directories]);
-
-        if (array_key_exists('security', $config)) {
-            $this->loadSecurityConfig($config['security'], $container, $loader);
-        }
-    }
-
-    private function loadSecurityConfig(array $config, ContainerBuilder $container, Loader\YamlFileLoader $loader)
-    {
-        $accessTokenClass = $config[self::ACCESS_TOKEN_CLASS];
-        $authenticationProviderKey = $config[self::AUTHENTICATION_PROVIDER_KEY];
-        if (null === $accessTokenClass && null === $authenticationProviderKey) {
-            return;
-        }
-
-        if (
-            (null === $accessTokenClass && null !== $authenticationProviderKey)
-            || (null !== $accessTokenClass && null === $authenticationProviderKey)
-        ) {
-            throw new \RuntimeException(
-                sprintf(
-                    'You need to provide values for "%s" AND "%s"',
-                    self::ACCESS_TOKEN_CLASS,
-                    self::AUTHENTICATION_PROVIDER_KEY
-                )
-            );
-        }
-
-        $container->setParameter('ddr_rest.access_token_class', $accessTokenClass);
-        $container->setParameter('ddr_rest.authentication_provider_key', $authenticationProviderKey);
-        $container->setParameter('ddr_rest.security.enabled', true);
-
-        $loader->load('services_security.yml');
     }
 }

@@ -9,7 +9,7 @@ framework:
 security:
 
     encoders:
-        Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\User: bcrypt
+        Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\User: plaintext
 
     providers:
         doctrine_provider:
@@ -20,8 +20,6 @@ security:
     firewalls:
         rest:
              pattern: ^/rest
-             simple_preauth:
-                authenticator: ddr_rest.security.access_token_authenticator
              anonymous: true
              stateless: true
              http_basic: ~
@@ -29,9 +27,6 @@ security:
 ddr_rest:
     paths:
         - '/rest'
-    security:
-        access_token_class: 'Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\AccessToken'
-        authentication_provider_key: 'rest'
     metadata:
         directories:
             secured:

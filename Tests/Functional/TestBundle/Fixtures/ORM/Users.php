@@ -36,31 +36,12 @@ class Users extends AbstractFixture implements ContainerAwareInterface
         $manager->persist($user);
         $this->addReference('user-user', $user);
 
-        $accessToken = new AccessToken();
-        $accessToken->setToken('user-user');
-        $accessToken->setUser($user);
-        $manager->persist($accessToken);
-        $this->addReference('token-user-user', $accessToken);
-
-        $accessToken = new AccessToken();
-        $accessToken->setToken('user-user-expired');
-        $accessToken->setExpiry(new \DateTime('-1 Week'));
-        $accessToken->setUser($user);
-        $manager->persist($accessToken);
-        $this->addReference('token-user-expired', $accessToken);
-
         $user = new User();
         $user->setUsername('admin');
         $user->setRole('ROLE_ADMIN');
         $user->setPassword($passwordEncoder->encodePassword($user, 'admin'));
         $manager->persist($user);
         $this->addReference('user-admin', $user);
-
-        $accessToken = new AccessToken();
-        $accessToken->setToken('user-admin');
-        $accessToken->setUser($user);
-        $manager->persist($accessToken);
-        $this->addReference('token-user-admin', $accessToken);
 
         $supervisor = new User();
         $supervisor->setRole('ROLE_USER');

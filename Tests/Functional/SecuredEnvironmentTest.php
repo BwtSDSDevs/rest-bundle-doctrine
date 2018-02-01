@@ -26,16 +26,19 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testList()
     {
-        $client = $this->makeClient();
-
-        /** @var AccessToken $accessToken */
-        $accessToken = $this->referenceRepository->getReference('token-user-user');
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'user',
+                'PHP_AUTH_PW'   => 'user',
+            ]
+        );
 
         $response = $this->performGet(
             $client,
             '/rest/secured',
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
+            []
         );
         $content = $this->assertJsonResponse($response);
 
@@ -51,15 +54,19 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testPost()
     {
-        /** @var AccessToken $accessToken */
-        $accessToken = $this->referenceRepository->getReference('token-user-admin');
-        $client = $this->makeClient();
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'admin',
+                'PHP_AUTH_PW'   => 'admin',
+            ]
+        );
 
         $response = $this->performPost(
             $client,
             '/rest/secured',
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()],
+            [],
             [
                 'integerField' => 23,
             ]
@@ -85,15 +92,18 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testPostInvalid()
     {
-        /** @var AccessToken $accessToken */
-        $accessToken = $this->referenceRepository->getReference('token-user-admin');
-
-        $client = $this->makeClient();
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'admin',
+                'PHP_AUTH_PW'   => 'admin',
+            ]
+        );
         $response = $this->performPost(
             $client,
             '/rest/secured',
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()],
+            [],
             ['integerField' => 'thisisnointeger']
         );
         $content = $this->assertJsonResponse($response, Response::HTTP_BAD_REQUEST, true);
@@ -125,10 +135,14 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testGet()
     {
-        $client = $this->makeClient();
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'user',
+                'PHP_AUTH_PW'   => 'user',
+            ]
+        );
 
-        /** @var AccessToken $accessToken */
-        $accessToken = $this->referenceRepository->getReference('token-user-user');
         /** @var SecuredEntity $entity */
         $entity = $this->referenceRepository->getReference('secured-entity-0');
 
@@ -136,7 +150,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             $client,
             sprintf('/rest/secured/%s', $entity->getId()),
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
+            []
         );
         $content = $this->assertJsonResponse($response);
 
@@ -166,15 +180,19 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testDelete()
     {
-        /** @var AccessToken $accessToken */
-        $accessToken = $this->referenceRepository->getReference('token-user-admin');
         $entity = $this->referenceRepository->getReference('secured-entity-0');
-        $client = $this->makeClient();
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'admin',
+                'PHP_AUTH_PW'   => 'admin',
+            ]
+        );
         $response = $this->performDelete(
             $client,
             sprintf('/rest/secured/%s', $entity->getId()),
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
+            []
         );
         $content = $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT);
 
@@ -196,22 +214,34 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         );
         $this->assertJsonResponse($response, Response::HTTP_UNAUTHORIZED);
 
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'user',
+                'PHP_AUTH_PW'   => 'user',
+            ]
+        );
+
         /* Insufficient Privileges */
 
-        /** @var AccessToken $accessToken */
-        $accessToken = $this->referenceRepository->getReference('token-user-user');
         $response = $this->performPut(
             $client,
             sprintf('/rest/secured/%s', $entity->getId()),
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
+            []
         );
         $this->assertJsonResponse($response, Response::HTTP_FORBIDDEN);
     }
 
     public function testPut()
     {
-        $client = $this->makeClient();
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'admin',
+                'PHP_AUTH_PW'   => 'admin',
+            ]
+        );
 
         $entity = $this->referenceRepository->getReference('secured-entity-0');
 
@@ -225,13 +255,11 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             ]
         ];
 
-        /** @var AccessToken $accessToken */
-        $accessToken = $this->referenceRepository->getReference('token-user-admin');
         $response = $this->performPut(
             $client,
             sprintf('/rest/secured/%s', $entity->getId()),
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()],
+            [],
             $data
         );
         $content = $this->assertJsonResponse($response);
@@ -246,10 +274,14 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testGetWithSubResources()
     {
-        $client = $this->makeClient();
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'user',
+                'PHP_AUTH_PW'   => 'user',
+            ]
+        );
 
-        /** @var AccessToken $accessToken */
-        $accessToken = $this->referenceRepository->getReference('token-user-user');
         /** @var SecuredEntity $entity */
         $entity = $this->referenceRepository->getReference('secured-entity-0');
 
@@ -257,7 +289,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             $client,
             sprintf('/rest/secured/%s', $entity->getId()),
             ['include' => 'subResources,subResources._links'],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
+            []
         );
         $content = $this->assertJsonResponse($response);
 
@@ -271,10 +303,14 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testListSubResources()
     {
-        $client = $this->makeClient();
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'user',
+                'PHP_AUTH_PW'   => 'user',
+            ]
+        );
 
-        /** @var AccessToken $accessToken */
-        $accessToken = $this->referenceRepository->getReference('token-user-user');
         /** @var SecuredEntity $entity */
         $entity = $this->referenceRepository->getReference('secured-entity-0');
 
@@ -282,7 +318,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             $client,
             sprintf('/rest/secured/%s/subresources', $entity->getId()),
             ['page' => 1, 'perPage' => 3],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
+            []
         );
         $content = $this->assertJsonResponse($response);
         $this->assertCount(3, $content);
@@ -291,22 +327,25 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testAddSubResource()
     {
-        /** @var AccessToken $accessToken */
-        $accessToken = $this->referenceRepository->getReference('token-user-admin');
-
         /** @var SecuredEntity $entity */
         $entity = $this->referenceRepository->getReference('secured-entity-1');
 
         /** @var SubResourceEntity $subResourceEntity */
         $subResourceEntity = $this->referenceRepository->getReference('subresource-entity-11');
 
-        $client = $this->makeClient();
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'admin',
+                'PHP_AUTH_PW'   => 'admin',
+            ]
+        );
 
         $response = $this->performPut(
             $client,
             sprintf('/rest/secured/%s/subresources/%s', $entity->getId(), $subResourceEntity->getId()),
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
+            []
         );
         $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT);
 
@@ -314,7 +353,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             $client,
             sprintf('/rest/secured/%s/subresources', $entity->getId()),
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
+            []
         );
         $content = $this->assertJsonResponse($response);
         $this->assertCount(1, $content);
@@ -322,32 +361,41 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testAddParent()
     {
-        /** @var AccessToken $adminToken */
-        $userToken = $this->referenceRepository->getReference('token-user-user');
-        /** @var AccessToken $adminToken */
-        $adminToken = $this->referenceRepository->getReference('token-user-admin');
-
         /** @var SecuredEntity $parent */
         $parent = $this->referenceRepository->getReference('secured-entity-1');
 
         /** @var SubResourceEntity $child */
         $child = $this->referenceRepository->getReference('subresource-entity-0');
 
-        $client = $this->makeClient();
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'admin',
+                'PHP_AUTH_PW'   => 'admin',
+            ]
+        );
 
         $response = $this->performPut(
             $client,
             sprintf('/rest/subresourceentities/%s/parententity/%s', $child->getId(), $parent->getId()),
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $adminToken->getToken()]
+            []
         );
         $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT, true);
+
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'user',
+                'PHP_AUTH_PW'   => 'user',
+            ]
+        );
 
         $response = $this->performGet(
             $client,
             sprintf('/rest/subresourceentities/%s', $child->getId()),
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $userToken->getToken()]
+            []
         );
         $content = $this->assertJsonResponse($response);
 
@@ -366,22 +414,25 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testRemoveSubResource()
     {
-        /** @var AccessToken $accessToken */
-        $accessToken = $this->referenceRepository->getReference('token-user-admin');
-
         /** @var SecuredEntity $entity */
         $entity = $this->referenceRepository->getReference('secured-entity-0');
 
         /** @var SubResourceEntity $subResourceEntity */
         $subResourceEntity = $this->referenceRepository->getReference('subresource-entity-2');
 
-        $client = $this->makeClient();
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'admin',
+                'PHP_AUTH_PW'   => 'admin',
+            ]
+        );
 
         $response = $this->performDelete(
             $client,
             sprintf('/rest/secured/%s/subresources/%s', $entity->getId(), $subResourceEntity->getId()),
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
+            []
         );
         $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT);
 
@@ -389,7 +440,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             $client,
             sprintf('/rest/secured/%s/subresources', $entity->getId()),
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
+            []
         );
         $content = $this->assertJsonResponse($response);
         $this->assertCount(4, $content);
@@ -397,32 +448,41 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testRemoveParent()
     {
-        /** @var AccessToken $adminToken */
-        $userToken = $this->referenceRepository->getReference('token-user-user');
-        /** @var AccessToken $adminToken */
-        $adminToken = $this->referenceRepository->getReference('token-user-admin');
-
         /** @var SecuredEntity $parent */
         $parent = $this->referenceRepository->getReference('secured-entity-1');
 
         /** @var SubResourceEntity $child */
         $child = $this->referenceRepository->getReference('subresource-entity-2');
 
-        $client = $this->makeClient();
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'admin',
+                'PHP_AUTH_PW'   => 'admin',
+            ]
+        );
 
         $response = $this->performDelete(
             $client,
             sprintf('/rest/subresourceentities/%s/parententity', $child->getId(), $parent->getId()),
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $adminToken->getToken()]
+            []
         );
         $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT, true);
+
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'user',
+                'PHP_AUTH_PW'   => 'user',
+            ]
+        );
 
         $response = $this->performGet(
             $client,
             sprintf('/rest/subresourceentities/%s', $child->getId()),
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $userToken->getToken()]
+            []
         );
         $content = $this->assertJsonResponse($response);
 
@@ -445,14 +505,18 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testSubResourcesList()
     {
-        /** @var AccessToken $accessToken */
-        $accessToken = $this->referenceRepository->getReference('token-user-user');
-        $client = $this->makeClient();
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'user',
+                'PHP_AUTH_PW'   => 'user',
+            ]
+        );
         $response = $this->performGet(
             $client,
             '/rest/subresourceentities',
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
+            []
         );
         $content = $this->assertJsonResponse($response);
         $this->assertCount(33, $content);
@@ -471,10 +535,13 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testPostSubresource()
     {
-        $client = $this->makeClient();
-
-        /** @var AccessToken $accessToken */
-        $accessToken = $this->referenceRepository->getReference('token-user-admin');
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'admin',
+                'PHP_AUTH_PW'   => 'admin',
+            ]
+        );
 
         /** @var SecuredEntity $entity */
         $entity = $this->referenceRepository->getReference('secured-entity-1');
@@ -483,7 +550,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             $client,
             sprintf('/rest/secured/%s/subresources', $entity->getId()),
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()]
+            []
         );
         $content = $this->assertJsonResponse($response, Response::HTTP_CREATED);
         $this->assertNotNull($content['id']);

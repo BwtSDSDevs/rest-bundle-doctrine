@@ -16,15 +16,19 @@ class ReferenceTest extends FunctionalTestCase
     {
         $creator = $this->referenceRepository->getReference(Users::EMPLOYEE_1);
 
-        /** @var AccessToken $accessToken */
-        $accessToken = $this->referenceRepository->getReference('token-user-admin');
-        $client = $this->makeClient();
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'admin',
+                'PHP_AUTH_PW'   => 'admin',
+            ]
+        );
 
         $response = $this->performPost(
             $client,
             '/rest/subresourceentities',
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()],
+            [],
             [
                 'creator' => [
                     'id' => $creator->getId(),
@@ -52,15 +56,19 @@ class ReferenceTest extends FunctionalTestCase
         $creator = $this->referenceRepository->getReference(Users::EMPLOYEE_1);
         $entity = $this->referenceRepository->getReference('subresource-entity-0');
 
-        /** @var AccessToken $accessToken */
-        $accessToken = $this->referenceRepository->getReference('token-user-admin');
-        $client = $this->makeClient();
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'admin',
+                'PHP_AUTH_PW'   => 'admin',
+            ]
+        );
 
         $response = $this->performPut(
             $client,
             sprintf('/rest/subresourceentities/%s', $entity->getId()),
             [],
-            [AbstractAccessTokenAuthenticator::DEFAULT_TOKEN_HEADER_NAME => $accessToken->getToken()],
+            [],
             [
                 'creator' => [
                     'id' => $creator->getId(),
