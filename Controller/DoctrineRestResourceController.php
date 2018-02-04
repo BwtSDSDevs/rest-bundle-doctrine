@@ -3,6 +3,7 @@
 namespace Dontdrinkandroot\RestBundle\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
 use Dontdrinkandroot\RestBundle\Service\Normalizer;
 use Dontdrinkandroot\RestBundle\Service\RestRequestParserInterface;
 use Dontdrinkandroot\Service\CrudServiceInterface;
@@ -26,7 +27,7 @@ class DoctrineRestResourceController extends AbstractCrudServiceRestResourceCont
         Normalizer $normalizer,
         ValidatorInterface $validator,
         RequestStack $requestStack,
-        MetadataFactoryInterface $metadataFactory,
+        RestMetadataFactory $metadataFactory,
         PropertyAccessorInterface $propertyAccessor,
         EntityManagerInterface $entityManager
     ) {

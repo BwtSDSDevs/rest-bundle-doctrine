@@ -7,6 +7,7 @@ use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
+use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
 use Dontdrinkandroot\RestBundle\Service\Normalizer;
 use Dontdrinkandroot\RestBundle\Service\RestRequestParserInterface;
 use Metadata\MetadataFactoryInterface;
@@ -48,7 +49,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     private $requestStack;
 
     /**
-     * @var MetadataFactoryInterface
+     * @var RestMetadataFactory
      */
     private $metadataFactory;
 
@@ -67,7 +68,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
         Normalizer $normalizer,
         ValidatorInterface $validator,
         RequestStack $requestStack,
-        MetadataFactoryInterface $metadataFactory,
+        RestMetadataFactory $metadataFactory,
         PropertyAccessorInterface $propertyAccessor
     ) {
         $this->requestParser = $requestParser;

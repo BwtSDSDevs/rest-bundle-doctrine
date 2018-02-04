@@ -2,6 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Controller;
 
+use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
 use Dontdrinkandroot\RestBundle\Service\Normalizer;
 use Dontdrinkandroot\RestBundle\Service\RestRequestParserInterface;
 use Dontdrinkandroot\Service\CrudServiceInterface;
@@ -19,7 +20,7 @@ class CrudServiceRestResourceController extends AbstractCrudServiceRestResourceC
         Normalizer $normalizer,
         ValidatorInterface $validator,
         RequestStack $requestStack,
-        MetadataFactoryInterface $metadataFactory,
+        RestMetadataFactory $metadataFactory,
         PropertyAccessorInterface $propertyAccessor,
         CrudServiceInterface $service
     ) {
