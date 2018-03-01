@@ -3,7 +3,6 @@
 namespace Dontdrinkandroot\RestBundle\Tests\Functional\app;
 
 use Symfony\Component\Config\Loader\LoaderInterface;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
 
 class AppKernel extends Kernel
@@ -30,14 +29,6 @@ class AppKernel extends Kernel
         }
 
         return include $bundlesFile;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function build(ContainerBuilder $container)
-    {
-        $container->addCompilerPass(new TestContainerPass());
     }
 
     /**

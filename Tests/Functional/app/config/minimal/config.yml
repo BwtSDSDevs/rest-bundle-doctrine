@@ -1,5 +1,7 @@
 imports:
     - { resource: ../config.yml }
+    - { resource: services.yml }
+    - { resource: services_test.yml }
 
 framework:
     router: { resource: "%kernel.root_dir%/config/minimal/routing.yml" }

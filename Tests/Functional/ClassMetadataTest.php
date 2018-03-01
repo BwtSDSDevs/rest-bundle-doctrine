@@ -16,7 +16,7 @@ class ClassMetadataTest extends FunctionalTestCase
     public function testUser()
     {
         /** @var MetadataFactory $metadataFactory */
-        $metadataFactory = $this->getContainer()->get('test.container')->get('ddr_rest.metadata.factory');
+        $metadataFactory = $this->getContainer()->get('test.Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory');
         /** @var ClassMetadata $classMetadata */
         $classMetadata = $metadataFactory->getMetadataForClass(User::class);
 
@@ -36,7 +36,7 @@ class ClassMetadataTest extends FunctionalTestCase
     public function testUserSerialization()
     {
         /** @var MetadataFactory $metadataFactory */
-        $metadataFactory = $this->getContainer()->get('test.container')->get('ddr_rest.metadata.factory');
+        $metadataFactory = $this->getContainer()->get('test.Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory');
         /** @var ClassMetadata $classMetadata */
         $classMetadata = $metadataFactory->getMetadataForClass(User::class);
 
@@ -51,7 +51,7 @@ class ClassMetadataTest extends FunctionalTestCase
     public function testSubResourceEntity()
     {
         /** @var MetadataFactory $metadataFactory */
-        $metadataFactory = $this->getContainer()->get('test.container')->get('ddr_rest.metadata.factory');
+        $metadataFactory = $this->getContainer()->get('test.Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory');
         /** @var ClassMetadata $classMetadata */
         $classMetadata = $metadataFactory->getMetadataForClass(SubResourceEntity::class);
 
@@ -69,7 +69,7 @@ class ClassMetadataTest extends FunctionalTestCase
     public function testSubResourceEntitySerialization()
     {
         /** @var MetadataFactory $metadataFactory */
-        $metadataFactory = $this->getContainer()->get('test.container')->get('ddr_rest.metadata.factory');
+        $metadataFactory = $this->getContainer()->get('test.Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory');
         /** @var ClassMetadata $classMetadata */
         $classMetadata = $metadataFactory->getMetadataForClass(SubResourceEntity::class);
 

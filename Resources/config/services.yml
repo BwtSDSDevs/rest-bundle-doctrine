@@ -4,24 +4,25 @@ services:
 
     ddr_rest.metadata.file_locator:
         class: Metadata\Driver\FileLocator
-        arguments:
 
-    ddr_rest.metadata.driver.doctrine:
-        class: Dontdrinkandroot\RestBundle\Metadata\Driver\DoctrineDriver
+    Dontdrinkandroot\RestBundle\Metadata\Driver\DoctrineDriver:
         arguments:
             - '@doctrine.orm.entity_manager'
 
-    ddr_rest.metadata.driver.annotation:
-        class: Dontdrinkandroot\RestBundle\Metadata\Driver\AnnotationDriver
+    ddr_rest.metadata.driver.doctrine: '@Dontdrinkandroot\RestBundle\Metadata\Driver\DoctrineDriver'
+
+    Dontdrinkandroot\RestBundle\Metadata\Driver\AnnotationDriver:
         arguments:
             - '@annotation_reader'
             - '@ddr_rest.metadata.driver.doctrine'
 
-    ddr_rest.metadata.driver.yaml:
-        class: Dontdrinkandroot\RestBundle\Metadata\Driver\YamlDriver
-        arguments:
+    ddr_rest.metadata.driver.annotation: '@Dontdrinkandroot\RestBundle\Metadata\Driver\AnnotationDriver'
+
+    Dontdrinkandroot\RestBundle\Metadata\Driver\YamlDriver:
             - '@ddr_rest.metadata.file_locator'
             - '@ddr_rest.metadata.driver.doctrine'
+
+    ddr_rest.metadata.driver.yaml: '@Dontdrinkandroot\RestBundle\Metadata\Driver\YamlDriver'
 
     ddr_rest.metadata.cache:
         class: Metadata\Cache\DoctrineCacheAdapter
@@ -34,8 +35,6 @@ services:
         arguments:
             - ['@ddr_rest.metadata.driver.yaml', '@ddr_rest.metadata.driver.annotation']
 
-    ddr_rest.metadata.factory: '@Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory'
-
     Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory:
         arguments:
             - '@ddr_rest.metadata.driver.chain'
@@ -43,6 +42,8 @@ services:
             - ['setCache',['@ddr_rest.metadata.cache']]
 
     ddr_rest.parser.request: '@Dontdrinkandroot\RestBundle\Service\RestRequestParser'
+
+    ddr_rest.metadata.factory: '@Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory'
 
     Dontdrinkandroot\RestBundle\Service\RestRequestParser:
         arguments:
@@ -52,16 +53,18 @@ services:
         calls:
             - [setAuthorizationChecker, ['@?security.authorization_checker']]
 
-    ddr_rest.routing.rest_entity_loader:
-        class: Dontdrinkandroot\RestBundle\Routing\RestResourceLoader
+
+    Dontdrinkandroot\RestBundle\Routing\RestResourceLoader:
         arguments:
             - '@file_locator'
             - '@ddr_rest.metadata.factory'
         tags:
             - { name: routing.loader }
 
-    ddr_rest.listener.kernel_exception:
-        class: Dontdrinkandroot\RestBundle\Listener\KernelExceptionListener
+    ddr_rest.routing.rest_entity_loader: '@Dontdrinkandroot\RestBundle\Routing\RestResourceLoader'
+
+
+    Dontdrinkandroot\RestBundle\Listener\KernelExceptionListener:
         arguments:
             - '%ddr_rest.paths%'
         calls:
@@ -69,7 +72,7 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
 
-    ddr_rest.normalizer: '@Dontdrinkandroot\RestBundle\Service\Normalizer'
+    ddr_rest.listener.kernel_exception: '@Dontdrinkandroot\RestBundle\Listener\KernelExceptionListener'
 
     Dontdrinkandroot\RestBundle\Service\Normalizer:
         arguments:
@@ -77,8 +80,9 @@ services:
             - '@property_accessor'
             - '@router'
 
-    ddr_rest.controller.doctrine:
-        class: Dontdrinkandroot\RestBundle\Controller\DoctrineRestResourceController
+    ddr_rest.normalizer: '@Dontdrinkandroot\RestBundle\Service\Normalizer'
+
+    Dontdrinkandroot\RestBundle\Controller\DoctrineRestResourceController:
         arguments:
             - '@ddr_rest.parser.request'
             - '@ddr_rest.normalizer'
@@ -89,4 +93,8 @@ services:
             - '@doctrine.orm.entity_manager'
         calls:
             - [setAuthorizationChecker, ['@?security.authorization_checker']]
+        public: true
+
+    ddr_rest.controller.doctrine:
+        alias: 'Dontdrinkandroot\RestBundle\Controller\DoctrineRestResourceController'
         public: true

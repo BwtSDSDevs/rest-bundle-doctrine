@@ -1,0 +1,6 @@
+services:
+
+    _defaults:
+        public: true
+
+    test.Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory: '@Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory'
