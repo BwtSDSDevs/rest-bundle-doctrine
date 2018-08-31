@@ -13,6 +13,10 @@
         syntaxCheck="false"
         bootstrap="Tests/autoload.php">
 
+    <php>
+        <env name="SHELL_VERBOSITY" value="-1" />
+    </php>
+
     <testsuites>
         <testsuite name="Project Test Suite">
             <directory>Tests</directory>
