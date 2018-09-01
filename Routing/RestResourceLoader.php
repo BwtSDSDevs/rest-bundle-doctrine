@@ -295,8 +295,7 @@ class RestResourceLoader extends Loader
      */
     protected function getController(ClassMetadata $classMetadata)
     {
-//        $controller = DoctrineRestResourceController::class;
-        $controller = 'ddr_rest.controller.doctrine';
+        $controller = 'Dontdrinkandroot\RestBundle\Controller\DoctrineRestResourceController';
         if (null !== $classMetadata->getController()) {
             $controller = $classMetadata->getController();
         }

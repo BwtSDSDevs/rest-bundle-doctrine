@@ -76,7 +76,7 @@ class YamlDriver extends AbstractFileDriver
         foreach ($class->getProperties() as $reflectionProperty) {
 
             $propertyName = $reflectionProperty->getName();
-            $propertyMetadata = $this->getOrCreatePropertymetadata($classMetadata, $propertyName);
+            $propertyMetadata = $this->getOrCreatePropertyMetadata($classMetadata, $propertyName);
 
             if (array_key_exists($propertyName, $fieldConfigs)) {
                 $fieldConfig = $fieldConfigs[$propertyName];
@@ -89,7 +89,7 @@ class YamlDriver extends AbstractFileDriver
 
         /* Parse unbacked field definitions */
         foreach ($fieldConfigs as $name => $fieldConfig) {
-            $propertyMetadata = $this->getOrCreatePropertymetadata($classMetadata, $name);
+            $propertyMetadata = $this->getOrCreatePropertyMetadata($classMetadata, $name);
             $this->parseFieldConfig($name, $fieldConfig, $propertyMetadata);
             $classMetadata->addPropertyMetadata($propertyMetadata);
         }
@@ -166,7 +166,7 @@ class YamlDriver extends AbstractFileDriver
         return 'rest.yml';
     }
 
-    protected function getOrCreatePropertymetadata(ClassMetadata $classMetadata, $propertyName): PropertyMetadata
+    protected function getOrCreatePropertyMetadata(ClassMetadata $classMetadata, $propertyName): PropertyMetadata
     {
         $propertyMetadata = $classMetadata->getPropertyMetadata($propertyName);
         if (null === $propertyMetadata) {

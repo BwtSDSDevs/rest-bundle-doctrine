@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+
+        <!-- Services -->
+
+        <service id="ddr_rest.metadata.file_locator" class="Metadata\Driver\FileLocator" />
+
+        <service id="Dontdrinkandroot\RestBundle\Metadata\Driver\DoctrineDriver">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
+        <service id="Dontdrinkandroot\RestBundle\Metadata\Driver\YamlDriver">
+            <argument type="service" id="ddr_rest.metadata.file_locator" />
+            <argument type="service" id="Dontdrinkandroot\RestBundle\Metadata\Driver\DoctrineDriver" />
+        </service>
+
+        <service id="Dontdrinkandroot\RestBundle\Metadata\Driver\AnnotationDriver">
+            <argument type="service" id="annotation_reader" />
+            <argument type="service" id="Dontdrinkandroot\RestBundle\Metadata\Driver\DoctrineDriver" />
+        </service>
+
+        <service id="ddr_rest.metadata.driver.chain" class="Metadata\Driver\DriverChain">
+            <argument type="collection">
+                <argument type="service" id="Dontdrinkandroot\RestBundle\Metadata\Driver\YamlDriver" />
+                <argument type="service" id="Dontdrinkandroot\RestBundle\Metadata\Driver\AnnotationDriver" />
+            </argument>
+        </service>
+
+        <service id="ddr_rest.metadata.cache" class="Metadata\Cache\DoctrineCacheAdapter">
+            <argument type="string">ddr_rest</argument>
+            <argument type="service" id="doctrine.orm.default_metadata_cache" />
+        </service>
+
+        <service id="Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory">
+            <argument type="service" id="ddr_rest.metadata.driver.chain" />
+            <call method="setCache">
+                <argument type="service" id="ddr_rest.metadata.cache" />
+            </call>
+        </service>
+
+        <service id="Dontdrinkandroot\RestBundle\Service\RestRequestParser">
+            <argument type="service" id="Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory" />
+            <argument type="service" id="property_accessor" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <call method="setAuthorizationChecker">
+                <argument type="service" id="security.authorization_checker" on-invalid="ignore" />
+            </call>
+        </service>
+
+        <service id="Dontdrinkandroot\RestBundle\Routing\RestResourceLoader">
+            <argument type="service" id="file_locator" />
+            <argument type="service" id="Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory" />
+            <tag name="routing.loader" />
+        </service>
+
+        <service id="Dontdrinkandroot\RestBundle\Service\Normalizer">
+            <argument type="service" id="Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory" />
+            <argument type="service" id="property_accessor" />
+            <argument type="service" id="router" />
+        </service>
+
+        <service id="Dontdrinkandroot\RestBundle\Listener\KernelExceptionListener">
+            <argument>%ddr_rest.paths%</argument>
+            <call method="setDebug">
+                <argument>%kernel.debug%</argument>
+            </call>
+            <tag name="kernel.event_listener" event="kernel.exception" />
+        </service>
+
+        <!-- Controller -->
+
+        <service id="Dontdrinkandroot\RestBundle\Controller\DoctrineRestResourceController" public="true">
+            <argument type="service" id="Dontdrinkandroot\RestBundle\Service\RestRequestParser" />
+            <argument type="service" id="Dontdrinkandroot\RestBundle\Service\Normalizer" />
+            <argument type="service" id="validator" />
+            <argument type="service" id="request_stack" />
+            <argument type="service" id="Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory" />
+            <argument type="service" id="property_accessor" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <call method="setAuthorizationChecker">
+                <argument type="service" id="security.authorization_checker" on-invalid="ignore" />
+            </call>
+        </service>
+
+        <!-- Commands -->
+
+    </services>
+
+</container>

@@ -25,11 +25,11 @@ class DdrRestExtension extends Extension
 
         $container->setParameter('ddr_rest.paths', $config['paths']);
 
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('services.yml');
+        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader->load('services.xml');
 
         $directories = [];
-        $directories['Dontdrinkandroot\RestBundle'] = realpath(__DIR__ . '/../Resources/config/rest/');
+        #$directories['Dontdrinkandroot\RestBundle'] = realpath(__DIR__ . '/../config/rest/');
         if (array_key_exists('metadata', $config) && array_key_exists('directories', $config['metadata'])) {
             foreach ($config['metadata']['directories'] as $directory) {
                 $directories[$directory['namespace_prefix']] = $directory['path'];
