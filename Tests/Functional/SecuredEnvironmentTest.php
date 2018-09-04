@@ -26,6 +26,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testList()
     {
+        $referenceRepository = $this->loadFixtures([Users::class, SecuredEntities::class])->getReferenceRepository();
         $client = $this->makeClient(
             false,
             [
@@ -54,6 +55,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testPost()
     {
+        $referenceRepository = $this->loadFixtures([Users::class])->getReferenceRepository();
         $client = $this->makeClient(
             false,
             [
@@ -92,6 +94,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testPostInvalid()
     {
+        $referenceRepository = $this->loadFixtures([Users::class])->getReferenceRepository();
         $client = $this->makeClient(
             false,
             [
@@ -122,9 +125,10 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testGetUnauthorized()
     {
+        $referenceRepository = $this->loadFixtures([SecuredEntities::class])->getReferenceRepository();
         $client = $this->makeClient();
 
-        $entity = $this->referenceRepository->getReference('secured-entity-0');
+        $entity = $referenceRepository->getReference('secured-entity-0');
 
         $response = $this->performGet(
             $client,
@@ -135,6 +139,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testGet()
     {
+        $referenceRepository = $this->loadFixtures([Users::class, SecuredEntities::class])->getReferenceRepository();
         $client = $this->makeClient(
             false,
             [
@@ -144,7 +149,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         );
 
         /** @var SecuredEntity $entity */
-        $entity = $this->referenceRepository->getReference('secured-entity-0');
+        $entity = $referenceRepository->getReference('secured-entity-0');
 
         $response = $this->performGet(
             $client,
@@ -172,7 +177,8 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testDeleteUnauthorized()
     {
-        $entity = $this->referenceRepository->getReference('secured-entity-0');
+        $referenceRepository = $this->loadFixtures([SecuredEntities::class])->getReferenceRepository();
+        $entity = $referenceRepository->getReference('secured-entity-0');
         $client = $this->makeClient();
         $response = $this->performDelete($client, sprintf('/rest/secured/%s', $entity->getId()));
         $content = $this->assertJsonResponse($response, Response::HTTP_UNAUTHORIZED);
@@ -180,7 +186,8 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testDelete()
     {
-        $entity = $this->referenceRepository->getReference('secured-entity-0');
+        $referenceRepository = $this->loadFixtures([Users::class, SecuredEntities::class])->getReferenceRepository();
+        $entity = $referenceRepository->getReference('secured-entity-0');
         $client = $this->makeClient(
             false,
             [
@@ -202,9 +209,10 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testPutUnauthorized()
     {
+        $referenceRepository = $this->loadFixtures([Users::class, SecuredEntities::class])->getReferenceRepository();
         $client = $this->makeClient();
 
-        $entity = $this->referenceRepository->getReference('secured-entity-0');
+        $entity = $referenceRepository->getReference('secured-entity-0');
 
         /* No User */
 
@@ -235,6 +243,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testPut()
     {
+        $referenceRepository = $this->loadFixtures([Users::class, SecuredEntities::class])->getReferenceRepository();
         $client = $this->makeClient(
             false,
             [
@@ -243,7 +252,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             ]
         );
 
-        $entity = $this->referenceRepository->getReference('secured-entity-0');
+        $entity = $referenceRepository->getReference('secured-entity-0');
 
         $data = [
             'dateTimeField'  => '2011-02-03 04:05:06',
@@ -274,6 +283,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testGetWithSubResources()
     {
+        $referenceRepository = $this->loadFixtures([Users::class, SecuredEntities::class])->getReferenceRepository();
         $client = $this->makeClient(
             false,
             [
@@ -283,7 +293,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         );
 
         /** @var SecuredEntity $entity */
-        $entity = $this->referenceRepository->getReference('secured-entity-0');
+        $entity = $referenceRepository->getReference('secured-entity-0');
 
         $response = $this->performGet(
             $client,
@@ -303,6 +313,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testListSubResources()
     {
+        $referenceRepository = $this->loadFixtures([Users::class, SecuredEntities::class])->getReferenceRepository();
         $client = $this->makeClient(
             false,
             [
@@ -312,7 +323,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         );
 
         /** @var SecuredEntity $entity */
-        $entity = $this->referenceRepository->getReference('secured-entity-0');
+        $entity = $referenceRepository->getReference('secured-entity-0');
 
         $response = $this->performGet(
             $client,
@@ -327,11 +338,12 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testAddSubResource()
     {
+        $referenceRepository = $this->loadFixtures([Users::class, SecuredEntities::class])->getReferenceRepository();
         /** @var SecuredEntity $entity */
-        $entity = $this->referenceRepository->getReference('secured-entity-1');
+        $entity = $referenceRepository->getReference('secured-entity-1');
 
         /** @var SubResourceEntity $subResourceEntity */
-        $subResourceEntity = $this->referenceRepository->getReference('subresource-entity-11');
+        $subResourceEntity = $referenceRepository->getReference('subresource-entity-11');
 
         $client = $this->makeClient(
             false,
@@ -361,11 +373,12 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testAddParent()
     {
+        $referenceRepository = $this->loadFixtures([Users::class, SecuredEntities::class])->getReferenceRepository();
         /** @var SecuredEntity $parent */
-        $parent = $this->referenceRepository->getReference('secured-entity-1');
+        $parent = $referenceRepository->getReference('secured-entity-1');
 
         /** @var SubResourceEntity $child */
-        $child = $this->referenceRepository->getReference('subresource-entity-0');
+        $child = $referenceRepository->getReference('subresource-entity-0');
 
         $client = $this->makeClient(
             false,
@@ -414,11 +427,13 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testRemoveSubResource()
     {
+        $referenceRepository = $this->loadFixtures([Users::class, SecuredEntities::class])->getReferenceRepository();
+
         /** @var SecuredEntity $entity */
-        $entity = $this->referenceRepository->getReference('secured-entity-0');
+        $entity = $referenceRepository->getReference('secured-entity-0');
 
         /** @var SubResourceEntity $subResourceEntity */
-        $subResourceEntity = $this->referenceRepository->getReference('subresource-entity-2');
+        $subResourceEntity = $referenceRepository->getReference('subresource-entity-2');
 
         $client = $this->makeClient(
             false,
@@ -448,11 +463,13 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testRemoveParent()
     {
+        $referenceRepository = $this->loadFixtures([Users::class, SecuredEntities::class])->getReferenceRepository();
+
         /** @var SecuredEntity $parent */
-        $parent = $this->referenceRepository->getReference('secured-entity-1');
+        $parent = $referenceRepository->getReference('secured-entity-1');
 
         /** @var SubResourceEntity $child */
-        $child = $this->referenceRepository->getReference('subresource-entity-2');
+        $child = $referenceRepository->getReference('subresource-entity-2');
 
         $client = $this->makeClient(
             false,
@@ -524,10 +541,11 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testPostSubresourceUnauthorized()
     {
+        $referenceRepository = $this->loadFixtures([SecuredEntities::class])->getReferenceRepository();
         $client = $this->makeClient();
 
         /** @var SecuredEntity $entity */
-        $entity = $this->referenceRepository->getReference('secured-entity-1');
+        $entity = $referenceRepository->getReference('secured-entity-1');
 
         $response = $this->performPost($client, sprintf('/rest/secured/%s/subresources', $entity->getId()));
         $this->assertJsonResponse($response, Response::HTTP_UNAUTHORIZED);
@@ -535,6 +553,8 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testPostSubresource()
     {
+        $referenceRepository = $this->loadFixtures([Users::class, SecuredEntities::class])->getReferenceRepository();
+
         $client = $this->makeClient(
             false,
             [
@@ -544,7 +564,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         );
 
         /** @var SecuredEntity $entity */
-        $entity = $this->referenceRepository->getReference('secured-entity-1');
+        $entity = $referenceRepository->getReference('secured-entity-1');
 
         $response = $this->performPost(
             $client,
@@ -560,21 +580,15 @@ class SecuredEnvironmentTest extends FunctionalTestCase
 
     public function testGetInheritedEntity()
     {
+        $referenceRepository = $this->loadFixtures([InheritedEntities::class])->getReferenceRepository();
+
         $client = $this->makeClient();
 
         /** @var InheritedEntity $entity */
-        $entity = $this->referenceRepository->getReference(InheritedEntities::INHERITED_ENTITY_0);
+        $entity = $referenceRepository->getReference(InheritedEntities::INHERITED_ENTITY_0);
         $response = $this->performGet($client, sprintf('/rest/inheritedentities/%s', $entity->getId()));
 
         $content = $this->assertJsonResponse($response);
         $this->assertContentEquals(['id' => $entity->getId(), 'excludedFieldTwo' => 'two'], $content, false);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getFixtureClasses()
-    {
-        return [Users::class, SecuredEntities::class, InheritedEntities::class];
     }
 }

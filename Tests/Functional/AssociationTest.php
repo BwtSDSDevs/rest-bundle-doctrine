@@ -14,10 +14,12 @@ class AssociationTest extends FunctionalTestCase
 
     public function testAddManyToOne()
     {
+        $referenceRepository = $this->loadFixtures([Groups::class])->getReferenceRepository();
+
         /** @var User $supervisor */
-        $supervisor = $this->referenceRepository->getReference(Users::SUPERVISOR);
+        $supervisor = $referenceRepository->getReference(Users::SUPERVISOR);
         /** @var User $user */
-        $user = $this->referenceRepository->getReference(Users::EMPLOYEE_2);
+        $user = $referenceRepository->getReference(Users::EMPLOYEE_2);
         $client = $this->makeClient();
 
         /* Also Testing for Virtual/Includable roles */
@@ -43,8 +45,10 @@ class AssociationTest extends FunctionalTestCase
 
     public function testRemoveManyToOne()
     {
+        $referenceRepository = $this->loadFixtures([Groups::class])->getReferenceRepository();
+
         /** @var User $user */
-        $user = $this->referenceRepository->getReference(Users::EMPLOYEE_1);
+        $user = $referenceRepository->getReference(Users::EMPLOYEE_1);
         $client = $this->makeClient();
 
         $response = $this->performGet($client, sprintf('/rest/users/%s', $user->getId()));
@@ -64,10 +68,12 @@ class AssociationTest extends FunctionalTestCase
 
     public function testAddOneToMany()
     {
+        $referenceRepository = $this->loadFixtures([Groups::class])->getReferenceRepository();
+
         /** @var User $supervisor */
-        $supervisor = $this->referenceRepository->getReference(Users::SUPERVISOR);
+        $supervisor = $referenceRepository->getReference(Users::SUPERVISOR);
         /** @var User $user */
-        $user = $this->referenceRepository->getReference(Users::EMPLOYEE_2);
+        $user = $referenceRepository->getReference(Users::EMPLOYEE_2);
         $client = $this->makeClient();
 
         $response = $this->performGet(
@@ -95,10 +101,12 @@ class AssociationTest extends FunctionalTestCase
 
     public function testRemoveOneToMany()
     {
+        $referenceRepository = $this->loadFixtures([Groups::class])->getReferenceRepository();
+
         /** @var User $supervisor */
-        $supervisor = $this->referenceRepository->getReference(Users::SUPERVISOR);
+        $supervisor = $referenceRepository->getReference(Users::SUPERVISOR);
         /** @var User $user */
-        $user = $this->referenceRepository->getReference(Users::EMPLOYEE_1);
+        $user = $referenceRepository->getReference(Users::EMPLOYEE_1);
         $client = $this->makeClient();
 
         $response = $this->performGet(
@@ -126,10 +134,12 @@ class AssociationTest extends FunctionalTestCase
 
     public function testAddManyToManyOwning()
     {
+        $referenceRepository = $this->loadFixtures([Groups::class])->getReferenceRepository();
+
         /** @var Group $group */
-        $group = $this->referenceRepository->getReference(Groups::EMPLOYEES);
+        $group = $referenceRepository->getReference(Groups::EMPLOYEES);
         /** @var User $user */
-        $user = $this->referenceRepository->getReference(Users::EMPLOYEE_2);
+        $user = $referenceRepository->getReference(Users::EMPLOYEE_2);
 
         $client = $this->makeClient();
         $response = $this->performGet($client, sprintf('/rest/groups/%s', $group->getId()), ['include' => 'users']);
@@ -149,10 +159,12 @@ class AssociationTest extends FunctionalTestCase
 
     public function testRemoveManyToManyOwning()
     {
+        $referenceRepository = $this->loadFixtures([Groups::class])->getReferenceRepository();
+
         /** @var Group $group */
-        $group = $this->referenceRepository->getReference(Groups::EMPLOYEES);
+        $group = $referenceRepository->getReference(Groups::EMPLOYEES);
         /** @var User $user */
-        $user = $this->referenceRepository->getReference(Users::EMPLOYEE_1);
+        $user = $referenceRepository->getReference(Users::EMPLOYEE_1);
 
         $client = $this->makeClient();
         $response = $this->performGet($client, sprintf('/rest/groups/%s', $group->getId()), ['include' => 'users']);
@@ -172,10 +184,12 @@ class AssociationTest extends FunctionalTestCase
 
     public function testAddManyToManyInverse()
     {
+        $referenceRepository = $this->loadFixtures([Groups::class])->getReferenceRepository();
+
         /** @var Group $group */
-        $group = $this->referenceRepository->getReference(Groups::EMPLOYEES);
+        $group = $referenceRepository->getReference(Groups::EMPLOYEES);
         /** @var User $user */
-        $user = $this->referenceRepository->getReference(Users::EMPLOYEE_2);
+        $user = $referenceRepository->getReference(Users::EMPLOYEE_2);
 
         $client = $this->makeClient();
         $response = $this->performGet($client, sprintf('/rest/users/%s', $user->getId()), ['include' => 'groups']);
@@ -195,10 +209,12 @@ class AssociationTest extends FunctionalTestCase
 
     public function testRemoveManyToManyInverse()
     {
+        $referenceRepository = $this->loadFixtures([Groups::class])->getReferenceRepository();
+
         /** @var Group $group */
-        $group = $this->referenceRepository->getReference(Groups::EMPLOYEES);
+        $group = $referenceRepository->getReference(Groups::EMPLOYEES);
         /** @var User $user */
-        $user = $this->referenceRepository->getReference(Users::EMPLOYEE_1);
+        $user = $referenceRepository->getReference(Users::EMPLOYEE_1);
 
         $client = $this->makeClient();
         $response = $this->performGet($client, sprintf('/rest/users/%s', $user->getId()), ['include' => 'groups']);
@@ -214,13 +230,5 @@ class AssociationTest extends FunctionalTestCase
         $response = $this->performGet($client, sprintf('/rest/users/%s', $user->getId()), ['include' => 'groups']);
         $content = $this->assertJsonResponse($response);
         $this->assertCount(0, $content['groups']);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getFixtureClasses()
-    {
-        return [Groups::class];
     }
 }

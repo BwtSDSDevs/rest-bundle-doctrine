@@ -14,8 +14,11 @@ class PuttablePostableTest extends FunctionalTestCase
 
     public function testPutAnon()
     {
+        $referenceRepository = $this->loadFixtures([PuttablePostableAnnotationEntities::class])->getReferenceRepository(
+        );
+
         /** @var PuttablePostableAnnotationEntity $entity */
-        $entity = $this->referenceRepository->getReference(PuttablePostableAnnotationEntities::PUTTABLE_POSTABLE_1);
+        $entity = $referenceRepository->getReference(PuttablePostableAnnotationEntities::PUTTABLE_POSTABLE_1);
         $client = $this->makeClient();
         $response = $this->performPut(
             $client,
@@ -48,6 +51,8 @@ class PuttablePostableTest extends FunctionalTestCase
 
     public function testPostAnon()
     {
+        $referenceRepository = $this->loadFixtures([PuttablePostableAnnotationEntities::class])->getReferenceRepository(
+        );
         $client = $this->makeClient();
         $response = $this->performPost(
             $client,
@@ -80,8 +85,12 @@ class PuttablePostableTest extends FunctionalTestCase
 
     public function testPutUser()
     {
+        $referenceRepository = $this->loadFixtures(
+            [Users::class, PuttablePostableAnnotationEntities::class]
+        )->getReferenceRepository();
+
         /** @var PuttablePostableAnnotationEntity $entity */
-        $entity = $this->referenceRepository->getReference(PuttablePostableAnnotationEntities::PUTTABLE_POSTABLE_1);
+        $entity = $referenceRepository->getReference(PuttablePostableAnnotationEntities::PUTTABLE_POSTABLE_1);
         $client = $this->makeClient(
             false,
             [
@@ -120,6 +129,7 @@ class PuttablePostableTest extends FunctionalTestCase
 
     public function testPostUser()
     {
+        $referenceRepository = $this->loadFixtures([Users::class])->getReferenceRepository();
         $client = $this->makeClient(
             false,
             [
@@ -159,8 +169,12 @@ class PuttablePostableTest extends FunctionalTestCase
 
     public function testPutAdmin()
     {
+        $referenceRepository = $this->loadFixtures(
+            [Users::class, PuttablePostableAnnotationEntities::class]
+        )->getReferenceRepository();
+
         /** @var PuttablePostableAnnotationEntity $entity */
-        $entity = $this->referenceRepository->getReference(PuttablePostableAnnotationEntities::PUTTABLE_POSTABLE_1);
+        $entity = $referenceRepository->getReference(PuttablePostableAnnotationEntities::PUTTABLE_POSTABLE_1);
         $client = $this->makeClient(
             false,
             [
@@ -199,6 +213,8 @@ class PuttablePostableTest extends FunctionalTestCase
 
     public function testPostAdmin()
     {
+        $referenceRepository = $this->loadFixtures([Users::class])->getReferenceRepository();
+
         $client = $this->makeClient(
             false,
             [
@@ -234,13 +250,5 @@ class PuttablePostableTest extends FunctionalTestCase
             ],
             $content
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getFixtureClasses()
-    {
-        return [Users::class, PuttablePostableAnnotationEntities::class];
     }
 }

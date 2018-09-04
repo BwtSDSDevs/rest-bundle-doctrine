@@ -2,8 +2,6 @@
 
 namespace Dontdrinkandroot\RestBundle\Tests;
 
-use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
-use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,18 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 abstract class RestTestCase extends WebTestCase
 {
-    /**
-     * @var ReferenceRepository
-     */
-    protected $referenceRepository;
-
-    protected function setUp()
-    {
-        /** @var ORMExecutor $executor */
-        $executor = $this->loadFixtures($this->getFixtureClasses());
-        $this->referenceRepository = $executor->getReferenceRepository();
-    }
-
     /**
      * @param Response $response
      * @param int      $statusCode
@@ -211,9 +197,4 @@ abstract class RestTestCase extends WebTestCase
         $this->assertEquals($totalPages, $headers->get('x-pagination-total-pages'));
         $this->assertEquals($total, $headers->get('x-pagination-total'));
     }
-
-    /**
-     * @return string[]
-     */
-    abstract protected function getFixtureClasses();
 }

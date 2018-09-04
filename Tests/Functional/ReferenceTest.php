@@ -14,7 +14,9 @@ class ReferenceTest extends FunctionalTestCase
 
     public function testPostByReference()
     {
-        $creator = $this->referenceRepository->getReference(Users::EMPLOYEE_1);
+        $referenceRepository = $this->loadFixtures([Users::class])->getReferenceRepository();
+
+        $creator = $referenceRepository->getReference(Users::EMPLOYEE_1);
 
         $client = $this->makeClient(
             false,
@@ -53,8 +55,11 @@ class ReferenceTest extends FunctionalTestCase
 
     public function testPutByReference()
     {
-        $creator = $this->referenceRepository->getReference(Users::EMPLOYEE_1);
-        $entity = $this->referenceRepository->getReference('subresource-entity-0');
+        $referenceRepository = $this->loadFixtures([Users::class, SubResourceEntities::class])->getReferenceRepository(
+        );
+
+        $creator = $referenceRepository->getReference(Users::EMPLOYEE_1);
+        $entity = $referenceRepository->getReference('subresource-entity-0');
 
         $client = $this->makeClient(
             false,
@@ -89,13 +94,5 @@ class ReferenceTest extends FunctionalTestCase
             ],
             $content
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getFixtureClasses()
-    {
-        return [Users::class, SubResourceEntities::class];
     }
 }

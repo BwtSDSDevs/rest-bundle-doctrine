@@ -14,6 +14,7 @@ class MinimalEnvironmentTest extends FunctionalTestCase
 
     public function testList()
     {
+        $referenceRepository = $this->loadFixtures([MinimalEntities::class])->getReferenceRepository();
         $client = $this->makeClient();
 
         $client->request(
@@ -39,9 +40,10 @@ class MinimalEnvironmentTest extends FunctionalTestCase
 
     public function testGet()
     {
+        $referenceRepository = $this->loadFixtures([MinimalEntities::class])->getReferenceRepository();
         $client = $this->makeClient();
         /** @var MinimalEntity $entity */
-        $entity = $this->referenceRepository->getReference('minimal-entity-10');
+        $entity = $referenceRepository->getReference('minimal-entity-10');
 
         $client->request(Request::METHOD_GET, sprintf('/rest/minimalentities/%s', $entity->getId()));
         $content = $this->assertJsonResponse($client->getResponse());
@@ -76,9 +78,10 @@ class MinimalEnvironmentTest extends FunctionalTestCase
 
     public function testPut()
     {
+        $referenceRepository = $this->loadFixtures([MinimalEntities::class])->getReferenceRepository();
         $client = $this->makeClient();
         /** @var MinimalEntity $entity */
-        $entity = $this->referenceRepository->getReference('minimal-entity-10');
+        $entity = $referenceRepository->getReference('minimal-entity-10');
 
         $this->expectException(MethodNotAllowedHttpException::class);
         $client->request(
@@ -92,9 +95,10 @@ class MinimalEnvironmentTest extends FunctionalTestCase
 
     public function testDelete()
     {
+        $referenceRepository = $this->loadFixtures([MinimalEntities::class])->getReferenceRepository();
         $client = $this->makeClient();
         /** @var MinimalEntity $entity */
-        $entity = $this->referenceRepository->getReference('minimal-entity-10');
+        $entity = $referenceRepository->getReference('minimal-entity-10');
 
         $this->expectException(MethodNotAllowedHttpException::class);
         $client->request(
@@ -116,13 +120,5 @@ class MinimalEnvironmentTest extends FunctionalTestCase
             [],
             []
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getFixtureClasses()
-    {
-        return [MinimalEntities::class];
     }
 }
