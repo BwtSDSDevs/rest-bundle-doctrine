@@ -4,7 +4,6 @@ namespace Dontdrinkandroot\RestBundle\Controller;
 
 use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
 use Dontdrinkandroot\RestBundle\Service\Normalizer;
-use Dontdrinkandroot\RestBundle\Service\RestRequestParserInterface;
 use Dontdrinkandroot\Service\CrudServiceInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -18,7 +17,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 abstract class AbstractCrudServiceRestResourceController extends AbstractRestResourceController
 {
     public function __construct(
-        RestRequestParserInterface $requestParser,
         ValidatorInterface $validator,
         RequestStack $requestStack,
         RestMetadataFactory $metadataFactory,
@@ -26,7 +24,6 @@ abstract class AbstractCrudServiceRestResourceController extends AbstractRestRes
         SerializerInterface $serializer
     ) {
         parent::__construct(
-            $requestParser,
             $validator,
             $requestStack,
             $metadataFactory,

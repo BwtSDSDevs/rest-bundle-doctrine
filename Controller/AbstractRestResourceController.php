@@ -8,9 +8,8 @@ use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
+use Dontdrinkandroot\RestBundle\Serializer\RestDenormalizer;
 use Dontdrinkandroot\RestBundle\Serializer\RestNormalizer;
-use Dontdrinkandroot\RestBundle\Service\Normalizer;
-use Dontdrinkandroot\RestBundle\Service\RestRequestParserInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -33,11 +32,6 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
      * @var ValidatorInterface
      */
     private $validator;
-
-    /**
-     * @var RestRequestParserInterface
-     */
-    private $requestParser;
 
     /**
      * @var RequestStack
@@ -65,14 +59,12 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     private $serializer;
 
     public function __construct(
-        RestRequestParserInterface $requestParser,
         ValidatorInterface $validator,
         RequestStack $requestStack,
         RestMetadataFactory $metadataFactory,
         PropertyAccessorInterface $propertyAccessor,
         SerializerInterface $serializer
     ) {
-        $this->requestParser = $requestParser;
         $this->validator = $validator;
         $this->requestStack = $requestStack;
         $this->metadataFactory = $metadataFactory;
@@ -123,7 +115,12 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     {
         $this->assertMethodGranted(Method::POST);
 
-        $entity = $this->getRequestParser()->parseEntity($request, $this->getEntityClass());
+        $entity = $this->serializer->deserialize(
+            $request->getContent(),
+            $this->getEntityClass(),
+            'json',
+            [RestDenormalizer::DDR_REST_METHOD => Method::POST]
+        );
         $entity = $this->postProcessPostedEntity($entity);
 
         $errors = $this->getValidator()->validate($entity);
@@ -179,7 +176,13 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     {
         $entity = $this->fetchEntity($id);
         $this->assertMethodGranted(Method::PUT, $entity);
-        $entity = $this->getRequestParser()->parseEntity($request, $this->getEntityClass(), $entity);
+
+        $entity = $this->serializer->deserialize(
+            $request->getContent(),
+            $this->getEntityClass(),
+            'json',
+            [RestDenormalizer::DDR_REST_METHOD => Method::PUT, RestDenormalizer::DDR_REST_ENTITY => $entity]
+        );
         $entity = $this->postProcessPuttedEntity($entity);
 
         $errors = $this->getValidator()->validate($entity);
@@ -262,8 +265,13 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
         $parent = $this->fetchEntity($id);
         $this->assertSubResourceMethodGranted(Method::POST, $parent, $subresource);
 
-        $restRequestParser = $this->getRequestParser();
-        $entity = $restRequestParser->parseEntity($request, $this->getSubResourceEntityClass($subresource));
+        $entity = $this->serializer->deserialize(
+            $request->getContent(),
+            $this->getSubResourceEntityClass($subresource),
+            'json',
+            [RestDenormalizer::DDR_REST_METHOD => Method::POST]
+        );
+
         $entity = $this->buildAssociation($parent, $subresource, $entity);
         $entity = $this->postProcessSubResourcePostedEntity($parent, $subresource, $entity);
 
@@ -481,19 +489,9 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
         );
     }
 
-    protected function getNormalizer()
-    {
-        return $this->normalizer;
-    }
-
     protected function getValidator()
     {
         return $this->validator;
-    }
-
-    protected function getRequestParser()
-    {
-        return $this->requestParser;
     }
 
     protected function getRequestStack()

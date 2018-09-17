@@ -5,7 +5,6 @@ namespace Dontdrinkandroot\RestBundle\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
 use Dontdrinkandroot\RestBundle\Service\Normalizer;
-use Dontdrinkandroot\RestBundle\Service\RestRequestParserInterface;
 use Dontdrinkandroot\Service\CrudServiceInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -23,7 +22,6 @@ class DoctrineRestResourceController extends AbstractCrudServiceRestResourceCont
     private $entityManager;
 
     public function __construct(
-        RestRequestParserInterface $requestParser,
         ValidatorInterface $validator,
         RequestStack $requestStack,
         RestMetadataFactory $metadataFactory,
@@ -32,7 +30,6 @@ class DoctrineRestResourceController extends AbstractCrudServiceRestResourceCont
         SerializerInterface $serializer
     ) {
         parent::__construct(
-            $requestParser,
             $validator,
             $requestStack,
             $metadataFactory,
