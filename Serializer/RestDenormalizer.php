@@ -87,8 +87,7 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
      */
     public function hasCacheableSupportsMethod(): bool
     {
-        // TODO: change
-        return false;
+        return true;
     }
 
     /**
