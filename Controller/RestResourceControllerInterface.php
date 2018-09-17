@@ -1,12 +1,11 @@
 <?php
+
 namespace Dontdrinkandroot\RestBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Interface RestResourceControllerInterface
- *
- * @package Dontdrinkandroot\RestBundle\Controller
+ * @author Philip Washington Sorst <philip@sorst.net>
  */
 interface RestResourceControllerInterface
 {

@@ -26,6 +26,7 @@ class MinimalEnvironmentTest extends FunctionalTestCase
         );
         $response = $client->getResponse();
         $content = $this->assertJsonResponse($response);
+
         $this->assertCount(10, $content);
         $this->assertEquals(10, $content[0]['integerValue']);
 

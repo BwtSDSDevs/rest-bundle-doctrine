@@ -1,6 +1,6 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Service;
+namespace Dontdrinkandroot\RestBundle\Serializer;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\ClassUtils;
@@ -8,17 +8,23 @@ use Doctrine\DBAL\Types\Type;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
-use Metadata\MetadataFactoryInterface;
+use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
  * @author Philip Washington Sorst <philip@sorst.net>
  */
-class Normalizer
+class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
+    const DDR_REST_INCLUDES = 'ddrRestIncludes';
+    const DDR_REST_PATH = 'ddrRestPath';
+    const DDR_REST_DEPTH = 'ddrRestDepth';
+
     /**
-     * @var MetadataFactoryInterface
+     * @var RestMetadataFactory
      */
     private $metadataFactory;
 
@@ -32,8 +38,8 @@ class Normalizer
      */
     private $urlGenerator;
 
-    function __construct(
-        MetadataFactoryInterface $metadataFactory,
+    public function __construct(
+        RestMetadataFactory $metadataFactory,
         PropertyAccessorInterface $propertyAccessor,
         UrlGeneratorInterface $urlGenerator
     ) {
@@ -43,19 +49,26 @@ class Normalizer
     }
 
     /**
-     * @param mixed    $data
-     * @param string[] $includes
-     * @param int      $depth
-     * @param string   $path
-     *
-     * @return array
+     * {@inheritdoc}
      */
-    public function normalize($data, $includes = [], int $depth = 0, string $path = '')
+    public function normalize($data, $format = null, array $context = [])
     {
+        $includes = $context[self::DDR_REST_INCLUDES];
+        $path = $context[self::DDR_REST_PATH];
+        $depth = $context[self::DDR_REST_DEPTH];
+
         if (is_array($data)) {
             $normalizedData = [];
             foreach ($data as $datum) {
-                $normalizedData[] = $this->normalize($datum, $includes, $depth + 1, $path);
+                $normalizedData[] = $this->normalize(
+                    $datum,
+                    $format,
+                    [
+                        self::DDR_REST_INCLUDES => $includes,
+                        self::DDR_REST_DEPTH    => $depth + 1,
+                        self::DDR_REST_PATH     => $path
+                    ]
+                );
             }
 
             return $normalizedData;
@@ -109,9 +122,12 @@ class Normalizer
                         }
                         $normalizedData[$propertyMetadatum->name] = $this->normalize(
                             $value,
-                            $includes,
-                            $depth + 1,
-                            $this->appendPath($path, $propertyMetadatum->name)
+                            $format,
+                            [
+                                self::DDR_REST_INCLUDES => $includes,
+                                self::DDR_REST_DEPTH    => $depth + 1,
+                                self::DDR_REST_PATH     => $this->appendPath($path, $propertyMetadatum->name)
+                            ]
                         );
                     }
                 } else {
@@ -132,9 +148,12 @@ class Normalizer
                         } else {
                             $normalizedData[$propertyMetadatum->name] = $this->normalize(
                                 $value,
-                                $includes,
-                                $depth + 1,
-                                $this->appendPath($path, $propertyMetadatum->name)
+                                $format,
+                                [
+                                    self::DDR_REST_INCLUDES => $includes,
+                                    self::DDR_REST_DEPTH    => $depth + 1,
+                                    self::DDR_REST_PATH     => $this->appendPath($path, $propertyMetadatum->name)
+                                ]
                             );
                         }
                     }
@@ -145,6 +164,26 @@ class Normalizer
         }
 
         return $data;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supportsNormalization($data, $format = null)
+    {
+        if ('json' === $format) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasCacheableSupportsMethod(): bool
+    {
+        return true;
     }
 
     private function isIncluded($currentPath, array $paths, ?array $includes): bool

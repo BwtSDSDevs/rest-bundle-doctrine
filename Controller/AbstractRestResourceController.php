@@ -8,9 +8,9 @@ use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
+use Dontdrinkandroot\RestBundle\Serializer\RestNormalizer;
 use Dontdrinkandroot\RestBundle\Service\Normalizer;
 use Dontdrinkandroot\RestBundle\Service\RestRequestParserInterface;
-use Metadata\MetadataFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -19,6 +19,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -28,11 +29,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 abstract class AbstractRestResourceController implements RestResourceControllerInterface
 {
-    /**
-     * @var Normalizer
-     */
-    private $normalizer;
-
     /**
      * @var ValidatorInterface
      */
@@ -63,20 +59,25 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
      */
     private $authorizationChecker;
 
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
     public function __construct(
         RestRequestParserInterface $requestParser,
-        Normalizer $normalizer,
         ValidatorInterface $validator,
         RequestStack $requestStack,
         RestMetadataFactory $metadataFactory,
-        PropertyAccessorInterface $propertyAccessor
+        PropertyAccessorInterface $propertyAccessor,
+        SerializerInterface $serializer
     ) {
         $this->requestParser = $requestParser;
-        $this->normalizer = $normalizer;
         $this->validator = $validator;
         $this->requestStack = $requestStack;
         $this->metadataFactory = $metadataFactory;
         $this->propertyAccessor = $propertyAccessor;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -101,9 +102,16 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
             $entities = $listResult;
         }
 
-        $content = $this->getNormalizer()->normalize($entities, $this->parseIncludes($request));
-
-        $response->setData($content);
+        $json = $this->getSerializer()->serialize(
+            $entities,
+            'json',
+            [
+                RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($request),
+                RestNormalizer::DDR_REST_DEPTH    => 0,
+                RestNormalizer::DDR_REST_PATH     => ''
+            ]
+        );
+        $response->setJson($json);
 
         return $response;
     }
@@ -125,9 +133,20 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
 
         $entity = $this->createEntity($entity);
 
-        $content = $this->getNormalizer()->normalize($entity, $this->parseIncludes($request));
+        $response = new JsonResponse(null, Response::HTTP_CREATED);
 
-        return new JsonResponse($content, Response::HTTP_CREATED);
+        $json = $this->getSerializer()->serialize(
+            $entity,
+            'json',
+            [
+                RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($request),
+                RestNormalizer::DDR_REST_DEPTH    => 0,
+                RestNormalizer::DDR_REST_PATH     => ''
+            ]
+        );
+        $response->setJson($json);
+
+        return $response;
     }
 
     /**
@@ -138,9 +157,19 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
         $entity = $this->fetchEntity($id);
         $this->assertMethodGranted(Method::GET, $entity);
 
-        $content = $this->getNormalizer()->normalize($entity, $this->parseIncludes($request));
+        $response = new JsonResponse();
+        $json = $this->getSerializer()->serialize(
+            $entity,
+            'json',
+            [
+                RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($request),
+                RestNormalizer::DDR_REST_DEPTH    => 0,
+                RestNormalizer::DDR_REST_PATH     => ''
+            ]
+        );
+        $response->setJson($json);
 
-        return new JsonResponse($content);
+        return $response;
     }
 
     /**
@@ -160,9 +189,20 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
 
         $entity = $this->updateEntity($entity);
 
-        $content = $this->getNormalizer()->normalize($entity, $this->parseIncludes($request));
+        $response = new JsonResponse();
 
-        return new JsonResponse($content);
+        $json = $this->getSerializer()->serialize(
+            $entity,
+            'json',
+            [
+                RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($request),
+                RestNormalizer::DDR_REST_DEPTH    => 0,
+                RestNormalizer::DDR_REST_PATH     => ''
+            ]
+        );
+        $response->setJson($json);
+
+        return $response;
     }
 
     /**
@@ -200,9 +240,16 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
             $entities = $listResult;
         }
 
-        $content = $this->getNormalizer()->normalize($entities, $this->parseIncludes($request));
-
-        $response->setData($content);
+        $json = $this->getSerializer()->serialize(
+            $entities,
+            'json',
+            [
+                RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($request),
+                RestNormalizer::DDR_REST_DEPTH    => 0,
+                RestNormalizer::DDR_REST_PATH     => ''
+            ]
+        );
+        $response->setJson($json);
 
         return $response;
     }
@@ -228,9 +275,19 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
 
         $entity = $this->createAssociation($entity);
 
-        $content = $this->getNormalizer()->normalize($entity, $this->parseIncludes($request));
+        $response = new JsonResponse(null, Response::HTTP_CREATED);
+        $json = $this->getSerializer()->serialize(
+            $entity,
+            'json',
+            [
+                RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($request),
+                RestNormalizer::DDR_REST_DEPTH    => 0,
+                RestNormalizer::DDR_REST_PATH     => ''
+            ]
+        );
+        $response->setJson($json);
 
-        return new JsonResponse($content, Response::HTTP_CREATED);
+        return $response;
     }
 
     /**
@@ -424,60 +481,44 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getNormalizer()
     {
         return $this->normalizer;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getValidator()
     {
         return $this->validator;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getRequestParser()
     {
         return $this->requestParser;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getRequestStack()
     {
         return $this->requestStack;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getMetadataFactory()
     {
         return $this->metadataFactory;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getPropertyAccessor()
     {
         return $this->propertyAccessor;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getAuthorizationChecker(): ?AuthorizationCheckerInterface
     {
         return $this->authorizationChecker;
+    }
+
+    protected function getSerializer(): SerializerInterface
+    {
+        return $this->serializer;
     }
 
     /**

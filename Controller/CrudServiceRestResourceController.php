@@ -6,9 +6,9 @@ use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
 use Dontdrinkandroot\RestBundle\Service\Normalizer;
 use Dontdrinkandroot\RestBundle\Service\RestRequestParserInterface;
 use Dontdrinkandroot\Service\CrudServiceInterface;
-use Metadata\MetadataFactoryInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class CrudServiceRestResourceController extends AbstractCrudServiceRestResourceController
@@ -17,20 +17,20 @@ class CrudServiceRestResourceController extends AbstractCrudServiceRestResourceC
 
     public function __construct(
         RestRequestParserInterface $requestParser,
-        Normalizer $normalizer,
         ValidatorInterface $validator,
         RequestStack $requestStack,
         RestMetadataFactory $metadataFactory,
         PropertyAccessorInterface $propertyAccessor,
-        CrudServiceInterface $service
+        CrudServiceInterface $service,
+        SerializerInterface $serializer
     ) {
         parent::__construct(
             $requestParser,
-            $normalizer,
             $validator,
             $requestStack,
             $metadataFactory,
-            $propertyAccessor
+            $propertyAccessor,
+            $serializer
         );
         $this->service = $service;
     }

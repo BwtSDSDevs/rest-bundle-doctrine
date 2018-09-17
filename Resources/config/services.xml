@@ -57,12 +57,6 @@
             <tag name="routing.loader" />
         </service>
 
-        <service id="Dontdrinkandroot\RestBundle\Service\Normalizer">
-            <argument type="service" id="Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory" />
-            <argument type="service" id="property_accessor" />
-            <argument type="service" id="router" />
-        </service>
-
         <service id="Dontdrinkandroot\RestBundle\Listener\KernelExceptionListener">
             <argument>%ddr_rest.paths%</argument>
             <call method="setDebug">
@@ -71,16 +65,29 @@
             <tag name="kernel.event_listener" event="kernel.exception" />
         </service>
 
+        <!-- Serialization -->
+
+        <service id="Dontdrinkandroot\RestBundle\Serializer\RestNormalizer">
+            <argument type="service" id="Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory" />
+            <argument type="service" id="property_accessor" />
+            <argument type="service" id="router" />
+            <tag name="serializer.normalizer" />
+        </service>
+
+        <service id="Dontdrinkandroot\RestBundle\Serializer\RestDenormalizer">
+            <tag name="serializer.denormalizer" />
+        </service>
+
         <!-- Controller -->
 
         <service id="Dontdrinkandroot\RestBundle\Controller\DoctrineRestResourceController" public="true">
             <argument type="service" id="Dontdrinkandroot\RestBundle\Service\RestRequestParser" />
-            <argument type="service" id="Dontdrinkandroot\RestBundle\Service\Normalizer" />
             <argument type="service" id="validator" />
             <argument type="service" id="request_stack" />
             <argument type="service" id="Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory" />
             <argument type="service" id="property_accessor" />
             <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="serializer" />
             <call method="setAuthorizationChecker">
                 <argument type="service" id="security.authorization_checker" on-invalid="ignore" />
             </call>
