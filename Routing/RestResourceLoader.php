@@ -2,6 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Routing;
 
+use Dontdrinkandroot\RestBundle\Controller\DoctrineRestResourceController;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
@@ -295,7 +296,7 @@ class RestResourceLoader extends Loader
      */
     protected function getController(ClassMetadata $classMetadata)
     {
-        $controller = 'Dontdrinkandroot\RestBundle\Controller\DoctrineRestResourceController';
+        $controller = DoctrineRestResourceController::class;
         if (null !== $classMetadata->getController()) {
             $controller = $classMetadata->getController();
         }

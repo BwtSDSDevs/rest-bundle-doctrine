@@ -45,7 +45,7 @@ class Method
             return $method;
         }
 
-        $method->right = Right::parse($config['right']?? null);
+        $method->right = Right::parse($config['right'] ?? null);
         $method->defaultIncludes = ParseUtils::parseStringArray($config['defaultIncludes'] ?? null);
 
         return $method;
