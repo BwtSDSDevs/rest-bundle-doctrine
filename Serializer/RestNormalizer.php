@@ -213,7 +213,8 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
     private function normalizeField($value, PropertyMetadata $propertyMetadata)
     {
         switch ($propertyMetadata->getType()) {
-            case 'datetime':
+
+            case Type::DATETIME:
                 if (null === $value) {
                     return null;
                 }
@@ -221,7 +222,7 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
                 /** @var $value \DateTime */
                 return $value->format('Y-m-d H:i:s');
 
-            case 'date':
+            case Type::DATE:
                 if (null === $value) {
                     return null;
                 }
@@ -229,7 +230,7 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
                 /** @var $value \DateTime */
                 return $value->format('Y-m-d');
 
-            case 'time':
+            case Type::TIME:
                 if (null === $value) {
                     return null;
                 }

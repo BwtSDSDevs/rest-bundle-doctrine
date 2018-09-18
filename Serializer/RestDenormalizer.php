@@ -215,9 +215,9 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
         }
 
         switch ($type) {
-            case 'datetime':
-            case 'date':
-            case 'time':
+            case Type::DATETIME:
+            case Type::DATE:
+            case TYPE::TIME:
                 return new \DateTime($value);
             default:
                 return $value;
