@@ -58,6 +58,10 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
      */
     public function denormalize($data, $class, $format = null, array $context = [])
     {
+        if (!array_key_exists(self::DDR_REST_METHOD, $context)) {
+            throw new \BadMethodCallException('No REST Method specified');
+        }
+
         $method = $context[self::DDR_REST_METHOD];
         $entity = array_key_exists(self::DDR_REST_ENTITY, $context) ? $context[self::DDR_REST_ENTITY] : null;
 

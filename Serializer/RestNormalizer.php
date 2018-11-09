@@ -53,6 +53,18 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
      */
     public function normalize($data, $format = null, array $context = [])
     {
+        if (!array_key_exists(self::DDR_REST_INCLUDES, $context)) {
+            throw new \LogicException('Includes missing');
+        }
+
+        if (!array_key_exists(self::DDR_REST_PATH, $context)) {
+            throw new \LogicException('Path missing');
+        }
+
+        if (!array_key_exists(self::DDR_REST_DEPTH, $context)) {
+            throw new \LogicException('Depth missing');
+        }
+
         $includes = $context[self::DDR_REST_INCLUDES];
         $path = $context[self::DDR_REST_PATH];
         $depth = $context[self::DDR_REST_DEPTH];
