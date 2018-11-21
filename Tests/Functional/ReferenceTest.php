@@ -2,8 +2,6 @@
 
 namespace Dontdrinkandroot\RestBundle\Tests\Functional;
 
-use Dontdrinkandroot\RestBundle\Security\AbstractAccessTokenAuthenticator;
-use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\AccessToken;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\SubResourceEntities;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\Users;
 use Symfony\Component\HttpFoundation\Response;
@@ -47,7 +45,8 @@ class ReferenceTest extends FunctionalTestCase
                     'roles'    => [
                         'ROLE_USER'
                     ]
-                ]
+                ],
+                'text'    => null
             ],
             $content
         );
@@ -90,7 +89,8 @@ class ReferenceTest extends FunctionalTestCase
                     'roles'    => [
                         'ROLE_USER'
                     ]
-                ]
+                ],
+                'text'    => null
             ],
             $content
         );

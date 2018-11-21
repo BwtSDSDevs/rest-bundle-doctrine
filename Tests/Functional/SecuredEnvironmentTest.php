@@ -418,7 +418,8 @@ class SecuredEnvironmentTest extends FunctionalTestCase
                 'parentEntity' => [
                     'id'   => $parent->getId(),
                     'uuid' => $parent->getUuid()
-                ]
+                ],
+                'text'         => null
             ],
             $content,
             false
@@ -506,7 +507,8 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $this->assertContentEquals(
             [
                 'id'           => $child->getId(),
-                'parentEntity' => null
+                'parentEntity' => null,
+                'text'         => null
             ],
             $content,
             false
@@ -570,12 +572,58 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             $client,
             sprintf('/rest/secured/%s/subresources', $entity->getId()),
             [],
+            [],
+            ['text' => 'TestText']
+        );
+        $content = $this->assertJsonResponse($response, Response::HTTP_CREATED);
+        $this->assertHasKeyAndUnset('id', $content);
+        $this->assertContentEquals(
+            [
+                'parentEntity' => [
+                    'id'   => $entity->getId(),
+                    'uuid' => $entity->getUuid()
+                ],
+                'text'         => 'TestText'
+            ],
+            $content,
+            false
+        );
+    }
+
+    public function testPostSubresourceAsForm()
+    {
+        $referenceRepository = $this->loadFixtures([Users::class, SecuredEntities::class])->getReferenceRepository();
+
+        $client = $this->makeClient(
+            false,
+            [
+                'PHP_AUTH_USER' => 'admin',
+                'PHP_AUTH_PW'   => 'admin',
+            ]
+        );
+
+        /** @var SecuredEntity $entity */
+        $entity = $referenceRepository->getReference('secured-entity-1');
+
+        $response = $this->performPost(
+            $client,
+            sprintf('/rest/secured/%s/subresources', $entity->getId()),
+            ['text' => 'TestText'],
             []
         );
         $content = $this->assertJsonResponse($response, Response::HTTP_CREATED);
-        $this->assertNotNull($content['id']);
-        $this->assertNotNull($content['parentEntity']);
-        $this->assertEquals($entity->getId(), $content['parentEntity']['id']);
+        $this->assertHasKeyAndUnset('id', $content);
+        $this->assertContentEquals(
+            [
+                'parentEntity' => [
+                    'id'   => $entity->getId(),
+                    'uuid' => $entity->getUuid()
+                ],
+                'text'         => 'TestText'
+            ],
+            $content,
+            false
+        );
     }
 
     public function testGetInheritedEntity()

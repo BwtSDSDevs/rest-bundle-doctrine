@@ -3,7 +3,6 @@
 namespace Dontdrinkandroot\RestBundle\Controller;
 
 use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
-use Dontdrinkandroot\RestBundle\Service\Normalizer;
 use Dontdrinkandroot\Service\CrudServiceInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

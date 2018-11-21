@@ -265,12 +265,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
         $parent = $this->fetchEntity($id);
         $this->assertSubResourceMethodGranted(Method::POST, $parent, $subresource);
 
-        $entity = $this->serializer->deserialize(
-            $request->getContent(),
-            $this->getSubResourceEntityClass($subresource),
-            'json',
-            [RestDenormalizer::DDR_REST_METHOD => Method::POST]
-        );
+        $entity = $this->getSubresourcePostedEntity($request, $subresource);
 
         $entity = $this->buildAssociation($parent, $subresource, $entity);
         $entity = $this->postProcessSubResourcePostedEntity($parent, $subresource, $entity);
@@ -609,4 +604,30 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
      * @return mixed
      */
     abstract protected function removeAssociation($parent, string $subresource, $subId = null);
+
+    /**
+     * @param Request $request
+     * @param string  $subresource
+     *
+     * @return mixed
+     */
+    protected function getSubresourcePostedEntity(Request $request, string $subresource)
+    {
+        $content = null;
+        $requestParameters = $request->request->all();
+        if (!empty($requestParameters)) {
+            $content = json_encode($requestParameters);
+        } else {
+            $content = $request->getContent();
+        }
+
+        $entity = $this->serializer->deserialize(
+            $content,
+            $this->getSubResourceEntityClass($subresource),
+            'json',
+            [RestDenormalizer::DDR_REST_METHOD => Method::POST]
+        );
+
+        return $entity;
+    }
 }

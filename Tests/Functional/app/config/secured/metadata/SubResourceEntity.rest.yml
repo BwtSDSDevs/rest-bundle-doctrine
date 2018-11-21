@@ -43,3 +43,5 @@ Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\SubResourceEntity
                 byReference: true
             puttable:
                 byReference: true
+        text:
+            postable: true

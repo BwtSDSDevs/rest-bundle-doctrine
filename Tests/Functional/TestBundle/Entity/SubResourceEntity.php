@@ -3,7 +3,6 @@
 namespace Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
 
 /**
  * @author Philip Washington Sorst <philip@sorst.net>
@@ -39,6 +38,13 @@ class SubResourceEntity
     private $creator;
 
     /**
+     * @ORM\Column(type="string", nullable=true)
+     *
+     * @var string|null
+     */
+    private $text;
+
+    /**
      * @return int
      */
     public function getId(): int
@@ -70,5 +76,21 @@ class SubResourceEntity
     public function setCreator($creator)
     {
         $this->creator = $creator;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getText(): ?string
+    {
+        return $this->text;
+    }
+
+    /**
+     * @param null|string $text
+     */
+    public function setText(?string $text): void
+    {
+        $this->text = $text;
     }
 }

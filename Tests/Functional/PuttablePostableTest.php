@@ -2,7 +2,6 @@
 
 namespace Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity;
 
-use Dontdrinkandroot\RestBundle\Security\AbstractAccessTokenAuthenticator;
 use Dontdrinkandroot\RestBundle\Tests\Functional\FunctionalTestCase;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\PuttablePostableAnnotationEntities;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\Users;
