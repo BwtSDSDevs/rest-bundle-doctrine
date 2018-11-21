@@ -621,6 +621,10 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
             $content = $request->getContent();
         }
 
+        if (null === $content || '' === $content) {
+            $content = '{}';
+        }
+
         $entity = $this->serializer->deserialize(
             $content,
             $this->getSubResourceEntityClass($subresource),
