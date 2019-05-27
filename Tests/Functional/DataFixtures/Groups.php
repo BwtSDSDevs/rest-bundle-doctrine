@@ -1,13 +1,13 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM;
+namespace Dontdrinkandroot\RestBundle\Tests\Functional\DataFixtures;
 
-use Doctrine\Common\DataFixtures\AbstractFixture;
+use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\Group;
 
-class Groups extends AbstractFixture implements DependentFixtureInterface
+class Groups extends Fixture implements DependentFixtureInterface
 {
     const EMPLOYEES = 'employees';
     const GROUP_2 = 'group-2';

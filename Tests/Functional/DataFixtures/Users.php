@@ -1,8 +1,8 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM;
+namespace Dontdrinkandroot\RestBundle\Tests\Functional\DataFixtures;
 
-use Doctrine\Common\DataFixtures\AbstractFixture;
+use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\AccessToken;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\User;
@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class Users extends AbstractFixture implements ContainerAwareInterface
+class Users extends Fixture implements ContainerAwareInterface
 {
     const SUPERVISOR = 'user-supervisor';
     const EMPLOYEE_1 = 'employee_1';

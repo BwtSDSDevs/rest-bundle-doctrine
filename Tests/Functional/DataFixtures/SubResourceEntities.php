@@ -1,12 +1,12 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM;
+namespace Dontdrinkandroot\RestBundle\Tests\Functional\DataFixtures;
 
-use Doctrine\Common\DataFixtures\AbstractFixture;
+use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\SubResourceEntity;
 
-class SubResourceEntities extends AbstractFixture
+class SubResourceEntities extends Fixture
 {
     /**
      * {@inheritdoc}

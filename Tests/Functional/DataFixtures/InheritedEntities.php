@@ -1,12 +1,12 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM;
+namespace Dontdrinkandroot\RestBundle\Tests\Functional\DataFixtures;
 
-use Doctrine\Common\DataFixtures\AbstractFixture;
+use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\InheritedEntity;
 
-class InheritedEntities extends AbstractFixture
+class InheritedEntities extends Fixture
 {
     const INHERITED_ENTITY_0 = 'inherited-entity-0';
 

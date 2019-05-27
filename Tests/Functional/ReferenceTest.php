@@ -2,8 +2,8 @@
 
 namespace Dontdrinkandroot\RestBundle\Tests\Functional;
 
-use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\SubResourceEntities;
-use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\Users;
+use Dontdrinkandroot\RestBundle\Tests\Functional\DataFixtures\SubResourceEntities;
+use Dontdrinkandroot\RestBundle\Tests\Functional\DataFixtures\Users;
 use Symfony\Component\HttpFoundation\Response;
 
 class ReferenceTest extends FunctionalTestCase

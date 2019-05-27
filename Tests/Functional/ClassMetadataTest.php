@@ -4,9 +4,9 @@ namespace Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity;
 
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
+use Dontdrinkandroot\RestBundle\Tests\Functional\DataFixtures\PuttablePostableAnnotationEntities;
+use Dontdrinkandroot\RestBundle\Tests\Functional\DataFixtures\Users;
 use Dontdrinkandroot\RestBundle\Tests\Functional\FunctionalTestCase;
-use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\PuttablePostableAnnotationEntities;
-use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\Users;
 use Metadata\MetadataFactory;
 
 class ClassMetadataTest extends FunctionalTestCase

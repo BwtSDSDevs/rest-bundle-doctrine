@@ -2,10 +2,10 @@
 
 namespace Dontdrinkandroot\RestBundle\Tests\Functional;
 
+use Dontdrinkandroot\RestBundle\Tests\Functional\DataFixtures\Groups;
+use Dontdrinkandroot\RestBundle\Tests\Functional\DataFixtures\Users;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\Group;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\User;
-use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\Groups;
-use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\Users;
 use Symfony\Component\HttpFoundation\Response;
 
 class AssociationTest extends FunctionalTestCase

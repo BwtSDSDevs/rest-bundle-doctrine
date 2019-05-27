@@ -3,13 +3,13 @@
 namespace Dontdrinkandroot\RestBundle\Tests\Functional;
 
 use Dontdrinkandroot\RestBundle\Security\AbstractAccessTokenAuthenticator;
+use Dontdrinkandroot\RestBundle\Tests\Functional\DataFixtures\InheritedEntities;
+use Dontdrinkandroot\RestBundle\Tests\Functional\DataFixtures\SecuredEntities;
+use Dontdrinkandroot\RestBundle\Tests\Functional\DataFixtures\Users;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\AccessToken;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\InheritedEntity;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\SecuredEntity;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\SubResourceEntity;
-use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\InheritedEntities;
-use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\SecuredEntities;
-use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\Users;
 use Symfony\Component\HttpFoundation\Response;
 
 class SecuredEnvironmentTest extends FunctionalTestCase

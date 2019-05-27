@@ -23,12 +23,12 @@ class AppKernel extends Kernel
      */
     public function registerBundles()
     {
-        $bundlesFile = $this->getRootDir() . '/config/' . $this->getEnvironment() . '/bundles.php';
-        if (!file_exists($bundlesFile)) {
-            throw new \RuntimeException($bundlesFile . ' is missing');
+        $contents = require $this->getProjectDir() . '/Tests/Functional/app/config/bundles.php';
+        foreach ($contents as $class => $envs) {
+            if (isset($envs['all']) || isset($envs[$this->environment])) {
+                yield new $class();
+            }
         }
-
-        return include $bundlesFile;
     }
 
     /**

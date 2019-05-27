@@ -2,8 +2,8 @@
 
 namespace Dontdrinkandroot\RestBundle\Tests\Functional;
 
+use Dontdrinkandroot\RestBundle\Tests\Functional\DataFixtures\MinimalEntities;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\MinimalEntity;
-use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\MinimalEntities;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

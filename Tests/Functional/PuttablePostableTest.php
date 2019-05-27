@@ -2,9 +2,9 @@
 
 namespace Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity;
 
+use Dontdrinkandroot\RestBundle\Tests\Functional\DataFixtures\PuttablePostableAnnotationEntities;
+use Dontdrinkandroot\RestBundle\Tests\Functional\DataFixtures\Users;
 use Dontdrinkandroot\RestBundle\Tests\Functional\FunctionalTestCase;
-use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\PuttablePostableAnnotationEntities;
-use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Fixtures\ORM\Users;
 use Symfony\Component\HttpFoundation\Response;
 
 class PuttablePostableTest extends FunctionalTestCase
