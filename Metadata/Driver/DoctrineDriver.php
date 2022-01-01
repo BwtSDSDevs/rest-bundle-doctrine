@@ -2,7 +2,6 @@
 
 namespace Dontdrinkandroot\RestBundle\Metadata\Driver;
 
-use Doctrine\Common\Persistence\Mapping\MappingException as CommonMappingException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\MappingException as OrmMappingException;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;

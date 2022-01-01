@@ -55,17 +55,6 @@ class ClassMetadata extends MergeableClassMetadata
      */
     public function merge(MergeableInterface $object): void
     {
-//        assert($object instanceof ClassMetadata);
-//
-//        $this->name = $object->name;
-//        $this->methodMetadata = array_merge($this->methodMetadata, $object->methodMetadata);
-//        $this->propertyMetadata = $this->mergePropertyMetadata($object);
-//        $this->fileResources = array_merge($this->fileResources, $object->fileResources);
-//
-//        if ($object->createdAt < $this->createdAt) {
-//            $this->createdAt = $object->createdAt;
-//        }
-
         parent::merge($object);
 
         /** @var ClassMetadata $object */
@@ -213,20 +202,12 @@ class ClassMetadata extends MergeableClassMetadata
 
     private function mergeField($existing, $toMerge)
     {
-        if (null !== $toMerge) {
-            return $toMerge;
-        }
-
-        return $existing;
+        return $toMerge ?? $existing;
     }
 
     public function getIdField(string $default = 'id'): string
     {
-        if (null !== $this->idField) {
-            return $this->idField;
-        }
-
-        return $default;
+        return $this->idField ?? $default;
     }
 
     /**
