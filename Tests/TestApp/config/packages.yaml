@@ -1,0 +1,26 @@
+framework:
+    secret: '%env(APP_SECRET)%'
+    test: true
+    session:
+        storage_factory_id: session.storage.factory.mock_file
+    router:
+        utf8: true
+    validation: { enable_annotations: true }
+
+doctrine:
+    dbal:
+        driver: pdo_sqlite
+        path: '/tmp/ddr_rest_bundle/test.db3'
+        charset: UTF8
+        logging: false
+
+    orm:
+        auto_generate_proxy_classes: "%kernel.debug%"
+        auto_mapping: true
+        mappings:
+            App:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/Entity'
+                prefix: 'Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\'
+                alias: TestApp

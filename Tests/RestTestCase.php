@@ -4,7 +4,6 @@ namespace Dontdrinkandroot\RestBundle\Tests;
 
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
-use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,9 +17,9 @@ abstract class RestTestCase extends WebTestCase
 
     protected function loadClientAndFixtures(array $fixtureClasses = [], string $environment = 'test')
     {
-        $this->client = self::createClient(['environment' => $environment]);
+        $this->client = static::createClient(['environment' => $environment]);
         /** @var DatabaseToolCollection $databaseToolCollection */
-        $databaseToolCollection = $this->client->getContainer()->get(DatabaseToolCollection::class);
+        $databaseToolCollection = static::getContainer()->get(DatabaseToolCollection::class);
         $this->referenceRepository = $databaseToolCollection->get()->loadFixtures(
             $fixtureClasses
         )->getReferenceRepository();
@@ -93,7 +92,7 @@ abstract class RestTestCase extends WebTestCase
      *
      * @return null|Response
      */
-    protected function performGet(Client $client, $url, array $parameters = [], array $headers = [])
+    protected function performGet(KernelBrowser $client, $url, array $parameters = [], array $headers = [])
     {
         $client->request(
             Request::METHOD_GET,
@@ -116,7 +115,7 @@ abstract class RestTestCase extends WebTestCase
      * @return null|Response
      */
     protected function performPost(
-        Client $client,
+        KernelBrowser $client,
         $url,
         array $parameters = [],
         array $headers = [],
@@ -144,7 +143,7 @@ abstract class RestTestCase extends WebTestCase
      * @return null|Response
      */
     protected function performPut(
-        Client $client,
+        KernelBrowser $client,
         $url,
         array $parameters = [],
         array $headers = [],
@@ -169,7 +168,7 @@ abstract class RestTestCase extends WebTestCase
      *
      * @return null|Response
      */
-    protected function performDelete(Client $client, $url, array $parameters = [], array $headers = [])
+    protected function performDelete(KernelBrowser $client, $url, array $parameters = [], array $headers = [])
     {
         $client->request(
             Request::METHOD_DELETE,

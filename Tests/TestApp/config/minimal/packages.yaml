@@ -1,0 +1,6 @@
+ddr_rest:
+    metadata:
+        directories:
+            minimal:
+                namespace_prefix: 'Dontdrinkandroot\RestBundle\Tests\TestApp\Entity'
+                path: '%kernel.project_dir%/config/minimal/metadata'

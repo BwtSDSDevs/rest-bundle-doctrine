@@ -162,7 +162,7 @@ class YamlDriver extends AbstractFileDriver
      */
     protected function getExtension(): string
     {
-        return 'rest.yml';
+        return 'rest.yaml';
     }
 
     protected function getOrCreatePropertyMetadata(ClassMetadata $classMetadata, $propertyName): PropertyMetadata

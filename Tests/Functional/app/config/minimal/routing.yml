@@ -1,9 +1,0 @@
-rest_minimal_entity:
-    resource: "@TestBundle/Entity/MinimalEntity.php"
-    type: "ddr_rest"
-    prefix:   /rest
-
-rest_inherited_entity:
-    resource: "@TestBundle/Entity/InheritedEntity.php"
-    type: "ddr_rest"
-    prefix:   /rest

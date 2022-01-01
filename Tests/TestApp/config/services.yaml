@@ -1,0 +1,9 @@
+services:
+
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Dontdrinkandroot\RestBundle\Tests\TestApp\DataFixtures\:
+        resource: '../DataFixtures/*'

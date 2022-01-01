@@ -14,21 +14,18 @@ use Symfony\Component\Config\Loader\Loader;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
 class RestResourceLoader extends Loader
 {
-    private FileLocatorInterface $fileLocator;
-
-    private MetadataFactoryInterface $metadataFactory;
-
     public function __construct(
-        FileLocatorInterface $fileLocator,
-        MetadataFactoryInterface $metadataFactory
+        private FileLocatorInterface $fileLocator,
+        private MetadataFactoryInterface $metadataFactory,
+        private KernelInterface $kernel
     ) {
-        $this->fileLocator = $fileLocator;
-        $this->metadataFactory = $metadataFactory;
+        parent::__construct();
     }
 
     /**
@@ -36,7 +33,7 @@ class RestResourceLoader extends Loader
      */
     public function load($resource, $type = null)
     {
-        $locatedResource = $this->fileLocator->locate($resource);
+        $locatedResource = $this->fileLocator->locate($resource, $this->kernel->getProjectDir());
         $files = [];
         if (is_dir($locatedResource)) {
             $finder = new Finder();
@@ -58,7 +55,6 @@ class RestResourceLoader extends Loader
             /** @var ClassMetadata $classMetadata */
             $classMetadata = $this->metadataFactory->getMetadataForClass($class);
             if ($classMetadata->isRestResource()) {
-
                 $namePrefix = $classMetadata->getNamePrefix();
                 $pathPrefix = $classMetadata->getPathPrefix();
                 $controller = $this->getController($classMetadata);
@@ -146,7 +142,6 @@ class RestResourceLoader extends Loader
                 /** @var PropertyMetadata $propertyMetadata */
                 foreach ($classMetadata->propertyMetadata as $propertyMetadata) {
                     if ($propertyMetadata->isSubResource()) {
-
                         $subResourcePath = strtolower($propertyMetadata->name);
                         if (null !== $propertyMetadata->getSubResourcePath()) {
                             $subResourcePath = $propertyMetadata->getSubResourcePath();
@@ -240,38 +235,45 @@ class RestResourceLoader extends Loader
      */
     protected function findClass($file)
     {
-        $class = false;
-        $namespace = false;
-        $tokens = token_get_all(file_get_contents($file));
-        for ($i = 0; isset($tokens[$i]); ++$i) {
-            $token = $tokens[$i];
+        $fp = fopen($file, 'r');
+        $buffer = '';
+        $namespace = null;
+        $class = null;
+        $i = 0;
+        while (!$class) {
+            if (feof($fp)) {
+                break;
+            }
 
-            if (!isset($token[1])) {
+            $buffer .= fread($fp, 512);
+            $tokens = token_get_all($buffer);
+
+            if (!str_contains($buffer, '{')) {
                 continue;
             }
 
-            if (true === $class && T_STRING === $token[0]) {
-                return $namespace . '\\' . $token[1];
-            }
-
-            if (true === $namespace && T_STRING === $token[0]) {
-                $namespace = $token[1];
-                while (isset($tokens[++$i][1]) && in_array($tokens[$i][0], array(T_NS_SEPARATOR, T_STRING))) {
-                    $namespace .= $tokens[$i][1];
+            for ($iMax = count($tokens); $i < $iMax; $i++) {
+                if ($tokens[$i][0] === T_NAMESPACE) {
+                    for ($j = $i + 1, $jMax = count($tokens); $j < $jMax; $j++) {
+                        if ($tokens[$j][0] === T_NAME_QUALIFIED) {
+                            $namespace = $tokens[$j][1];
+                            break;
+                        }
+                    }
                 }
-                $token = $tokens[$i];
-            }
 
-            if (T_CLASS === $token[0]) {
-                $class = true;
-            }
-
-            if (T_NAMESPACE === $token[0]) {
-                $namespace = true;
+                if ($tokens[$i][0] === T_CLASS) {
+                    for ($j = $i + 1, $jMax = count($tokens); $j < $jMax; $j++) {
+                        if ($tokens[$j] === '{') {
+                            $class = $tokens[$i + 2][1];
+                        }
+                    }
+                }
             }
         }
 
-        return false;
+        fclose($fp);
+        return $namespace . "\\" . $class;
     }
 
     /**

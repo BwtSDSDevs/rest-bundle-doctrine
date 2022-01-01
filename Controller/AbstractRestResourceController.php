@@ -23,40 +23,19 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/**
- * @author Philip Washington Sorst <philip@sorst.net>
- */
 abstract class AbstractRestResourceController implements RestResourceControllerInterface
 {
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
+    private ValidatorInterface $validator;
 
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
+    private RequestStack $requestStack;
 
-    /**
-     * @var RestMetadataFactory
-     */
-    private $metadataFactory;
+    private RestMetadataFactory $metadataFactory;
 
-    /**
-     * @var PropertyAccessorInterface
-     */
-    private $propertyAccessor;
+    private PropertyAccessorInterface $propertyAccessor;
 
-    /**
-     * @var AuthorizationCheckerInterface
-     */
-    private $authorizationChecker;
+    private AuthorizationCheckerInterface $authorizationChecker;
 
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
+    private SerializerInterface $serializer;
 
     public function __construct(
         ValidatorInterface $validator,
@@ -420,7 +399,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     protected function assertRightGranted(Right $right, $entity = null)
     {
         $propertyPath = $right->propertyPath;
-        if (null === $propertyPath || null == $entity) {
+        if (null === $propertyPath || null === $entity) {
             $this->denyAccessUnlessGranted($right->attributes);
         } else {
             $subject = $this->resolveSubject($entity, $propertyPath);
@@ -445,15 +424,17 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
         return array_merge($defaultIncludes, $includes);
     }
 
-    protected function denyAccessUnlessGranted($attributes, $object = null, $message = 'Access Denied.')
+    protected function denyAccessUnlessGranted(array $attributes, $object = null, $message = 'Access Denied.')
     {
         $authorizationChecker = $this->getAuthorizationChecker();
         if (null === $authorizationChecker) {
             throw new AccessDeniedException('No authorization checker configured');
         }
 
-        if (!$authorizationChecker->isGranted($attributes, $object)) {
-            throw new AccessDeniedException($message);
+        foreach ($attributes as $attribute) {
+            if (!$authorizationChecker->isGranted($attribute, $object)) {
+                throw new AccessDeniedException($message);
+            }
         }
     }
 

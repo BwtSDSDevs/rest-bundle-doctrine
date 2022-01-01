@@ -26,25 +26,13 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
     const DDR_REST_METHOD = 'ddrRestMethod';
     const DDR_REST_ENTITY = 'ddrRestEntity';
 
-    /**
-     * @var RestMetadataFactory
-     */
-    private $metadataFactory;
+    private RestMetadataFactory $metadataFactory;
 
-    /**
-     * @var PropertyAccessorInterface
-     */
-    private $propertyAccessor;
+    private PropertyAccessorInterface $propertyAccessor;
 
-    /**
-     * @var AuthorizationCheckerInterface|null
-     */
-    private $authorizationChecker;
+    private ?AuthorizationCheckerInterface $authorizationChecker = null;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(
         RestMetadataFactory $metadataFactory,
@@ -198,12 +186,21 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
 
         $propertyPath = $right->propertyPath;
         if (null === $propertyPath) {
-            return $this->authorizationChecker->isGranted($right->attributes);
-        } else {
-            $subject = $this->resolveSubject($object, $propertyPath);
-
-            return $this->authorizationChecker->isGranted($right->attributes, $subject);
+            foreach ($right->attributes as $attribute) {
+                if (!$this->authorizationChecker->isGranted($attribute)) {
+                    return false;
+                }
+            }
+            return true;
         }
+
+        $subject = $this->resolveSubject($object, $propertyPath);
+        foreach ($right->attributes as $attribute) {
+            if (!$this->authorizationChecker->isGranted($attribute, $subject)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private function resolveSubject($entity, $propertyPath)

@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<phpunit
-        colors="true"
-        bootstrap="vendor/autoload.php">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" colors="true" bootstrap="vendor/autoload.php"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
 
     <php>
+        <ini name="memory_limit" value="-1" />
+        <env name="APP_ENV" value="test" />
+        <env name="APP_SECRET" value="234235843796083224023453245" />
         <env name="SHELL_VERBOSITY" value="-1" />
+        <env name="KERNEL_CLASS" value="Dontdrinkandroot\RestBundle\Tests\TestApp\TestKernel" />
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[direct]=0" />
+        <env name="SYMFONY_PHPUNIT_VERSION" value="9.5" />
     </php>
 
     <testsuites>
@@ -14,15 +18,19 @@
         </testsuite>
     </testsuites>
 
-    <filter>
-        <whitelist>
+    <coverage>
+        <include>
             <directory>./</directory>
-            <exclude>
-                <directory>./Resources</directory>
-                <directory>./Tests</directory>
-                <directory>./vendor</directory>
-            </exclude>
-        </whitelist>
-    </filter>
+        </include>
+        <exclude>
+            <directory>./Resources</directory>
+            <directory>./Tests</directory>
+            <directory>./vendor</directory>
+        </exclude>
+    </coverage>
+
+    <listeners>
+        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
+    </listeners>
 
 </phpunit>

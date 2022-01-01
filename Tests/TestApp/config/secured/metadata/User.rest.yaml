@@ -1,0 +1,33 @@
+Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\User:
+    rootResource: true
+    methods:
+        GET:
+            defaultIncludes: [ "supervisor" ]
+        POST:
+            right:
+                attributes: [ "ROLE_ADMIN" ]
+    fields:
+        role:
+            excluded: true
+        password:
+            excluded: true
+        supervisor:
+            includable: true
+            subResource:
+                methods:
+                    PUT: true
+                    DELETE: true
+        subordinates:
+            includable: true
+            subResource:
+                methods:
+                    PUT: true
+                    DELETE: true
+        groups:
+            includable: true
+            subResource:
+                methods:
+                    PUT: true
+                    DELETE: true
+        roles:
+            virtual: true

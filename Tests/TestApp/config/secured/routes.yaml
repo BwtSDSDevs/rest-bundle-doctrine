@@ -1,0 +1,5 @@
+rest_secured:
+    resource: "./Entity/"
+    type: "ddr_rest"
+    prefix:   /rest
+

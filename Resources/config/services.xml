@@ -45,6 +45,7 @@
         <service id="Dontdrinkandroot\RestBundle\Routing\RestResourceLoader">
             <argument type="service" id="file_locator" />
             <argument type="service" id="Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory" />
+            <argument type="service" id="kernel" />
             <tag name="routing.loader" />
         </service>
 
