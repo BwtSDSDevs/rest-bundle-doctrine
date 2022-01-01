@@ -12,6 +12,8 @@ use Dontdrinkandroot\RestBundle\Metadata\Annotation\Virtual;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\Driver\DriverInterface;
+use ReflectionClass;
+use ReflectionMethod;
 
 /**
  * @author Philip Washington Sorst <philip@sorst.net>
@@ -37,7 +39,7 @@ class AnnotationDriver implements DriverInterface
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass(\ReflectionClass $class)
+    public function loadMetadataForClass(ReflectionClass $class): \Metadata\ClassMetadata
     {
         /** @var ClassMetadata $ddrRestClassMetadata */
         $ddrRestClassMetadata = $this->doctrineDriver->loadMetadataForClass($class);
@@ -159,7 +161,7 @@ class AnnotationDriver implements DriverInterface
         return $ddrRestClassMetadata;
     }
 
-    private function methodToPropertyName(\ReflectionMethod $reflectionMethod): string
+    private function methodToPropertyName(ReflectionMethod $reflectionMethod): string
     {
         $name = $reflectionMethod->getName();
         if (0 === strpos($name, 'get')) {

@@ -10,21 +10,19 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MinimalEnvironmentTest extends FunctionalTestCase
 {
-    protected $environment = 'minimal';
 
     public function testList()
     {
-        $referenceRepository = $this->loadFixtures([MinimalEntities::class])->getReferenceRepository();
-        $client = $this->makeClient();
+        $referenceRepository = $this->loadClientAndFixtures([MinimalEntities::class], 'minimal');
 
-        $client->request(
+        $this->client->request(
             Request::METHOD_GET,
             '/rest/minimalentities',
             ['page' => 2, 'perPage' => 10],
             [],
             []
         );
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $content = $this->assertJsonResponse($response);
 
         $this->assertCount(10, $content);
@@ -41,13 +39,12 @@ class MinimalEnvironmentTest extends FunctionalTestCase
 
     public function testGet()
     {
-        $referenceRepository = $this->loadFixtures([MinimalEntities::class])->getReferenceRepository();
-        $client = $this->makeClient();
+        $referenceRepository = $this->loadClientAndFixtures([MinimalEntities::class], 'minimal');
         /** @var MinimalEntity $entity */
         $entity = $referenceRepository->getReference('minimal-entity-10');
 
-        $client->request(Request::METHOD_GET, sprintf('/rest/minimalentities/%s', $entity->getId()));
-        $content = $this->assertJsonResponse($client->getResponse());
+        $this->client->request(Request::METHOD_GET, sprintf('/rest/minimalentities/%s', $entity->getId()));
+        $content = $this->assertJsonResponse($this->client->getResponse());
 
         $this->assertContentEquals(
             [
@@ -65,10 +62,11 @@ class MinimalEnvironmentTest extends FunctionalTestCase
 
     public function testPost()
     {
-        $client = $this->makeClient();
+        $this->loadClientAndFixtures([], 'minimal');
+        $this->client->catchExceptions(false);
 
         $this->expectException(MethodNotAllowedHttpException::class);
-        $client->request(
+        $this->client->request(
             Request::METHOD_POST,
             '/rest/minimalentities',
             [],
@@ -79,13 +77,13 @@ class MinimalEnvironmentTest extends FunctionalTestCase
 
     public function testPut()
     {
-        $referenceRepository = $this->loadFixtures([MinimalEntities::class])->getReferenceRepository();
-        $client = $this->makeClient();
+        $referenceRepository = $this->loadClientAndFixtures([MinimalEntities::class], 'minimal');
+        $this->client->catchExceptions(false);
         /** @var MinimalEntity $entity */
         $entity = $referenceRepository->getReference('minimal-entity-10');
 
         $this->expectException(MethodNotAllowedHttpException::class);
-        $client->request(
+        $this->client->request(
             Request::METHOD_PUT,
             sprintf('/rest/minimalentities/%s', $entity->getId()),
             [],
@@ -96,13 +94,13 @@ class MinimalEnvironmentTest extends FunctionalTestCase
 
     public function testDelete()
     {
-        $referenceRepository = $this->loadFixtures([MinimalEntities::class])->getReferenceRepository();
-        $client = $this->makeClient();
+        $referenceRepository = $this->loadClientAndFixtures([MinimalEntities::class], 'minimal');
+        $this->client->catchExceptions(false);
         /** @var MinimalEntity $entity */
         $entity = $referenceRepository->getReference('minimal-entity-10');
 
         $this->expectException(MethodNotAllowedHttpException::class);
-        $client->request(
+        $this->client->request(
             Request::METHOD_DELETE,
             sprintf('/rest/minimalentities/%s', $entity->getId())
         );
@@ -110,11 +108,12 @@ class MinimalEnvironmentTest extends FunctionalTestCase
 
     public function testUnmappedPath()
     {
-        $client = $this->makeClient();
+        $this->loadClientAndFixtures([], 'minimal');
+        $this->client->catchExceptions(false);
 
         $this->expectException(NotFoundHttpException::class);
 
-        $client->request(
+        $this->client->request(
             Request::METHOD_GET,
             '/rest/test',
             [],

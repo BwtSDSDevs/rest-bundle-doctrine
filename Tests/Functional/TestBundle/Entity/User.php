@@ -11,9 +11,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * @author Philip Washington Sorst <philip@sorst.net>
  *
- * @ORM\Entity(
- *     repositoryClass="Dontdrinkandroot\Service\DoctrineCrudService"
- * )
+ * @ORM\Entity()
  */
 class User implements UserInterface
 {

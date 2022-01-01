@@ -30,9 +30,9 @@
             </argument>
         </service>
 
-        <service id="ddr_rest.metadata.cache" class="Metadata\Cache\DoctrineCacheAdapter">
+        <service id="ddr_rest.metadata.cache" class="Metadata\Cache\PsrCacheAdapter">
             <argument type="string">ddr_rest</argument>
-            <argument type="service" id="doctrine.orm.default_metadata_cache" />
+            <argument type="service" id="cache.system" />
         </service>
 
         <service id="Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory">

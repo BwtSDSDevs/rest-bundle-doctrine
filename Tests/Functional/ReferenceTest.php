@@ -8,27 +8,20 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ReferenceTest extends FunctionalTestCase
 {
-    protected $environment = 'secured';
-
     public function testPostByReference()
     {
-        $referenceRepository = $this->loadFixtures([Users::class])->getReferenceRepository();
+        $referenceRepository = $this->loadClientAndFixtures([Users::class], 'secured');
 
         $creator = $referenceRepository->getReference(Users::EMPLOYEE_1);
 
-        $client = $this->makeClient(
-            false,
+        $response = $this->performPost(
+            $this->client,
+            '/rest/subresourceentities',
+            [],
             [
                 'PHP_AUTH_USER' => 'admin',
                 'PHP_AUTH_PW'   => 'admin',
-            ]
-        );
-
-        $response = $this->performPost(
-            $client,
-            '/rest/subresourceentities',
-            [],
-            [],
+            ],
             [
                 'creator' => [
                     'id' => $creator->getId(),
@@ -54,25 +47,19 @@ class ReferenceTest extends FunctionalTestCase
 
     public function testPutByReference()
     {
-        $referenceRepository = $this->loadFixtures([Users::class, SubResourceEntities::class])->getReferenceRepository(
-        );
+        $referenceRepository = $this->loadClientAndFixtures([Users::class, SubResourceEntities::class], 'secured');
 
         $creator = $referenceRepository->getReference(Users::EMPLOYEE_1);
         $entity = $referenceRepository->getReference('subresource-entity-0');
 
-        $client = $this->makeClient(
-            false,
+        $response = $this->performPut(
+            $this->client,
+            sprintf('/rest/subresourceentities/%s', $entity->getId()),
+            [],
             [
                 'PHP_AUTH_USER' => 'admin',
                 'PHP_AUTH_PW'   => 'admin',
-            ]
-        );
-
-        $response = $this->performPut(
-            $client,
-            sprintf('/rest/subresourceentities/%s', $entity->getId()),
-            [],
-            [],
+            ],
             [
                 'creator' => [
                     'id' => $creator->getId(),

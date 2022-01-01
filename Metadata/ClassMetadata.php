@@ -2,14 +2,12 @@
 
 namespace Dontdrinkandroot\RestBundle\Metadata;
 
-use Doctrine\Common\Inflector\Inflector;
+use Doctrine\Inflector\InflectorFactory;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Metadata\MergeableClassMetadata;
 use Metadata\MergeableInterface;
+use ReflectionClass;
 
-/**
- * @author Philip Washington Sorst <philip@sorst.net>
- */
 class ClassMetadata extends MergeableClassMetadata
 {
     /**
@@ -46,26 +44,29 @@ class ClassMetadata extends MergeableClassMetadata
     {
         parent::__construct($name);
 
-        $this->namePrefix = Inflector::tableize($this->reflection->getShortName());
-        $this->pathPrefix = Inflector::pluralize(strtolower($this->reflection->getShortName()));
+        $reflection = new ReflectionClass($name);
+        $inflector = InflectorFactory::create()->build();
+        $this->namePrefix = $inflector->tableize($reflection->getShortName());
+        $this->pathPrefix = $inflector->pluralize(strtolower($reflection->getShortName()));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function merge(MergeableInterface $object)
+    public function merge(MergeableInterface $object): void
     {
-        assert($object instanceof ClassMetadata);
+//        assert($object instanceof ClassMetadata);
+//
+//        $this->name = $object->name;
+//        $this->methodMetadata = array_merge($this->methodMetadata, $object->methodMetadata);
+//        $this->propertyMetadata = $this->mergePropertyMetadata($object);
+//        $this->fileResources = array_merge($this->fileResources, $object->fileResources);
+//
+//        if ($object->createdAt < $this->createdAt) {
+//            $this->createdAt = $object->createdAt;
+//        }
 
-        $this->name = $object->name;
-        $this->reflection = $object->reflection;
-        $this->methodMetadata = array_merge($this->methodMetadata, $object->methodMetadata);
-        $this->propertyMetadata = $this->mergePropertyMetadata($object);
-        $this->fileResources = array_merge($this->fileResources, $object->fileResources);
-
-        if ($object->createdAt < $this->createdAt) {
-            $this->createdAt = $object->createdAt;
-        }
+        parent::merge($object);
 
         /** @var ClassMetadata $object */
         $this->restResource = $this->mergeField($this->restResource, $object->restResource);
@@ -268,7 +269,5 @@ class ClassMetadata extends MergeableClassMetadata
             $this->controller,
             $this->methods
             ) = unserialize($str);
-
-        $this->reflection = new \ReflectionClass($this->name);
     }
 }

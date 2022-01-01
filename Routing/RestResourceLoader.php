@@ -6,7 +6,9 @@ use Dontdrinkandroot\RestBundle\Controller\DoctrineRestResourceController;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
+use Exception;
 use Metadata\MetadataFactoryInterface;
+use RuntimeException;
 use Symfony\Component\Config\FileLocatorInterface;
 use Symfony\Component\Config\Loader\Loader;
 use Symfony\Component\Finder\Finder;
@@ -15,20 +17,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
-/**
- * @author Philip Washington Sorst <philip@sorst.net>
- */
 class RestResourceLoader extends Loader
 {
-    /**
-     * @var FileLocatorInterface
-     */
-    private $fileLocator;
+    private FileLocatorInterface $fileLocator;
 
-    /**
-     * @var MetadataFactoryInterface
-     */
-    private $metadataFactory;
+    private MetadataFactoryInterface $metadataFactory;
 
     public function __construct(
         FileLocatorInterface $fileLocator,
@@ -60,7 +53,7 @@ class RestResourceLoader extends Loader
         foreach ($files as $file) {
             $class = $this->findClass($file);
             if (false === $class) {
-                throw new \Exception(sprintf('Couldn\'t find class for %s', $file));
+                throw new Exception(sprintf('Couldn\'t find class for %s', $file));
             }
             /** @var ClassMetadata $classMetadata */
             $classMetadata = $this->metadataFactory->getMetadataForClass($class);
@@ -302,7 +295,7 @@ class RestResourceLoader extends Loader
         }
 
         if (strpos($controller, ':') !== false) {
-            throw new \RuntimeException(sprintf('Short controller notation is not permitted for "%s"', $controller));
+            throw new RuntimeException(sprintf('Short controller notation is not permitted for "%s"', $controller));
         }
 
         if (strpos($controller, '\\') !== false) {

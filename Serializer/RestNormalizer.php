@@ -2,13 +2,16 @@
 
 namespace Dontdrinkandroot\RestBundle\Serializer;
 
+use DateTime;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
+use LogicException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
@@ -54,15 +57,15 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
     public function normalize($data, $format = null, array $context = [])
     {
         if (!array_key_exists(self::DDR_REST_INCLUDES, $context)) {
-            throw new \LogicException('Includes missing');
+            throw new LogicException('Includes missing');
         }
 
         if (!array_key_exists(self::DDR_REST_PATH, $context)) {
-            throw new \LogicException('Path missing');
+            throw new LogicException('Path missing');
         }
 
         if (!array_key_exists(self::DDR_REST_DEPTH, $context)) {
-            throw new \LogicException('Depth missing');
+            throw new LogicException('Depth missing');
         }
 
         $includes = $context[self::DDR_REST_INCLUDES];
@@ -87,7 +90,6 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
         }
 
         if (is_object($data)) {
-
             /** @var ClassMetadata $classMetadata */
             $classMetadata = $this->metadataFactory->getMetadataForClass(ClassUtils::getClass($data));
 
@@ -113,13 +115,11 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
 
             /** @var PropertyMetadata $propertyMetadatum */
             foreach ($classMetadata->propertyMetadata as $propertyMetadatum) {
-
                 if ($propertyMetadatum->isExcluded()) {
                     continue;
                 }
 
                 if ($propertyMetadatum->isAssociation()) {
-
                     /* Inlude if includable AND it is on include path */
                     if ($propertyMetadatum->isIncludable() && $this->isIncluded(
                             $path,
@@ -143,7 +143,6 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
                         );
                     }
                 } else {
-
                     /* Inlude if includable is missing OR it is on include path */
                     if (!$propertyMetadatum->isIncludable() || $this->isIncluded(
                             $path,
@@ -225,29 +224,28 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
     private function normalizeField($value, PropertyMetadata $propertyMetadata)
     {
         switch ($propertyMetadata->getType()) {
-
-            case Type::DATETIME:
+            case Types::DATETIME_MUTABLE:
                 if (null === $value) {
                     return null;
                 }
 
-                /** @var $value \DateTime */
+                /** @var $value DateTime */
                 return $value->format('Y-m-d H:i:s');
 
-            case Type::DATE:
+            case Types::DATE_MUTABLE:
                 if (null === $value) {
                     return null;
                 }
 
-                /** @var $value \DateTime */
+                /** @var $value DateTime */
                 return $value->format('Y-m-d');
 
-            case Type::TIME:
+            case Types::TIME_MUTABLE:
                 if (null === $value) {
                     return null;
                 }
 
-                /** @var $value \DateTime */
+                /** @var $value DateTime */
                 return $value->format('H:i:s');
 
             default:

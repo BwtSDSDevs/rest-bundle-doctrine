@@ -9,18 +9,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PuttablePostableTest extends FunctionalTestCase
 {
-    protected $environment = 'secured';
-
     public function testPutAnon()
     {
-        $referenceRepository = $this->loadFixtures([PuttablePostableAnnotationEntities::class])->getReferenceRepository(
-        );
+        $referenceRepository = $this->loadClientAndFixtures([PuttablePostableAnnotationEntities::class], 'secured');
 
         /** @var PuttablePostableAnnotationEntity $entity */
         $entity = $referenceRepository->getReference(PuttablePostableAnnotationEntities::PUTTABLE_POSTABLE_1);
-        $client = $this->makeClient();
         $response = $this->performPut(
-            $client,
+            $this->client,
             sprintf('/rest/puttablepostableannotationentities/%s', $entity->getId()),
             [],
             [],
@@ -50,11 +46,9 @@ class PuttablePostableTest extends FunctionalTestCase
 
     public function testPostAnon()
     {
-        $referenceRepository = $this->loadFixtures([PuttablePostableAnnotationEntities::class])->getReferenceRepository(
-        );
-        $client = $this->makeClient();
+        $referenceRepository = $this->loadClientAndFixtures([PuttablePostableAnnotationEntities::class], 'secured');
         $response = $this->performPost(
-            $client,
+            $this->client,
             sprintf('/rest/puttablepostableannotationentities'),
             [],
             [],
@@ -84,24 +78,21 @@ class PuttablePostableTest extends FunctionalTestCase
 
     public function testPutUser()
     {
-        $referenceRepository = $this->loadFixtures(
-            [Users::class, PuttablePostableAnnotationEntities::class]
-        )->getReferenceRepository();
+        $referenceRepository = $this->loadClientAndFixtures(
+            [Users::class, PuttablePostableAnnotationEntities::class],
+            'secured'
+        );
 
         /** @var PuttablePostableAnnotationEntity $entity */
         $entity = $referenceRepository->getReference(PuttablePostableAnnotationEntities::PUTTABLE_POSTABLE_1);
-        $client = $this->makeClient(
-            false,
+        $response = $this->performPut(
+            $this->client,
+            sprintf('/rest/puttablepostableannotationentities/%s', $entity->getId()),
+            [],
             [
                 'PHP_AUTH_USER' => 'user',
                 'PHP_AUTH_PW'   => 'user',
-            ]
-        );
-        $response = $this->performPut(
-            $client,
-            sprintf('/rest/puttablepostableannotationentities/%s', $entity->getId()),
-            [],
-            [],
+            ],
             [
                 'puttableByAll'   => 'changedPuttableByAll',
                 'puttableByUser'  => 'changedPuttableByUser',
@@ -128,20 +119,16 @@ class PuttablePostableTest extends FunctionalTestCase
 
     public function testPostUser()
     {
-        $referenceRepository = $this->loadFixtures([Users::class])->getReferenceRepository();
-        $client = $this->makeClient(
-            false,
+        $referenceRepository = $this->loadClientAndFixtures([Users::class], 'secured');
+
+        $response = $this->performPost(
+            $this->client,
+            sprintf('/rest/puttablepostableannotationentities'),
+            [],
             [
                 'PHP_AUTH_USER' => 'user',
                 'PHP_AUTH_PW'   => 'user',
-            ]
-        );
-
-        $response = $this->performPost(
-            $client,
-            sprintf('/rest/puttablepostableannotationentities'),
-            [],
-            [],
+            ],
             [
                 'puttableByAll'   => 'puttableByAll',
                 'puttableByUser'  => 'puttableByUser',
@@ -168,24 +155,21 @@ class PuttablePostableTest extends FunctionalTestCase
 
     public function testPutAdmin()
     {
-        $referenceRepository = $this->loadFixtures(
-            [Users::class, PuttablePostableAnnotationEntities::class]
-        )->getReferenceRepository();
+        $referenceRepository = $this->loadClientAndFixtures(
+            [Users::class, PuttablePostableAnnotationEntities::class],
+            'secured'
+        );
 
         /** @var PuttablePostableAnnotationEntity $entity */
         $entity = $referenceRepository->getReference(PuttablePostableAnnotationEntities::PUTTABLE_POSTABLE_1);
-        $client = $this->makeClient(
-            false,
+        $response = $this->performPut(
+            $this->client,
+            sprintf('/rest/puttablepostableannotationentities/%s', $entity->getId()),
+            [],
             [
                 'PHP_AUTH_USER' => 'admin',
                 'PHP_AUTH_PW'   => 'admin',
-            ]
-        );
-        $response = $this->performPut(
-            $client,
-            sprintf('/rest/puttablepostableannotationentities/%s', $entity->getId()),
-            [],
-            [],
+            ],
             [
                 'puttableByAll'   => 'changedPuttableByAll',
                 'puttableByUser'  => 'changedPuttableByUser',
@@ -212,21 +196,16 @@ class PuttablePostableTest extends FunctionalTestCase
 
     public function testPostAdmin()
     {
-        $referenceRepository = $this->loadFixtures([Users::class])->getReferenceRepository();
+        $referenceRepository = $this->loadClientAndFixtures([Users::class], 'secured');
 
-        $client = $this->makeClient(
-            false,
+        $response = $this->performPost(
+            $this->client,
+            sprintf('/rest/puttablepostableannotationentities'),
+            [],
             [
                 'PHP_AUTH_USER' => 'admin',
                 'PHP_AUTH_PW'   => 'admin',
-            ]
-        );
-
-        $response = $this->performPost(
-            $client,
-            sprintf('/rest/puttablepostableannotationentities'),
-            [],
-            [],
+            ],
             [
                 'puttableByAll'   => 'puttableByAll',
                 'puttableByUser'  => 'puttableByUser',

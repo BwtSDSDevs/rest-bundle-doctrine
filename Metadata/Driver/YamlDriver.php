@@ -10,14 +10,13 @@ use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\Driver\AbstractFileDriver;
 use Metadata\Driver\DriverInterface;
 use Metadata\Driver\FileLocatorInterface;
+use ReflectionClass;
+use RuntimeException;
 use Symfony\Component\Yaml\Yaml;
 
 class YamlDriver extends AbstractFileDriver
 {
-    /**
-     * @var DriverInterface
-     */
-    private $doctrineDriver;
+    private DriverInterface $doctrineDriver;
 
     public function __construct(FileLocatorInterface $locator, DriverInterface $doctrineDriver)
     {
@@ -28,7 +27,7 @@ class YamlDriver extends AbstractFileDriver
     /**
      * {@inheritdoc}
      */
-    protected function loadMetadataFromFile(\ReflectionClass $class, $file)
+    protected function loadMetadataFromFile(ReflectionClass $class, $file): ?\Metadata\ClassMetadata
     {
         /** @var ClassMetadata $ddrRestClassMetadata */
         $classMetadata = $this->doctrineDriver->loadMetadataForClass($class);
@@ -40,7 +39,7 @@ class YamlDriver extends AbstractFileDriver
         $className = key($config);
 
         if ($className !== $class->name) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 sprintf('Class definition mismatch for "%s" in "%s": %s', $class->getName(), $file, key($config))
             );
         }
@@ -139,7 +138,7 @@ class YamlDriver extends AbstractFileDriver
         }
 
         if (!is_bool($value)) {
-            throw new \RuntimeException(sprintf('Value %s must be of type bool', $key));
+            throw new RuntimeException(sprintf('Value %s must be of type bool', $key));
         }
 
         return $value;
@@ -149,7 +148,7 @@ class YamlDriver extends AbstractFileDriver
     {
         if (!array_key_exists($key, $haystack)) {
             if ($required) {
-                throw new \RuntimeException(sprintf('Value %s is required', $key));
+                throw new RuntimeException(sprintf('Value %s is required', $key));
             }
 
             return null;
@@ -161,7 +160,7 @@ class YamlDriver extends AbstractFileDriver
     /**
      * {@inheritdoc}
      */
-    protected function getExtension()
+    protected function getExtension(): string
     {
         return 'rest.yml';
     }

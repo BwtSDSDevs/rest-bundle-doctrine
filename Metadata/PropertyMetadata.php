@@ -5,24 +5,12 @@ namespace Dontdrinkandroot\RestBundle\Metadata;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Postable;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Puttable;
+use InvalidArgumentException;
 use Metadata\MergeableInterface;
 use Metadata\PropertyMetadata as BasePropertyMetadata;
 
-/**
- * @author Philip Washington Sorst <philip@sorst.net>
- */
 class PropertyMetadata extends BasePropertyMetadata implements MergeableInterface
 {
-    public function __construct($class, $name)
-    {
-        try {
-            parent::__construct($class, $name);
-        } catch (\ReflectionException $e) {
-            /* Ignore missing property definition as they might just be overridden or virtual and therefore only exist
-            in the parent class. They will be accessible after merging. */
-        }
-    }
-
     /**
      * @var string|null
      */
@@ -217,13 +205,12 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         $this->methods = $methods;
     }
 
-    public function merge(MergeableInterface $other)
+    public function merge(MergeableInterface $other): void
     {
         if (!$other instanceof PropertyMetadata) {
-            throw new \InvalidArgumentException('$object must be an instance of PropertyMetadata.');
+            throw new InvalidArgumentException('$object must be an instance of PropertyMetadata.');
         }
 
-        $this->reflection = $this->mergeField($other->reflection, $this->reflection);
         $this->type = $this->mergeField($other->type, $this->type);
         $this->puttable = $this->mergeField($other->puttable, $this->puttable);
         $this->postable = $this->mergeField($other->postable, $this->postable);
@@ -236,8 +223,6 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         $this->subResourcePath = $this->mergeField($other->subResourcePath, $this->subResourcePath);
         $this->methods = $this->mergeField($other->methods, $this->methods);
         $this->virtual = $this->mergeField($other->virtual, $this->virtual);
-
-        return $this;
     }
 
     protected function getBool(?bool $value, bool $default)
@@ -319,12 +304,5 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
             $this->virtual,
             $this->subResourcePath
             ) = unserialize($str);
-        try {
-            $this->reflection = new \ReflectionProperty($this->class, $this->name);
-            $this->reflection->setAccessible(true);
-        } catch (\ReflectionException $e) {
-            /* Ignore missing property definition as they might just be overridden or virtual and therefore only exist
-            in the parent class. They will be accessible after merging. */
-        }
     }
 }

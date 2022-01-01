@@ -1,22 +1,21 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity;
+namespace Dontdrinkandroot\RestBundle\Tests\Functional;
 
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
-use Dontdrinkandroot\RestBundle\Tests\Functional\DataFixtures\PuttablePostableAnnotationEntities;
-use Dontdrinkandroot\RestBundle\Tests\Functional\DataFixtures\Users;
-use Dontdrinkandroot\RestBundle\Tests\Functional\FunctionalTestCase;
+use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\SubResourceEntity;
+use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\User;
 use Metadata\MetadataFactory;
 
 class ClassMetadataTest extends FunctionalTestCase
 {
-    protected $environment = 'secured';
-
     public function testUser()
     {
         /** @var MetadataFactory $metadataFactory */
-        $metadataFactory = $this->getContainer()->get('test.Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory');
+        $metadataFactory = self::bootKernel(['environment' => 'secured'])->getContainer()->get(
+            'test.Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory'
+        );
         /** @var ClassMetadata $classMetadata */
         $classMetadata = $metadataFactory->getMetadataForClass(User::class);
 
@@ -36,7 +35,9 @@ class ClassMetadataTest extends FunctionalTestCase
     public function testUserSerialization()
     {
         /** @var MetadataFactory $metadataFactory */
-        $metadataFactory = $this->getContainer()->get('test.Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory');
+        $metadataFactory = self::bootKernel(['environment' => 'secured'])->getContainer()->get(
+            'test.Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory'
+        );
         /** @var ClassMetadata $classMetadata */
         $classMetadata = $metadataFactory->getMetadataForClass(User::class);
 
@@ -51,7 +52,9 @@ class ClassMetadataTest extends FunctionalTestCase
     public function testSubResourceEntity()
     {
         /** @var MetadataFactory $metadataFactory */
-        $metadataFactory = $this->getContainer()->get('test.Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory');
+        $metadataFactory = self::bootKernel(['environment' => 'secured'])->getContainer()->get(
+            'test.Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory'
+        );
         /** @var ClassMetadata $classMetadata */
         $classMetadata = $metadataFactory->getMetadataForClass(SubResourceEntity::class);
 
@@ -69,7 +72,9 @@ class ClassMetadataTest extends FunctionalTestCase
     public function testSubResourceEntitySerialization()
     {
         /** @var MetadataFactory $metadataFactory */
-        $metadataFactory = $this->getContainer()->get('test.Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory');
+        $metadataFactory = self::bootKernel(['environment' => 'secured'])->getContainer()->get(
+            'test.Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory'
+        );
         /** @var ClassMetadata $classMetadata */
         $classMetadata = $metadataFactory->getMetadataForClass(SubResourceEntity::class);
 
@@ -79,13 +84,5 @@ class ClassMetadataTest extends FunctionalTestCase
         $unserializedClassMetadata->unserialize($serialized);
 
         $this->assertEquals($classMetadata, $unserializedClassMetadata);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getFixtureClasses()
-    {
-        return [Users::class, PuttablePostableAnnotationEntities::class];
     }
 }

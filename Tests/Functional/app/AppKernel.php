@@ -36,7 +36,7 @@ class AppKernel extends Kernel
      */
     public function getCacheDir()
     {
-        return sys_get_temp_dir() . '/ddrrestbundle/cache/';
+        return sys_get_temp_dir() . '/ddr_rest_bundle/cache/';
     }
 
     /**
@@ -44,7 +44,7 @@ class AppKernel extends Kernel
      */
     public function getLogDir()
     {
-        return sys_get_temp_dir() . '/ddrrestbundle/logs';
+        return sys_get_temp_dir() . '/ddr_rest_bundle/logs';
     }
 
     /**

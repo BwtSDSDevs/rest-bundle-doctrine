@@ -2,8 +2,11 @@
 
 namespace Dontdrinkandroot\RestBundle\Serializer;
 
+use BadMethodCallException;
+use DateTime;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
@@ -59,7 +62,7 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
     public function denormalize($data, $class, $format = null, array $context = [])
     {
         if (!array_key_exists(self::DDR_REST_METHOD, $context)) {
-            throw new \BadMethodCallException('No REST Method specified');
+            throw new BadMethodCallException('No REST Method specified');
         }
 
         $method = $context[self::DDR_REST_METHOD];
@@ -219,10 +222,10 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
         }
 
         switch ($type) {
-            case Type::DATETIME:
-            case Type::DATE:
-            case TYPE::TIME:
-                return new \DateTime($value);
+            case Types::DATETIME_MUTABLE:
+            case Types::DATE_MUTABLE:
+            case Types::TIME_MUTABLE:
+                return new DateTime($value);
             default:
                 return $value;
         }

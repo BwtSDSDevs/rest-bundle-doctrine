@@ -2,13 +2,32 @@
 
 namespace Dontdrinkandroot\RestBundle\Tests;
 
-use Liip\FunctionalTestBundle\Test\WebTestCase;
+use Doctrine\Common\DataFixtures\ReferenceRepository;
+use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Symfony\Bundle\FrameworkBundle\Client;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 abstract class RestTestCase extends WebTestCase
 {
+    protected KernelBrowser $client;
+
+    protected ReferenceRepository $referenceRepository;
+
+    protected function loadClientAndFixtures(array $fixtureClasses = [], string $environment = 'test')
+    {
+        $this->client = self::createClient(['environment' => $environment]);
+        /** @var DatabaseToolCollection $databaseToolCollection */
+        $databaseToolCollection = $this->client->getContainer()->get(DatabaseToolCollection::class);
+        $this->referenceRepository = $databaseToolCollection->get()->loadFixtures(
+            $fixtureClasses
+        )->getReferenceRepository();
+
+        return $this->referenceRepository;
+    }
+
     /**
      * @param Response $response
      * @param int      $statusCode

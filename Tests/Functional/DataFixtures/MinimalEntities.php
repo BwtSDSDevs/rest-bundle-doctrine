@@ -3,12 +3,9 @@
 namespace Dontdrinkandroot\RestBundle\Tests\Functional\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\MinimalEntity;
 
-/**
- * @author Philip Washington Sorst <philip@sorst.net>
- */
 class MinimalEntities extends Fixture
 {
     /**

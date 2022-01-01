@@ -8,16 +8,11 @@ use Doctrine\ORM\Mapping\MappingException as OrmMappingException;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\Driver\DriverInterface;
+use ReflectionClass;
 
-/**
- * @author Philip Washington Sorst <philip@sorst.net>
- */
 class DoctrineDriver implements DriverInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
@@ -27,7 +22,7 @@ class DoctrineDriver implements DriverInterface
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass(\ReflectionClass $class)
+    public function loadMetadataForClass(ReflectionClass $class): ?\Metadata\ClassMetadata
     {
         $ddrRestClassMetadata = new ClassMetadata($class->getName());
         try {

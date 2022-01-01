@@ -3,7 +3,7 @@
 namespace Dontdrinkandroot\RestBundle\Tests\Functional\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 use Dontdrinkandroot\RestBundle\Tests\Functional\TestBundle\Entity\SubResourceEntity;
 
 class SubResourceEntities extends Fixture
