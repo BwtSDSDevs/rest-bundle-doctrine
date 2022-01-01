@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
-use Ramsey\Uuid\Uuid;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -35,9 +35,9 @@ class SecuredEntity
     private $id;
 
     /**
-     * @ORM\Column(type="guid", nullable=false)
+     * @ORM\Column(type="uuid", nullable=false, unique=true)
      *
-     * @var string
+     * @var Uuid
      */
     private $uuid;
 
@@ -111,7 +111,7 @@ class SecuredEntity
 
     public function __construct()
     {
-        $this->uuid = Uuid::uuid4();
+        $this->uuid = Uuid::v4();
         $this->subResources = new ArrayCollection();
         $this->embeddedEntity = new EmbeddableEntity();
     }
@@ -129,7 +129,7 @@ class SecuredEntity
         $this->uuid = $uuid;
     }
 
-    public function getUuid(): string
+    public function getUuid(): Uuid
     {
         return $this->uuid;
     }
