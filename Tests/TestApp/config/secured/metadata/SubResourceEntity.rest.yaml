@@ -5,19 +5,19 @@ Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\SubResourceEntity:
             right:
                 attributes:
                     - 'ROLE_USER'
-        GET:
+        READ:
             defaultIncludes:
                 - 'details'
             right:
                 attributes:
                     - 'ROLE_USER'
-        POST:
+        CREATE:
             defaultIncludes:
                 - 'creator'
             right:
                 attributes:
                     - 'ROLE_ADMIN'
-        PUT:
+        UPDATE:
             defaultIncludes:
                 - 'creator'
             right:
@@ -29,7 +29,7 @@ Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\SubResourceEntity:
             includable: ['parentEntity','details']
             subResource:
                 methods:
-                    PUT:
+                    UPDATE:
                         right:
                             attributes:
                                 - 'ROLE_ADMIN'

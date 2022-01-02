@@ -22,13 +22,13 @@ class ClassMetadataTest extends FunctionalTestCase
         $methods = $classMetadata->getMethods();
         $this->assertCount(2, $methods);
 
-        $method = $methods['GET'];
-        $this->assertEquals('GET', $method->name);
+        $method = $methods['READ'];
+        $this->assertEquals('READ', $method->name);
         $this->assertNull($method->right);
         $this->assertEquals(['supervisor'], $method->defaultIncludes);
 
-        $method = $methods['POST'];
-        $this->assertEquals('POST', $method->name);
+        $method = $methods['CREATE'];
+        $this->assertEquals('CREATE', $method->name);
         $this->assertEquals(['ROLE_ADMIN'], $method->right->attributes);
     }
 

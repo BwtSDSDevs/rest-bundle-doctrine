@@ -2,13 +2,15 @@
 
 namespace Dontdrinkandroot\RestBundle\Service;
 
+use DateTime;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
+use Dontdrinkandroot\Common\CrudOperation;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\MetadataFactory;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -74,7 +76,7 @@ class RestRequestParser implements RestRequestParserInterface
         $format = $request->getRequestFormat();
 
         if ('json' !== $format) {
-            throw new \RuntimeException(sprintf('Unsupported format "%s"', $format));
+            throw new RuntimeException(sprintf('Unsupported format "%s"', $format));
         }
 
         $content = $request->getContent();
@@ -187,11 +189,10 @@ class RestRequestParser implements RestRequestParserInterface
         $propertyPath = $right->propertyPath;
         if (null === $propertyPath) {
             return $this->authorizationChecker->isGranted($right->attributes);
-        } else {
-            $subject = $this->resolveSubject($object, $propertyPath);
-
-            return $this->authorizationChecker->isGranted($right->attributes, $subject);
         }
+
+        $subject = $this->resolveSubject($object, $propertyPath);
+        return $this->authorizationChecker->isGranted($right->attributes, $subject);
     }
 
     private function resolveSubject($entity, $propertyPath)
@@ -213,7 +214,7 @@ class RestRequestParser implements RestRequestParserInterface
             case 'datetime':
             case 'date':
             case 'time':
-                return new \DateTime($value);
+                return new DateTime($value);
             default:
                 return $value;
         }
@@ -222,14 +223,14 @@ class RestRequestParser implements RestRequestParserInterface
     private function isUpdateableByReference(PropertyMetadata $propertyMetadata, string $method)
     {
         if (
-            Method::PUT === $method
+            CrudOperation::UPDATE === $method
             && null !== $propertyMetadata->getPuttable() && true === $propertyMetadata->getPuttable()->byReference
         ) {
             return true;
         }
 
         if (
-            Method::POST === $method
+            CrudOperation::CREATE === $method
             && null !== $propertyMetadata->getPostable() && true === $propertyMetadata->getPostable()->byReference
         ) {
             return true;

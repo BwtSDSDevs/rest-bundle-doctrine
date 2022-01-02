@@ -12,7 +12,7 @@ use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
  * @ORM\Table(name="`Group`")
  * @REST\RootResource(
  *     methods = {
- *         @REST\Method(name="GET")
+ *         @REST\Method(name="READ")
  *     }
  * )
  */
@@ -38,7 +38,7 @@ class Group
      * @ORM\ManyToMany(targetEntity="User", inversedBy="groups")
      * @REST\SubResource(
      *     methods = {
-     *         @REST\Method("PUT"),
+     *         @REST\Method("UPDATE"),
      *         @REST\Method("DELETE")
      *     }
      * )

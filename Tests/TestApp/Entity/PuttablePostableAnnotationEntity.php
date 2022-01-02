@@ -9,8 +9,8 @@ use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
  * @ORM\Entity()
  * @REST\RootResource(
  *     methods = {
- *         @REST\Method("POST"),
- *         @REST\Method("PUT"),
+ *         @REST\Method("CREATE"),
+ *         @REST\Method("UPDATE"),
  *     }
  * )
  */

@@ -3,21 +3,14 @@
 namespace Dontdrinkandroot\RestBundle\Metadata\Annotation;
 
 use Doctrine\Common\Annotations\Annotation\Required;
+use Dontdrinkandroot\Common\CrudOperation;
 
 /**
- * @author Philip Washington Sorst <philip@sorst.net>
- *
  * @Annotation
  * @Target({"ANNOTATION"})
  */
 class Method
 {
-    const LIST = 'LIST';
-    const POST = 'POST';
-    const GET = 'GET';
-    const PUT = 'PUT';
-    const DELETE = 'DELETE';
-
     /**
      * @Required()
      * @var string
@@ -25,7 +18,7 @@ class Method
     public $name;
 
     /**
-     * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Right
+     * @var Right
      */
     public $right;
 
@@ -36,7 +29,18 @@ class Method
 
     public static function parse($name, $config): ?Method
     {
-        assert(in_array($name, [self::LIST, self::POST, self::GET, self::PUT, self::DELETE]));
+        assert(
+            in_array(
+                $name,
+                [
+                    CrudOperation::LIST,
+                    CrudOperation::CREATE,
+                    CrudOperation::READ,
+                    CrudOperation::UPDATE,
+                    CrudOperation::DELETE
+                ]
+            )
+        );
         assert(is_string($name));
 
         $method = new Method();

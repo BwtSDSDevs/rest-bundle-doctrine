@@ -8,7 +8,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Dontdrinkandroot\Common\Asserted;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
+use Dontdrinkandroot\Common\CrudOperation;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
@@ -75,7 +75,7 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
 
             $normalizedData = [];
 
-            if ($classMetadata->isRestResource() && $classMetadata->hasMethod(Method::GET) && $this->isIncluded(
+            if ($classMetadata->isRestResource() && $classMetadata->hasMethod(CrudOperation::READ) && $this->isIncluded(
                     $path,
                     ['_links'],
                     $includes

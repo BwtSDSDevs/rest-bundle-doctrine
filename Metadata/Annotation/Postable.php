@@ -7,8 +7,6 @@ use Doctrine\ORM\Mapping\Annotation;
 /**
  * @Annotation
  * @Target({"PROPERTY"})
- *
- * @author Philip Washington Sorst <philip@sorst.net>
  */
 class Postable extends Writeable
 {

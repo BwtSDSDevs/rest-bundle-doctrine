@@ -20,9 +20,9 @@ abstract class RestTestCase extends WebTestCase
         $this->client = static::createClient(['environment' => $environment]);
         /** @var DatabaseToolCollection $databaseToolCollection */
         $databaseToolCollection = static::getContainer()->get(DatabaseToolCollection::class);
-        $this->referenceRepository = $databaseToolCollection->get()->loadFixtures(
-            $fixtureClasses
-        )->getReferenceRepository();
+        $this->referenceRepository = $databaseToolCollection->get()
+            ->loadFixtures($fixtureClasses)
+            ->getReferenceRepository();
 
         return $this->referenceRepository;
     }

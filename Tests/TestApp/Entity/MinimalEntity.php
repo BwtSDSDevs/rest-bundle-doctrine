@@ -8,7 +8,7 @@ use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
 
 /**
  * @ORM\Entity()
- * @REST\RootResource(methods={@REST\Method("LIST"),@Rest\Method(name="GET",defaultIncludes={"detail", "arbitrary"})})
+ * @REST\RootResource(methods={@REST\Method("LIST"),@Rest\Method(name="READ",defaultIncludes={"detail", "arbitrary"})})
  */
 class MinimalEntity
 {

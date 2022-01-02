@@ -8,11 +8,10 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
+use Dontdrinkandroot\Common\CrudOperation;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
@@ -146,11 +145,11 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
      */
     protected function isUpdateable($object, string $method, PropertyMetadata $propertyMetadata): bool
     {
-        if ((Request::METHOD_PUT === $method || Request::METHOD_PATCH === $method) && $propertyMetadata->isPuttable()) {
+        if (CrudOperation::UPDATE === $method && $propertyMetadata->isPuttable()) {
             return $this->isGranted($object, $propertyMetadata->getPuttable()->right);
         }
 
-        if (Request:: METHOD_POST === $method && $propertyMetadata->isPostable()) {
+        if (CrudOperation::CREATE === $method && $propertyMetadata->isPostable()) {
             return $this->isGranted($object, $propertyMetadata->getPostable()->right);
         }
 
@@ -215,14 +214,14 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
     private function isUpdateableByReference(PropertyMetadata $propertyMetadata, string $method)
     {
         if (
-            Method::PUT === $method
+            CrudOperation::UPDATE === $method
             && null !== $propertyMetadata->getPuttable() && true === $propertyMetadata->getPuttable()->byReference
         ) {
             return true;
         }
 
         if (
-            Method::POST === $method
+            CrudOperation::CREATE === $method
             && null !== $propertyMetadata->getPostable() && true === $propertyMetadata->getPostable()->byReference
         ) {
             return true;
@@ -231,9 +230,6 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
         return false;
     }
 
-    /**
-     * @param AuthorizationCheckerInterface $authorizationChecker
-     */
     public function setAuthorizationChecker(AuthorizationCheckerInterface $authorizationChecker)
     {
         $this->authorizationChecker = $authorizationChecker;
