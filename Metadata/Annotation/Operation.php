@@ -9,7 +9,7 @@ use Dontdrinkandroot\Common\CrudOperation;
  * @Annotation
  * @Target({"ANNOTATION"})
  */
-class Method
+class Operation
 {
     /**
      * @Required()
@@ -24,7 +24,7 @@ class Method
      */
     public $defaultIncludes;
 
-    public static function parse($name, $config): ?Method
+    public static function parse($name, $config): ?Operation
     {
         assert(
             in_array(
@@ -40,7 +40,7 @@ class Method
         );
         assert(is_string($name));
 
-        $method = new Method();
+        $method = new Operation();
         $method->name = $name;
         if (is_bool($config) && true === $config) {
             return $method;

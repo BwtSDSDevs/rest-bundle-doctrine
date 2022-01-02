@@ -2,7 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Metadata\Driver;
 
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Operation;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Postable;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Puttable;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
@@ -65,7 +65,7 @@ class YamlDriver extends AbstractFileDriver
             $classMetadata->namePrefix = $config['namePrefix'];
         }
 
-        $classMetadata->setMethods($this->parseMethods($config));
+        $classMetadata->setOperations($this->parseOperations($config));
 
         $fieldConfigs = [];
         if (array_key_exists('fields', $config)) {
@@ -115,7 +115,7 @@ class YamlDriver extends AbstractFileDriver
 
         if (null !== $subResourceConfig = $fieldConfig['subResource'] ?? null) {
             $propertyMetadata->setSubResource(true);
-            $propertyMetadata->setMethods($this->parseMethods($subResourceConfig));
+            $propertyMetadata->setOperations($this->parseOperations($subResourceConfig));
         }
 
         if (array_key_exists('includable', $fieldConfig)) {
@@ -174,21 +174,21 @@ class YamlDriver extends AbstractFileDriver
     /**
      * @param array $config
      *
-     * @return Method[]
+     * @return Operation[]
      */
-    private function parseMethods(array $config)
+    private function parseOperations(array $config)
     {
-        if (!array_key_exists('methods', $config)) {
+        if (!array_key_exists('operations', $config)) {
             return null;
         }
 
-        $methods = [];
-        $methodsConfig = $config['methods'];
-        foreach ($methodsConfig as $name => $config) {
-            $method = Method::parse($name, $config);
-            $methods[$method->name] = $method;
+        $operations = [];
+        $methodsConfig = $config['operations'];
+        foreach ($methodsConfig as $name => $operationConfig) {
+            $operation = Operation::parse($name, $operationConfig);
+            $operations[$operation->name] = $operation;
         }
 
-        return $methods;
+        return $operations;
     }
 }

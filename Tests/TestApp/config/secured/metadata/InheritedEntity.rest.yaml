@@ -1,6 +1,6 @@
 Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\InheritedEntity:
     rootResource: true
-    methods:
+    operations:
         READ:
     fields:
         excludedFieldTwo:

@@ -3,7 +3,7 @@
 namespace Dontdrinkandroot\RestBundle\Metadata;
 
 use Doctrine\Inflector\InflectorFactory;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Operation;
 use Metadata\MergeableClassMetadata;
 use Metadata\MergeableInterface;
 use ReflectionClass;
@@ -20,8 +20,8 @@ class ClassMetadata extends MergeableClassMetadata
 
     public ?string $controller = null;
 
-    /** @var list<Method>|null */
-    public ?array $methods = null;
+    /** @var list<Operation>|null */
+    public ?array $operations = null;
 
     public function __construct($name)
     {
@@ -43,7 +43,7 @@ class ClassMetadata extends MergeableClassMetadata
         /** @var ClassMetadata $object */
         $this->restResource = $this->mergeField($this->restResource, $object->restResource);
         $this->idField = $this->mergeField($this->idField, $object->idField);
-        $this->methods = $this->mergeField($this->methods, $object->methods);
+        $this->operations = $this->mergeField($this->operations, $object->operations);
         $this->namePrefix = $this->mergeField($this->namePrefix, $object->namePrefix);
         $this->pathPrefix = $this->mergeField($this->pathPrefix, $object->pathPrefix);
         $this->controller = $this->mergeField($this->controller, $object->controller);
@@ -114,19 +114,19 @@ class ClassMetadata extends MergeableClassMetadata
     }
 
     /**
-     * @return Method[]|null
+     * @return Operation[]|null
      */
-    public function getMethods()
+    public function getOperations()
     {
-        return $this->methods;
+        return $this->operations;
     }
 
     /**
-     * @param Method[]|null $methods
+     * @param Operation[]|null $operations
      */
-    public function setMethods($methods)
+    public function setOperations($operations)
     {
-        $this->methods = $methods;
+        $this->operations = $operations;
     }
 
     public function getPropertyMetadata(string $property): ?PropertyMetadata
@@ -163,13 +163,13 @@ class ClassMetadata extends MergeableClassMetadata
         return $mergedMetadata;
     }
 
-    public function getMethod(string $methodName): ?Method
+    public function getMethod(string $methodName): ?Operation
     {
-        if (null === $this->methods) {
+        if (null === $this->operations) {
             return null;
         }
 
-        foreach ($this->methods as $method) {
+        foreach ($this->operations as $method) {
             if ($methodName === $method->name) {
                 return $method;
             }
@@ -210,7 +210,7 @@ class ClassMetadata extends MergeableClassMetadata
                 $this->pathPrefix,
                 $this->idField,
                 $this->controller,
-                $this->methods
+                $this->operations
             ]
         );
     }
@@ -231,7 +231,7 @@ class ClassMetadata extends MergeableClassMetadata
             $this->pathPrefix,
             $this->idField,
             $this->controller,
-            $this->methods
+            $this->operations
             ) = unserialize($str);
     }
 }

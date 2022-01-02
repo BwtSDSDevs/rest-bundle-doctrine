@@ -7,9 +7,9 @@ use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
 
 /**
  * @REST\RootResource(
- *     methods = {
- *         @REST\Method("CREATE"),
- *         @REST\Method("UPDATE"),
+ *     operations = {
+ *         @REST\Operation("CREATE"),
+ *         @REST\Operation("UPDATE"),
  *     }
  * )
  */

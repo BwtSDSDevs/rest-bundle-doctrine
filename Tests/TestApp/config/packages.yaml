@@ -9,8 +9,7 @@ framework:
 
 doctrine:
     dbal:
-        driver: pdo_sqlite
-        path: '/tmp/ddr_rest_bundle/test.db3'
+        url: "sqlite:////tmp/ddr_rest_bundle/test.db3"
         charset: UTF8
         logging: false
 

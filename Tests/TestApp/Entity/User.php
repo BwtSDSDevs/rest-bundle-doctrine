@@ -38,12 +38,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: "string", nullable: false)]
     private $role;
 
-    /**
-     * @var User|null
-     */
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "subordinates")]
     #[ORM\JoinColumn(nullable: true)]
-    private $supervisor;
+    private ?User $supervisor;
 
     /**
      * @var Collection|User[]

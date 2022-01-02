@@ -13,12 +13,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @REST\RootResource(
  *      pathPrefix="secured",
- *      methods={
- *          @REST\Method(name="LIST", right=@REST\Right(attributes={"ROLE_USER"})),
- *          @REST\Method(name="CREATE", right=@REST\Right(attributes={"ROLE_ADMIN"}), defaultIncludes={"details"}),
- *          @REST\Method(name="DELETE", right=@REST\Right(attributes={"ROLE_ADMIN"})),
- *          @REST\Method(name="READ", right=@REST\Right(attributes={"ROLE_USER"}), defaultIncludes={"details"}),
- *          @REST\Method(name="UPDATE", right=@REST\Right(attributes={"ROLE_ADMIN"}), defaultIncludes={"details"})
+ *      operations={
+ *          @REST\Operation(name="LIST", right=@REST\Right(attributes={"ROLE_USER"})),
+ *          @REST\Operation(name="CREATE", right=@REST\Right(attributes={"ROLE_ADMIN"}), defaultIncludes={"details"}),
+ *          @REST\Operation(name="DELETE", right=@REST\Right(attributes={"ROLE_ADMIN"})),
+ *          @REST\Operation(name="READ", right=@REST\Right(attributes={"ROLE_USER"}), defaultIncludes={"details"}),
+ *          @REST\Operation(name="UPDATE", right=@REST\Right(attributes={"ROLE_ADMIN"}), defaultIncludes={"details"})
  *     }
  * )
  */
@@ -79,11 +79,11 @@ class SecuredEntity
     /**
      * @REST\Includable()
      * @REST\SubResource(
-     *      methods={
-     *          @REST\Method(name="LIST", right=@REST\Right(attributes={"ROLE_USER"})),
-     *          @REST\Method(name="CREATE", right=@REST\Right(attributes={"ROLE_ADMIN"}), defaultIncludes={"parentEntity"}),
-     *          @REST\Method(name="UPDATE", right=@REST\Right(attributes={"ROLE_ADMIN"})),
-     *          @REST\Method(name="DELETE", right=@REST\Right(attributes={"ROLE_ADMIN"}))
+     *      operations={
+     *          @REST\Operation(name="LIST", right=@REST\Right(attributes={"ROLE_USER"})),
+     *          @REST\Operation(name="CREATE", right=@REST\Right(attributes={"ROLE_ADMIN"}), defaultIncludes={"parentEntity"}),
+     *          @REST\Operation(name="UPDATE", right=@REST\Right(attributes={"ROLE_ADMIN"})),
+     *          @REST\Operation(name="DELETE", right=@REST\Right(attributes={"ROLE_ADMIN"}))
      *      }
      * )
      *

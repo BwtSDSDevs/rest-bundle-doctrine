@@ -1,6 +1,6 @@
 Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\SubResourceEntity:
     rootResource: true
-    methods:
+    operations:
         LIST:
             right:
                 attributes:
@@ -28,7 +28,7 @@ Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\SubResourceEntity:
         parentEntity:
             includable: ['parentEntity','details']
             subResource:
-                methods:
+                operations:
                     UPDATE:
                         right:
                             attributes:

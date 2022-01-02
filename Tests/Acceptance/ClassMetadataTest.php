@@ -19,7 +19,7 @@ class ClassMetadataTest extends FunctionalTestCase
         /** @var ClassMetadata $classMetadata */
         $classMetadata = $metadataFactory->getMetadataForClass(User::class);
 
-        $methods = $classMetadata->getMethods();
+        $methods = $classMetadata->getOperations();
         $this->assertCount(2, $methods);
 
         $method = $methods['READ'];

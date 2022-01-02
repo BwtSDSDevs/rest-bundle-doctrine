@@ -1,6 +1,6 @@
 Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\User:
     rootResource: true
-    methods:
+    operations:
         READ:
             defaultIncludes: [ "supervisor" ]
         CREATE:
@@ -14,19 +14,19 @@ Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\User:
         supervisor:
             includable: true
             subResource:
-                methods:
+                operations:
                     UPDATE: true
                     DELETE: true
         subordinates:
             includable: true
             subResource:
-                methods:
+                operations:
                     UPDATE: true
                     DELETE: true
         groups:
             includable: true
             subResource:
-                methods:
+                operations:
                     UPDATE: true
                     DELETE: true
         roles:

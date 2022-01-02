@@ -9,8 +9,8 @@ use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
 
 /**
  * @REST\RootResource(
- *     methods = {
- *         @REST\Method(name="READ")
+ *     operations = {
+ *         @REST\Operation(name="READ")
  *     }
  * )
  */
@@ -34,9 +34,9 @@ class Group
 
     /**
      * @REST\SubResource(
-     *     methods = {
-     *         @REST\Method("UPDATE"),
-     *         @REST\Method("DELETE")
+     *     operations = {
+     *         @REST\Operation("UPDATE"),
+     *         @REST\Operation("DELETE")
      *     }
      * )
      * @REST\Includable()

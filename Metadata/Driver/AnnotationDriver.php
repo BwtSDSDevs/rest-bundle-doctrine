@@ -67,17 +67,17 @@ class AnnotationDriver implements DriverInterface
 
             $ddrRestClassMetadata->idField = $restResourceAnnotation->idField;
 
-            if (null !== $restResourceAnnotation->methods) {
-                $methods = [];
-                $methodAnnotations = $restResourceAnnotation->methods;
-                foreach ($methodAnnotations as $methodAnnotation) {
-                    $methods[$methodAnnotation->name] = $methodAnnotation;
+            if (null !== $restResourceAnnotation->operations) {
+                $operations = [];
+                $operationAnnotations = $restResourceAnnotation->operations;
+                foreach ($operationAnnotations as $operationAnnotation) {
+                    $operations[$operationAnnotation->name] = $operationAnnotation;
                 }
-                $ddrRestClassMetadata->setMethods($methods);
+                $ddrRestClassMetadata->setOperations($operations);
             }
 
-            if (null !== $restResourceAnnotation->methods) {
-                $ddrRestClassMetadata->setMethods($restResourceAnnotation->methods);
+            if (null !== $restResourceAnnotation->operations) {
+                $ddrRestClassMetadata->setOperations($restResourceAnnotation->operations);
             }
         }
 
@@ -112,20 +112,19 @@ class AnnotationDriver implements DriverInterface
             /** @var SubResource $subResourceAnnotation */
             $subResourceAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, SubResource::class);
             if (null !== $subResourceAnnotation) {
-
                 $propertyMetadata->setSubResource(true);
 
                 if (null !== $subResourceAnnotation->path) {
                     $propertyMetadata->setSubResourcePath($subResourceAnnotation->path);
                 }
 
-                if (null !== $subResourceAnnotation->methods) {
-                    $methods = [];
-                    $methodAnnotations = $subResourceAnnotation->methods;
-                    foreach ($methodAnnotations as $methodAnnotation) {
-                        $methods[$methodAnnotation->name] = $methodAnnotation;
+                if (null !== $subResourceAnnotation->operations) {
+                    $operations = [];
+                    $operationAnnotations = $subResourceAnnotation->operations;
+                    foreach ($operationAnnotations as $operationAnnotation) {
+                        $operations[$operationAnnotation->name] = $operationAnnotation;
                     }
-                    $propertyMetadata->setMethods($methods);
+                    $propertyMetadata->setOperations($operations);
                 }
             }
 

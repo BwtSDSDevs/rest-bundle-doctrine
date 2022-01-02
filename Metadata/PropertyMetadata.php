@@ -2,7 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Metadata;
 
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Operation;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Postable;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Puttable;
 use InvalidArgumentException;
@@ -26,8 +26,8 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
 
     private ?bool $subResource = null;
 
-    /** @var list<Method>|null */
-    private ?array $methods = null;
+    /** @var list<Operation>|null */
+    private ?array $operations = null;
 
     private ?bool $association = null;
 
@@ -158,11 +158,11 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
     }
 
     /**
-     * @param Method[] $methods
+     * @param Operation[] $operations
      */
-    public function setMethods(array $methods)
+    public function setOperations(?array $operations)
     {
-        $this->methods = $methods;
+        $this->operations = $operations;
     }
 
     public function merge(MergeableInterface $other): void
@@ -181,7 +181,7 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         $this->association = $this->mergeField($other->association, $this->association);
         $this->collection = $this->mergeField($other->collection, $this->collection);
         $this->subResourcePath = $this->mergeField($other->subResourcePath, $this->subResourcePath);
-        $this->methods = $this->mergeField($other->methods, $this->methods);
+        $this->operations = $this->mergeField($other->operations, $this->operations);
         $this->virtual = $this->mergeField($other->virtual, $this->virtual);
     }
 
@@ -203,13 +203,13 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         return $otherValue;
     }
 
-    public function getMethod(string $methodName): ?Method
+    public function getMethod(string $methodName): ?Operation
     {
-        if (null === $this->methods) {
+        if (null === $this->operations) {
             return null;
         }
 
-        foreach ($this->methods as $method) {
+        foreach ($this->operations as $method) {
             if ($methodName === $method->name) {
                 return $method;
             }
@@ -234,7 +234,7 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
                 $this->includable,
                 $this->includablePaths,
                 $this->subResource,
-                $this->methods,
+                $this->operations,
                 $this->association,
                 $this->collection,
                 $this->virtual,
@@ -258,7 +258,7 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
             $this->includable,
             $this->includablePaths,
             $this->subResource,
-            $this->methods,
+            $this->operations,
             $this->association,
             $this->collection,
             $this->virtual,
