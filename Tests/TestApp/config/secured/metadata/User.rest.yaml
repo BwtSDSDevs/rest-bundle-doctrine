@@ -3,6 +3,11 @@ Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\User:
     operations:
         READ:
             defaultIncludes: [ "supervisor" ]
+            properties:
+                username: ~
+                supervisor:
+                    children:
+                        username: ~
         CREATE:
             granted: 'ROLE_ADMIN'
     fields:

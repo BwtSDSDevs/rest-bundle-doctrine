@@ -4,6 +4,8 @@ namespace Dontdrinkandroot\RestBundle\Metadata\Annotation;
 
 use Doctrine\Common\Annotations\Annotation\Required;
 use Dontdrinkandroot\Common\CrudOperation;
+use Dontdrinkandroot\RestBundle\Metadata\PropertyNode;
+use PhpParser\Builder\Property;
 
 /**
  * @Annotation
@@ -26,6 +28,9 @@ class Operation
 
     public ?string $grantedExpression = null;
 
+    /** @var list<PropertyNode> */
+    public array $properties = [];
+
     public static function parse($name, $config): ?Operation
     {
         assert(
@@ -38,16 +43,27 @@ class Operation
             ], true)
         );
 
-        $method = new Operation();
-        $method->name = $name;
+        $operation = new Operation();
+        $operation->name = $name;
         if (is_bool($config) && true === $config) {
-            return $method;
+            return $operation;
         }
 
-        $method->defaultIncludes = ParseUtils::parseStringArray($config['defaultIncludes'] ?? null);
-        $method->granted = $config['granted'] ?? null;
-        $method->grantedExpression = $config['granted_expression'] ?? null;
+        $operation->defaultIncludes = ParseUtils::parseStringArray($config['defaultIncludes'] ?? null);
+        $operation->granted = $config['granted'] ?? null;
+        $operation->grantedExpression = $config['granted_expression'] ?? null;
+        $operation->properties = static::parseProperties($config['properties'] ?? []);
 
-        return $method;
+        return $operation;
+    }
+
+    private static function parseProperties(array $propertyConfigs): array
+    {
+        $propertyNodes = [];
+        foreach ($propertyConfigs as $name => $config) {
+            $propertyNodes[] = PropertyNode::parse($name, $config);
+        }
+
+        return $propertyNodes;
     }
 }
