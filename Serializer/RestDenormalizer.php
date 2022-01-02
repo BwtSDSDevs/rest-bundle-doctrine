@@ -174,7 +174,7 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
         }
 
         if (null !== $writeable->grantedExpression) {
-            return $this->authorizationChecker->isGranted(new Expression($writeable->grantedExpression));
+            return $this->authorizationChecker->isGranted(new Expression($writeable->grantedExpression), $object);
         }
 
         return true;

@@ -2,9 +2,6 @@
 
 namespace Dontdrinkandroot\RestBundle\Metadata\Annotation;
 
-/**
- * @author Philip Washington Sorst <philip@sorst.net>
- */
 class ParseUtils
 {
     public static function parseBool(?bool $value): ?bool
