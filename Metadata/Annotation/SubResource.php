@@ -14,7 +14,7 @@ class SubResource
     public $path;
 
     /**
-     * @var Operation[]
+     * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Operation[]
      */
     public $operations;
 }

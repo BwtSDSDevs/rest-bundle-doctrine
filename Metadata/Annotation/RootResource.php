@@ -29,7 +29,7 @@ class RootResource
     public $idField;
 
     /**
-     * @var Operation[]
+     * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Operation[]
      */
     public $operations;
 }
