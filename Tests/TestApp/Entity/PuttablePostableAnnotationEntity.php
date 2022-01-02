@@ -16,13 +16,10 @@ use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
 #[ORM\Entity]
 class PuttablePostableAnnotationEntity
 {
-    /**
-     * @var int
-     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer", nullable: false)]
-    private $id;
+    private int $id;
 
     /**
      * @REST\Puttable()
@@ -41,7 +38,7 @@ class PuttablePostableAnnotationEntity
     private $postableByAll;
 
     /**
-     * @REST\Puttable(@REST\Right("ROLE_USER"))
+     * @REST\Puttable(granted="ROLE_USER")
      *
      * @var string|null
      */
@@ -49,7 +46,7 @@ class PuttablePostableAnnotationEntity
     private $puttableByUser;
 
     /**
-     * @REST\Postable(@REST\Right("ROLE_USER"))
+     * @REST\Postable(granted="ROLE_USER")
      *
      * @var string|null
      */
@@ -57,7 +54,7 @@ class PuttablePostableAnnotationEntity
     private $postableByUser;
 
     /**
-     * @REST\Puttable(@REST\Right("ROLE_ADMIN"))
+     * @REST\Puttable(granted="ROLE_ADMIN")
      *
      * @var string|null
      */
@@ -65,7 +62,7 @@ class PuttablePostableAnnotationEntity
     private $puttableByAdmin;
 
     /**
-     * @REST\Postable(@REST\Right("ROLE_ADMIN"))
+     * @REST\Postable(granted="ROLE_ADMIN")
      *
      * @var string|null
      */

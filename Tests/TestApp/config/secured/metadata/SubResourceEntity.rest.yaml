@@ -2,27 +2,19 @@ Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\SubResourceEntity:
     rootResource: true
     operations:
         LIST:
-            right:
-                attributes:
-                    - 'ROLE_USER'
+            granted: 'ROLE_USER'
         READ:
             defaultIncludes:
                 - 'details'
-            right:
-                attributes:
-                    - 'ROLE_USER'
+            granted: 'ROLE_USER'
         CREATE:
             defaultIncludes:
                 - 'creator'
-            right:
-                attributes:
-                    - 'ROLE_ADMIN'
+            granted: 'ROLE_ADMIN'
         UPDATE:
             defaultIncludes:
                 - 'creator'
-            right:
-                attributes:
-                    - 'ROLE_ADMIN'
+            granted: 'ROLE_ADMIN'
 
     fields:
         parentEntity:
@@ -30,13 +22,9 @@ Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\SubResourceEntity:
             subResource:
                 operations:
                     UPDATE:
-                        right:
-                            attributes:
-                                - 'ROLE_ADMIN'
+                        granted: 'ROLE_ADMIN'
                     DELETE:
-                        right:
-                            attributes:
-                                - 'ROLE_ADMIN'
+                        granted: 'ROLE_ADMIN'
         creator:
             includable: true
             postable:

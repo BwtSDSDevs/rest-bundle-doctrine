@@ -14,11 +14,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @REST\RootResource(
  *      pathPrefix="secured",
  *      operations={
- *          @REST\Operation(name="LIST", right=@REST\Right(attributes={"ROLE_USER"})),
- *          @REST\Operation(name="CREATE", right=@REST\Right(attributes={"ROLE_ADMIN"}), defaultIncludes={"details"}),
- *          @REST\Operation(name="DELETE", right=@REST\Right(attributes={"ROLE_ADMIN"})),
- *          @REST\Operation(name="READ", right=@REST\Right(attributes={"ROLE_USER"}), defaultIncludes={"details"}),
- *          @REST\Operation(name="UPDATE", right=@REST\Right(attributes={"ROLE_ADMIN"}), defaultIncludes={"details"})
+ *          @REST\Operation(name="LIST", granted="ROLE_USER"),
+ *          @REST\Operation(name="CREATE", granted="ROLE_ADMIN", defaultIncludes={"details"}),
+ *          @REST\Operation(name="DELETE", granted="ROLE_ADMIN"),
+ *          @REST\Operation(name="READ", granted="ROLE_USER", defaultIncludes={"details"}),
+ *          @REST\Operation(name="UPDATE", granted="ROLE_ADMIN", defaultIncludes={"details"})
  *     }
  * )
  */
@@ -80,10 +80,10 @@ class SecuredEntity
      * @REST\Includable()
      * @REST\SubResource(
      *      operations={
-     *          @REST\Operation(name="LIST", right=@REST\Right(attributes={"ROLE_USER"})),
-     *          @REST\Operation(name="CREATE", right=@REST\Right(attributes={"ROLE_ADMIN"}), defaultIncludes={"parentEntity"}),
-     *          @REST\Operation(name="UPDATE", right=@REST\Right(attributes={"ROLE_ADMIN"})),
-     *          @REST\Operation(name="DELETE", right=@REST\Right(attributes={"ROLE_ADMIN"}))
+     *          @REST\Operation(name="LIST", granted="ROLE_USER"),
+     *          @REST\Operation(name="CREATE", granted="ROLE_ADMIN", defaultIncludes={"parentEntity"}),
+     *          @REST\Operation(name="UPDATE", granted="ROLE_ADMIN"),
+     *          @REST\Operation(name="DELETE", granted="ROLE_ADMIN")
      *      }
      * )
      *

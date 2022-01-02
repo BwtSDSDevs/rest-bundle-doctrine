@@ -2,20 +2,13 @@
 
 namespace Dontdrinkandroot\RestBundle\Metadata\Annotation;
 
-/**
- * @author Philip Washington Sorst <philip@sorst.net>
- */
 abstract class Writeable
 {
-    /**
-     * @var \Dontdrinkandroot\RestBundle\Metadata\Annotation\Right
-     */
-    public $right;
+    public ?bool $byReference = null;
 
-    /**
-     * @var bool
-     */
-    public $byReference;
+    public ?string $granted = null;
+
+    public ?string $grantedExpression = null;
 
     protected static function parseInstance($config, $instance)
     {
@@ -23,8 +16,9 @@ abstract class Writeable
             return null;
         }
 
-        $instance->right = Right::parse($config['right'] ?? null);
         $instance->byReference = ParseUtils::parseBool($config['byReference'] ?? null);
+        $instance->granted = $config['granted'] ?? null;
+        $instance->grantedExpression = $config['granted_expression'] ?? null;
 
         return $instance;
     }

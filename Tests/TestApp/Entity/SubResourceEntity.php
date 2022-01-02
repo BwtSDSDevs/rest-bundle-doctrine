@@ -7,13 +7,10 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class SubResourceEntity
 {
-    /**
-     * @var int
-     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer", nullable: false)]
-    private $id;
+    private int $id;
 
     /**
      * @var SecuredEntity

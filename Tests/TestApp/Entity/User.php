@@ -4,6 +4,7 @@ namespace Dontdrinkandroot\RestBundle\Tests\TestApp\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Mapping as ORM;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -12,47 +13,31 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    /**
-     * @var int
-     */
     #[ORM\Column(type: "integer", nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    private $id;
+    private int $id;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(type: "string", nullable: true)]
-    private $password;
+    private string $password;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(type: "string", nullable: false)]
-    private $username;
+    private string $username;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(type: "string", nullable: false)]
-    private $role;
+    private string $role;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "subordinates")]
     #[ORM\JoinColumn(nullable: true)]
     private ?User $supervisor;
 
-    /**
-     * @var Collection|User[]
-     */
+    /** @var Collection<array-key, User>|Selectable<User> */
     #[ORM\OneToMany(targetEntity: User::class, mappedBy: "supervisor")]
-    private $subordinates;
+    private Collection|Selectable $subordinates;
 
-    /**
-     * @var Collection|Group[]
-     */
+    /** @var Collection<array-key, Group>|Selectable<Group> */
     #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: "users")]
-    private $groups;
+    private Collection|Selectable $groups;
 
     function __construct()
     {

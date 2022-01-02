@@ -10,6 +10,7 @@ use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
 use Dontdrinkandroot\RestBundle\Serializer\RestDenormalizer;
 use Dontdrinkandroot\RestBundle\Serializer\RestNormalizer;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -349,8 +350,14 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     protected function assertMethodGranted(string $methodName, $entity = null)
     {
         $method = $this->getClassMetadata()->getMethod($methodName);
-        if ($method !== null && null !== $right = $method->right) {
-            $this->assertRightGranted($right, $entity);
+        if ($method !== null) {
+            if (null !== $method->granted) {
+                $this->denyAccessUnlessGranted($method->granted);
+            }
+
+            if (null !== $method->grantedExpression) {
+                $this->denyAccessUnlessGranted(new Expression($method->grantedExpression));
+            }
         }
     }
 
@@ -360,8 +367,14 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
         /** @var PropertyMetadata $propertyMetadata */
         $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
         $method = $propertyMetadata->getMethod($methodName);
-        if (null !== $right = $method->right) {
-            $this->assertRightGranted($right, $entity);
+        if (null !== $method) {
+            if (null !== $method->granted) {
+                $this->denyAccessUnlessGranted($method->granted);
+            }
+
+            if (null !== $method->grantedExpression) {
+                $this->denyAccessUnlessGranted(new Expression($method->grantedExpression));
+            }
         }
     }
 
@@ -376,21 +389,6 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
             return $entity;
         }
         return $this->getPropertyAccessor()->getValue($entity, $propertyPath);
-    }
-
-    /**
-     * @param Right  $right
-     * @param object $entity
-     */
-    protected function assertRightGranted(Right $right, $entity = null)
-    {
-        $propertyPath = $right->propertyPath;
-        if (null === $propertyPath || null === $entity) {
-            $this->denyAccessUnlessGranted($right->attributes);
-        } else {
-            $subject = $this->resolveSubject($entity, $propertyPath);
-            $this->denyAccessUnlessGranted($right->attributes, $subject);
-        }
     }
 
     protected function parseIncludes(Request $request)
@@ -410,17 +408,15 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
         return array_merge($defaultIncludes, $includes);
     }
 
-    protected function denyAccessUnlessGranted(array $attributes, $object = null, $message = 'Access Denied.')
+    protected function denyAccessUnlessGranted($attribute, $object = null, $message = 'Access Denied.')
     {
         $authorizationChecker = $this->getAuthorizationChecker();
         if (null === $authorizationChecker) {
             throw new AccessDeniedException('No authorization checker configured');
         }
 
-        foreach ($attributes as $attribute) {
-            if (!$authorizationChecker->isGranted($attribute, $object)) {
-                throw new AccessDeniedException($message);
-            }
+        if (!$authorizationChecker->isGranted($attribute, $object)) {
+            throw new AccessDeniedException($message);
         }
     }
 

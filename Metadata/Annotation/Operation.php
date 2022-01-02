@@ -17,28 +17,26 @@ class Operation
      */
     public $name;
 
-    public ?Right $right = null;
-
     /**
      * @var array<string>
      */
     public $defaultIncludes;
 
+    public ?string $granted = null;
+
+    public ?string $grantedExpression = null;
+
     public static function parse($name, $config): ?Operation
     {
         assert(
-            in_array(
-                $name,
-                [
-                    CrudOperation::LIST,
-                    CrudOperation::CREATE,
-                    CrudOperation::READ,
-                    CrudOperation::UPDATE,
-                    CrudOperation::DELETE
-                ]
-            )
+            in_array($name, [
+                CrudOperation::LIST,
+                CrudOperation::CREATE,
+                CrudOperation::READ,
+                CrudOperation::UPDATE,
+                CrudOperation::DELETE
+            ], true)
         );
-        assert(is_string($name));
 
         $method = new Operation();
         $method->name = $name;
@@ -46,8 +44,9 @@ class Operation
             return $method;
         }
 
-        $method->right = Right::parse($config['right'] ?? null);
         $method->defaultIncludes = ParseUtils::parseStringArray($config['defaultIncludes'] ?? null);
+        $method->granted = $config['granted'] ?? null;
+        $method->grantedExpression = $config['granted_expression'] ?? null;
 
         return $method;
     }

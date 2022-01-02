@@ -10,8 +10,10 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Dontdrinkandroot\Common\CrudOperation;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
+use Dontdrinkandroot\RestBundle\Metadata\Annotation\Writeable;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
@@ -146,19 +148,19 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
     protected function isUpdateable($object, string $method, PropertyMetadata $propertyMetadata): bool
     {
         if (CrudOperation::UPDATE === $method && $propertyMetadata->isPuttable()) {
-            return $this->isGranted($object, $propertyMetadata->getPuttable()->right);
+            return $this->isGranted($object, $propertyMetadata->getPuttable());
         }
 
         if (CrudOperation::CREATE === $method && $propertyMetadata->isPostable()) {
-            return $this->isGranted($object, $propertyMetadata->getPostable()->right);
+            return $this->isGranted($object, $propertyMetadata->getPostable());
         }
 
         return false;
     }
 
-    private function isGranted($object, ?Right $right): bool
+    private function isGranted($object, ?Writeable $writeable): bool
     {
-        if (null === $right) {
+        if (null === $writeable) {
             return true;
         }
 
@@ -167,22 +169,14 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
             return false;
         }
 
-        $propertyPath = $right->propertyPath;
-        if (null === $propertyPath) {
-            foreach ($right->attributes as $attribute) {
-                if (!$this->authorizationChecker->isGranted($attribute)) {
-                    return false;
-                }
-            }
-            return true;
+        if (null !== $writeable->granted) {
+            return $this->authorizationChecker->isGranted($writeable->granted);
         }
 
-        $subject = $this->resolveSubject($object, $propertyPath);
-        foreach ($right->attributes as $attribute) {
-            if (!$this->authorizationChecker->isGranted($attribute, $subject)) {
-                return false;
-            }
+        if (null !== $writeable->grantedExpression) {
+            return $this->authorizationChecker->isGranted(new Expression($writeable->grantedExpression));
         }
+
         return true;
     }
 

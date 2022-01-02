@@ -7,7 +7,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
 
 /**
- * @REST\RootResource(operations={@REST\Operation("LIST"),@Rest\Operation(name="READ",defaultIncludes={"detail", "arbitrary"})})
+ * @REST\RootResource(
+ *     operations={
+ *         @REST\Operation("LIST"),
+ *         @REST\Operation(name="READ",defaultIncludes={"detail", "arbitrary"})
+ *     }
+ * )
  */
 #[ORM\Entity]
 class MinimalEntity

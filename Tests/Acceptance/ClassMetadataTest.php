@@ -24,12 +24,13 @@ class ClassMetadataTest extends FunctionalTestCase
 
         $method = $methods['READ'];
         $this->assertEquals('READ', $method->name);
-        $this->assertNull($method->right);
+        $this->assertNull($method->granted);
+        $this->assertNull($method->grantedExpression);
         $this->assertEquals(['supervisor'], $method->defaultIncludes);
 
         $method = $methods['CREATE'];
         $this->assertEquals('CREATE', $method->name);
-        $this->assertEquals(['ROLE_ADMIN'], $method->right->attributes);
+        $this->assertEquals('ROLE_ADMIN', $method->granted);
     }
 
     public function testUserSerialization()

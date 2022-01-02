@@ -4,11 +4,13 @@ Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\User:
         READ:
             defaultIncludes: [ "supervisor" ]
         CREATE:
-            right:
-                attributes: [ "ROLE_ADMIN" ]
+            granted: 'ROLE_ADMIN'
     fields:
+        username:
+            postable: true
         role:
             excluded: true
+            postable: true
         password:
             excluded: true
         supervisor:
