@@ -17,10 +17,7 @@ class Method
      */
     public $name;
 
-    /**
-     * @var Right
-     */
-    public $right;
+    public ?Right $right = null;
 
     /**
      * @var array<string>

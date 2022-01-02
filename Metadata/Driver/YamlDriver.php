@@ -168,13 +168,7 @@ class YamlDriver extends AbstractFileDriver
     protected function getOrCreatePropertyMetadata(ClassMetadata $classMetadata, $propertyName): PropertyMetadata
     {
         $propertyMetadata = $classMetadata->getPropertyMetadata($propertyName);
-        if (null === $propertyMetadata) {
-            $propertyMetadata = new PropertyMetadata($classMetadata->name, $propertyName);
-
-            return $propertyMetadata;
-        }
-
-        return $propertyMetadata;
+        return $propertyMetadata ?? new PropertyMetadata($classMetadata->name, $propertyName);
     }
 
     /**
