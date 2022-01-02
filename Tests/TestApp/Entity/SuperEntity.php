@@ -2,38 +2,35 @@
 
 namespace Dontdrinkandroot\RestBundle\Tests\TestApp\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\MappedSuperclass;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
 
-/**
- * @MappedSuperclass()
- */
+#[ORM\MappedSuperclass]
 class SuperEntity
 {
     /**
-     * @ORM\Column(type="integer", nullable=false)
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     *
      * @var int
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: "integer", nullable: false)]
     private $id;
 
     /**
-     * @ORM\Column(type="string", nullable= false)
      * @REST\Excluded()
      *
      * @var string
      */
+    #[ORM\Column(type: Types::STRING, nullable: false)]
     private $excludedFieldOne;
 
     /**
-     * @ORM\Column(type="string", nullable= false)
      * @REST\Excluded()
      *
      * @var string
      */
+    #[ORM\Column(type: Types::STRING, nullable: false)]
     private $excludedFieldTwo;
 
     /**

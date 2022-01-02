@@ -7,9 +7,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
 
 /**
- * @ORM\Entity()
  * @REST\RootResource(methods={@REST\Method("LIST"),@Rest\Method(name="READ",defaultIncludes={"detail", "arbitrary"})})
  */
+#[ORM\Entity]
 class MinimalEntity
 {
     /**
@@ -19,13 +19,15 @@ class MinimalEntity
      *
      * @var int
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: "integer", nullable: false)]
     private $id;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
-     *
      * @var int|null
      */
+    #[ORM\Column(type: "integer", nullable: true)]
     private $integerValue;
 
     /**

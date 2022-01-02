@@ -11,7 +11,6 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity()
  * @REST\RootResource(
  *      pathPrefix="secured",
  *      methods={
@@ -23,40 +22,39 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     }
  * )
  */
+#[ORM\Entity]
 class SecuredEntity
 {
     /**
-     * @ORM\Column(type="integer", nullable=false)
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     *
      * @var int
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: "integer", nullable: false)]
     private $id;
 
     /**
-     * @ORM\Column(type="uuid", nullable=false, unique=true)
-     *
      * @var Uuid
      */
+    #[ORM\Column(type: "uuid", nullable: false, unique: true)]
     private $uuid;
 
     /**
      * @REST\Includable("details")
-     * @ORM\Column(type="datetime", nullable=true)
      * @REST\Puttable()
      *
      * @var DateTime|null
      */
+    #[ORM\Column(type: "datetime", nullable: true)]
     private $dateTimeField;
 
     /**
      * @REST\Includable("details")
-     * @ORM\Column(type="date", nullable=true)
      * @REST\Puttable()
      *
      * @var DateTime|null
      */
+    #[ORM\Column(type: "date", nullable: true)]
     private $dateField;
 
     /**
@@ -66,19 +64,19 @@ class SecuredEntity
      *
      * @var DateTime|null
      */
+    #[ORM\Column(type: "time", nullable: true)]
     private $timeField;
 
     /**
      * @REST\Includable("details")
      * @Assert\Type("integer")
-     * @ORM\Column(type="integer", nullable=true)
      * @var int|null
      * @REST\Postable()
      */
+    #[ORM\Column(type: "integer", nullable: true)]
     private $integerField;
 
     /**
-     * @ORM\OneToMany(targetEntity="SubResourceEntity", mappedBy="parentEntity")
      * @REST\Includable()
      * @REST\SubResource(
      *      methods={
@@ -91,15 +89,16 @@ class SecuredEntity
      *
      * @var SubResourceEntity[]|Collection
      */
+    #[ORM\OneToMany(targetEntity: SubResourceEntity::class, mappedBy: "parentEntity")]
     private $subResources;
 
     /**
      * @REST\Includable("details")
-     * @ORM\Embedded(class="EmbeddableEntity")
      * @REST\Puttable()
      *
      * @var EmbeddableEntity
      */
+    #[ORM\Embedded(class: EmbeddableEntity::class)]
     private $embeddedEntity;
 
     /**

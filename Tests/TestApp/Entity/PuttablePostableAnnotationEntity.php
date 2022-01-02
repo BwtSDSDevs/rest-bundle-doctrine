@@ -6,7 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
 
 /**
- * @ORM\Entity()
  * @REST\RootResource(
  *     methods = {
  *         @REST\Method("CREATE"),
@@ -14,63 +13,63 @@ use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
  *     }
  * )
  */
+#[ORM\Entity]
 class PuttablePostableAnnotationEntity
 {
     /**
-     * @ORM\Column(type="integer", nullable=false)
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     *
      * @var int
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: "integer", nullable: false)]
     private $id;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
      * @REST\Puttable()
      *
      * @var string|null
      */
+    #[ORM\Column(type: "string", nullable: true)]
     private $puttableByAll;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
      * @REST\Postable()
      *
      * @var string|null
      */
+    #[ORM\Column(type: "string", nullable: true)]
     private $postableByAll;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
      * @REST\Puttable(@REST\Right("ROLE_USER"))
      *
      * @var string|null
      */
+    #[ORM\Column(type: "string", nullable: true)]
     private $puttableByUser;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
      * @REST\Postable(@REST\Right("ROLE_USER"))
      *
      * @var string|null
      */
+    #[ORM\Column(type: "string", nullable: true)]
     private $postableByUser;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
      * @REST\Puttable(@REST\Right("ROLE_ADMIN"))
      *
      * @var string|null
      */
+    #[ORM\Column(type: "string", nullable: true)]
     private $puttableByAdmin;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
      * @REST\Postable(@REST\Right("ROLE_ADMIN"))
      *
      * @var string|null
      */
+    #[ORM\Column(type: "string", nullable: true)]
     private $postableByAdmin;
 
     /**

@@ -8,34 +8,31 @@ use Doctrine\ORM\Mapping as ORM;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
 
 /**
- * @ORM\Entity()
- * @ORM\Table(name="`Group`")
  * @REST\RootResource(
  *     methods = {
  *         @REST\Method(name="READ")
  *     }
  * )
  */
+#[ORM\Entity]
+#[ORM\Table(name: "`Group`")]
 class Group
 {
     /**
-     * @ORM\Column(type="integer", nullable=false)
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     *
      * @var int
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: "integer", nullable: false)]
     private $id;
 
     /**
-     * @ORM\Column(type="string", nullable=false)
-     *
      * @var string
      */
+    #[ORM\Column(type: "string", nullable: false)]
     private $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="User", inversedBy="groups")
      * @REST\SubResource(
      *     methods = {
      *         @REST\Method("UPDATE"),
@@ -46,6 +43,7 @@ class Group
      *
      * @var Collection|User[]
      */
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: "groups")]
     private $users;
 
     function __construct()

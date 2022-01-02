@@ -9,61 +9,52 @@ use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-/**
- * @ORM\Entity()
- */
+#[ORM\Entity]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
-     * @ORM\Column(type="integer", nullable=false)
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     *
      * @var int
      */
+    #[ORM\Column(type: "integer", nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
     private $id;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
-     *
      * @var string
      */
+    #[ORM\Column(type: "string", nullable: true)]
     private $password;
 
     /**
-     * @ORM\Column(type="string", nullable=false)
-     *
      * @var string
      */
+    #[ORM\Column(type: "string", nullable: false)]
     private $username;
 
     /**
-     * @ORM\Column(type="string", nullable=false)
-     *
      * @var string
      */
+    #[ORM\Column(type: "string", nullable: false)]
     private $role;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="subordinates")
-     * @ORM\JoinColumn(nullable=true)
-     *
      * @var User|null
      */
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "subordinates")]
+    #[ORM\JoinColumn(nullable: true)]
     private $supervisor;
 
     /**
-     * @ORM\OneToMany(targetEntity="User", mappedBy="supervisor")
-     *
      * @var Collection|User[]
      */
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: "supervisor")]
     private $subordinates;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Group", mappedBy="users")
-     *
      * @var Collection|Group[]
      */
+    #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: "users")]
     private $groups;
 
     function __construct()

@@ -4,40 +4,34 @@ namespace Dontdrinkandroot\RestBundle\Tests\TestApp\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity()
- */
+#[ORM\Entity]
 class SubResourceEntity
 {
     /**
-     * @ORM\Column(type="integer", nullable=false)
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     *
      * @var int
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: "integer", nullable: false)]
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="SecuredEntity", inversedBy="subResources")
-     *
      * @var SecuredEntity
      */
+    #[ORM\ManyToOne(targetEntity: SecuredEntity::class, inversedBy: "subResources")]
     private $parentEntity;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User")
-     * @ORM\JoinColumn(nullable=true)
-     *
      * @var User|null
      */
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private $creator;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
-     *
      * @var string|null
      */
+    #[ORM\Column(type: "string", nullable: true)]
     private $text;
 
     /**
