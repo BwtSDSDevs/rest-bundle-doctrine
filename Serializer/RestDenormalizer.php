@@ -18,30 +18,18 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-/**
- * @author Philip Washington Sorst <philip@sorst.net>
- */
 class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethodInterface
 {
     const DDR_REST_METHOD = 'ddrRestMethod';
     const DDR_REST_ENTITY = 'ddrRestEntity';
 
-    private RestMetadataFactory $metadataFactory;
-
-    private PropertyAccessorInterface $propertyAccessor;
-
     private ?AuthorizationCheckerInterface $authorizationChecker = null;
 
-    private EntityManagerInterface $entityManager;
-
     public function __construct(
-        RestMetadataFactory $metadataFactory,
-        PropertyAccessorInterface $propertyAccessor,
-        EntityManagerInterface $entityManager
+        private RestMetadataFactory $metadataFactory,
+        private PropertyAccessorInterface $propertyAccessor,
+        private EntityManagerInterface $entityManager
     ) {
-        $this->metadataFactory = $metadataFactory;
-        $this->propertyAccessor = $propertyAccessor;
-        $this->entityManager = $entityManager;
     }
 
     /**
@@ -68,13 +56,9 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, $type, $format = null): bool
     {
-        if ('json' === $format) {
-            return true;
-        }
-
-        return false;
+        return 'json' === $format;
     }
 
     /**

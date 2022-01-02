@@ -2,11 +2,12 @@
 
 namespace Dontdrinkandroot\RestBundle\Serializer;
 
-use DateTime;
+use DateTimeInterface;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
+use Dontdrinkandroot\Common\Asserted;
 use Dontdrinkandroot\RestBundle\Metadata\Annotation\Method;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
@@ -17,38 +18,17 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-/**
- * @author Philip Washington Sorst <philip@sorst.net>
- */
 class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
     const DDR_REST_INCLUDES = 'ddrRestIncludes';
     const DDR_REST_PATH = 'ddrRestPath';
     const DDR_REST_DEPTH = 'ddrRestDepth';
 
-    /**
-     * @var RestMetadataFactory
-     */
-    private $metadataFactory;
-
-    /**
-     * @var PropertyAccessorInterface
-     */
-    private $propertyAccessor;
-
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $urlGenerator;
-
     public function __construct(
-        RestMetadataFactory $metadataFactory,
-        PropertyAccessorInterface $propertyAccessor,
-        UrlGeneratorInterface $urlGenerator
+        private RestMetadataFactory $metadataFactory,
+        private PropertyAccessorInterface $propertyAccessor,
+        private UrlGeneratorInterface $urlGenerator
     ) {
-        $this->metadataFactory = $metadataFactory;
-        $this->propertyAccessor = $propertyAccessor;
-        $this->urlGenerator = $urlGenerator;
     }
 
     /**
@@ -180,13 +160,9 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization($data, $format = null): bool
     {
-        if ('json' === $format) {
-            return true;
-        }
-
-        return false;
+        return 'json' === $format;
     }
 
     /**
@@ -204,7 +180,7 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
         }
 
         foreach ($paths as $path) {
-            if (in_array($this->appendPath($currentPath, $path), $includes)) {
+            if (in_array($this->appendPath($currentPath, $path), $includes, true)) {
                 return true;
             }
         }
@@ -229,24 +205,21 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
                     return null;
                 }
 
-                /** @var $value DateTime */
-                return $value->format('Y-m-d H:i:s');
+                return Asserted::instanceOf($value, DateTimeInterface::class)->format('Y-m-d H:i:s');
 
             case Types::DATE_MUTABLE:
                 if (null === $value) {
                     return null;
                 }
 
-                /** @var $value DateTime */
-                return $value->format('Y-m-d');
+                return Asserted::instanceOf($value, DateTimeInterface::class)->format('Y-m-d');
 
             case Types::TIME_MUTABLE:
                 if (null === $value) {
                     return null;
                 }
 
-                /** @var $value DateTime */
-                return $value->format('H:i:s');
+                return Asserted::instanceOf($value, DateTimeInterface::class)->format('H:i:s');
 
             default:
                 return $value;
