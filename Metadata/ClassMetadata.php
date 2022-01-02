@@ -10,35 +10,18 @@ use ReflectionClass;
 
 class ClassMetadata extends MergeableClassMetadata
 {
-    /**
-     * @var bool
-     */
-    public $restResource;
+    public ?bool $restResource = null;
 
-    /**
-     * @var string
-     */
-    public $namePrefix;
+    public ?string $namePrefix = null;
 
-    /**
-     * @var string
-     */
-    public $pathPrefix;
+    public ?string $pathPrefix = null;
 
-    /**
-     * @var string
-     */
-    public $idField;
+    public ?string $idField = null;
 
-    /**
-     * @var string
-     */
-    public $controller;
+    public ?string $controller = null;
 
-    /**
-     * @var Method[]|null
-     */
-    public $methods;
+    /** @var list<Method>|null */
+    public ?array $methods = null;
 
     public function __construct($name)
     {

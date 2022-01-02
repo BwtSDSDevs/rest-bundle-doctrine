@@ -11,65 +11,31 @@ use Metadata\PropertyMetadata as BasePropertyMetadata;
 
 class PropertyMetadata extends BasePropertyMetadata implements MergeableInterface
 {
-    /**
-     * @var string|null
-     */
-    private $type;
+    private ?string $type = null;
 
-    /**
-     * @var bool
-     */
-    private $excluded;
+    private ?bool $excluded = null;
 
-    /**
-     * @var Puttable|null
-     */
-    private $puttable;
+    private ?Puttable $puttable = null;
 
-    /**
-     * @var Postable|null
-     */
-    private $postable;
+    private ?Postable $postable = null;
 
-    /**
-     * @var bool
-     */
-    private $includable;
+    private ?bool $includable = null;
 
-    /**
-     * @var string[]|null
-     */
-    private $includablePaths;
+    /** @var list<string>|null */
+    private ?array $includablePaths = null;
 
-    /**
-     * @var bool
-     */
-    private $subResource;
+    private ?bool $subResource = null;
 
-    /**
-     * @var Method[]|null
-     */
-    private $methods;
+    /** @var list<Method>|null */
+    private ?array $methods = null;
 
-    /**
-     * @var bool
-     */
-    private $association;
+    private ?bool $association = null;
 
-    /**
-     * @var bool
-     */
-    private $collection;
+    private ?bool $collection = null;
 
-    /**
-     * @var bool
-     */
-    private $virtual;
+    private ?bool $virtual = null;
 
-    /**
-     * @var string|null
-     */
-    private $subResourcePath;
+    private ?string $subResourcePath = null;
 
     public function isPuttable(): bool
     {
@@ -151,17 +117,11 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         $this->excluded = $excluded;
     }
 
-    /**
-     * @return null|string[]
-     */
     public function getIncludablePaths(): ?array
     {
         return $this->includablePaths;
     }
 
-    /**
-     * @param null|string[] $includablePaths
-     */
     public function setIncludablePaths(?array $includablePaths)
     {
         $this->includablePaths = $includablePaths;
