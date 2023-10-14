@@ -1,7 +1,7 @@
-/composer.lock
 /vendor/
 /.idea/
-###> symfony/phpunit-bridge ###
-.phpunit.result.cache
-/phpunit.xml
-###< symfony/phpunit-bridge ###
+/composer.lock
+/.phpunit.result.cache
+/coverage.clover.xml
+/log.junit.xml
+/symfony.lock

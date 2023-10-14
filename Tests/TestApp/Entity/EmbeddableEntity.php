@@ -2,56 +2,37 @@
 
 namespace Dontdrinkandroot\RestBundle\Tests\TestApp\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Puttable;
+use Dontdrinkandroot\RestBundle\Metadata\Attribute\Puttable;
 
 #[ORM\Embeddable]
 class EmbeddableEntity
 {
-    /**
-     * @Puttable()
-     *
-     * @var string|null
-     */
-    #[ORM\Column(type: "string", nullable: true)]
-    private $fieldString;
+    #[Puttable]
+    #[ORM\Column(type: Types::STRING, nullable: true)]
+    private ?string $fieldString = null;
 
-    /**
-     * @Puttable()
-     *
-     * @var int|null
-     */
-    #[ORM\Column(type: "integer", nullable: true)]
-    private $fieldInteger;
+    #[Puttable]
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
+    private ?int $fieldInteger = null;
 
-    /**
-     * @return null|string
-     */
-    public function getFieldString()
+    public function getFieldString(): ?string
     {
         return $this->fieldString;
     }
 
-    /**
-     * @param null|string $fieldString
-     */
-    public function setFieldString($fieldString)
+    public function setFieldString(?string $fieldString)
     {
         $this->fieldString = $fieldString;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getFieldInteger()
+    public function getFieldInteger(): ?int
     {
         return $this->fieldInteger;
     }
 
-    /**
-     * @param int|null $fieldInteger
-     */
-    public function setFieldInteger($fieldInteger)
+    public function setFieldInteger(?int $fieldInteger)
     {
         $this->fieldInteger = $fieldInteger;
     }

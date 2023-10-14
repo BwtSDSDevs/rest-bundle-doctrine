@@ -3,16 +3,15 @@
 namespace Dontdrinkandroot\RestBundle\Tests\TestApp\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
+use Dontdrinkandroot\Common\CrudOperation;
+use Dontdrinkandroot\RestBundle\Metadata\Attribute as REST;
 
-/**
- * @REST\RootResource(
- *     operations = {
- *         @REST\Operation("CREATE"),
- *         @REST\Operation("UPDATE"),
- *     }
- * )
- */
+#[REST\RootResource(
+    operations: [
+        new REST\Operation(CrudOperation::CREATE),
+        new REST\Operation(CrudOperation::UPDATE),
+    ]
+)]
 #[ORM\Entity]
 class PuttablePostableAnnotationEntity
 {
@@ -21,154 +20,91 @@ class PuttablePostableAnnotationEntity
     #[ORM\Column(type: "integer", nullable: false)]
     private int $id;
 
-    /**
-     * @REST\Puttable()
-     *
-     * @var string|null
-     */
+    #[REST\Puttable()]
     #[ORM\Column(type: "string", nullable: true)]
-    private $puttableByAll;
+    private ?string $puttableByAll = null;
 
-    /**
-     * @REST\Postable()
-     *
-     * @var string|null
-     */
+    #[REST\Postable()]
     #[ORM\Column(type: "string", nullable: true)]
-    private $postableByAll;
+    private ?string $postableByAll = null;
 
-    /**
-     * @REST\Puttable(granted="ROLE_USER")
-     *
-     * @var string|null
-     */
+    #[REST\Puttable(granted: "ROLE_USER")]
     #[ORM\Column(type: "string", nullable: true)]
-    private $puttableByUser;
+    private ?string $puttableByUser = null;
 
-    /**
-     * @REST\Postable(granted="ROLE_USER")
-     *
-     * @var string|null
-     */
+    #[REST\Postable(granted: "ROLE_USER")]
     #[ORM\Column(type: "string", nullable: true)]
-    private $postableByUser;
+    private ?string $postableByUser = null;
 
-    /**
-     * @REST\Puttable(granted="ROLE_ADMIN")
-     *
-     * @var string|null
-     */
+    #[REST\Puttable(granted: "ROLE_ADMIN")]
     #[ORM\Column(type: "string", nullable: true)]
-    private $puttableByAdmin;
+    private ?string $puttableByAdmin = null;
 
-    /**
-     * @REST\Postable(granted="ROLE_ADMIN")
-     *
-     * @var string|null
-     */
+    #[REST\Postable(granted: "ROLE_ADMIN")]
     #[ORM\Column(type: "string", nullable: true)]
-    private $postableByAdmin;
+    private ?string $postableByAdmin = null;
 
-    /**
-     * @return int
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @return null|string
-     */
-    public function getPuttableByAll()
+    public function getPuttableByAll(): ?string
     {
         return $this->puttableByAll;
     }
 
-    /**
-     * @param null|string $puttableByAll
-     */
-    public function setPuttableByAll($puttableByAll)
+    public function setPuttableByAll(?string $puttableByAll): void
     {
         $this->puttableByAll = $puttableByAll;
     }
 
-    /**
-     * @return null|string
-     */
-    public function getPostableByAll()
+    public function getPostableByAll(): ?string
     {
         return $this->postableByAll;
     }
 
-    /**
-     * @param null|string $postableByAll
-     */
-    public function setPostableByAll($postableByAll)
+    public function setPostableByAll(?string $postableByAll): void
     {
         $this->postableByAll = $postableByAll;
     }
 
-    /**
-     * @return null|string
-     */
-    public function getPuttableByUser()
+    public function getPuttableByUser(): ?string
     {
         return $this->puttableByUser;
     }
 
-    /**
-     * @param null|string $puttableByUser
-     */
-    public function setPuttableByUser($puttableByUser)
+    public function setPuttableByUser(?string $puttableByUser): void
     {
         $this->puttableByUser = $puttableByUser;
     }
 
-    /**
-     * @return null|string
-     */
-    public function getPostableByUser()
+    public function getPostableByUser(): ?string
     {
         return $this->postableByUser;
     }
 
-    /**
-     * @param null|string $postableByUser
-     */
-    public function setPostableByUser($postableByUser)
+    public function setPostableByUser(?string $postableByUser): void
     {
         $this->postableByUser = $postableByUser;
     }
 
-    /**
-     * @return null|string
-     */
-    public function getPuttableByAdmin()
+    public function getPuttableByAdmin(): ?string
     {
         return $this->puttableByAdmin;
     }
 
-    /**
-     * @param null|string $puttableByAdmin
-     */
-    public function setPuttableByAdmin($puttableByAdmin)
+    public function setPuttableByAdmin(?string $puttableByAdmin): void
     {
         $this->puttableByAdmin = $puttableByAdmin;
     }
 
-    /**
-     * @return null|string
-     */
-    public function getPostableByAdmin()
+    public function getPostableByAdmin(): ?string
     {
         return $this->postableByAdmin;
     }
 
-    /**
-     * @param null|string $postableByAdmin
-     */
-    public function setPostableByAdmin($postableByAdmin)
+    public function setPostableByAdmin(?string $postableByAdmin): void
     {
         $this->postableByAdmin = $postableByAdmin;
     }

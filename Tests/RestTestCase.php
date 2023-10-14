@@ -29,7 +29,7 @@ abstract class RestTestCase extends WebTestCase
 
     /**
      * @param Response $response
-     * @param int      $statusCode
+     * @param int $statusCode
      *
      * @return array
      */
@@ -73,7 +73,7 @@ abstract class RestTestCase extends WebTestCase
     /**
      * @param array $expected
      * @param array $actual
-     * @param bool  $linksExpected
+     * @param bool $linksExpected
      */
     protected function assertContentEquals(array $expected, array $actual, $linksExpected = false)
     {
@@ -87,8 +87,8 @@ abstract class RestTestCase extends WebTestCase
 
     /**
      * @param string $url
-     * @param array  $parameters
-     * @param array  $headers
+     * @param array $parameters
+     * @param array $headers
      *
      * @return null|Response
      */
@@ -107,10 +107,10 @@ abstract class RestTestCase extends WebTestCase
 
     /**
      * @param string $url
-     * @param array  $parameters
-     * @param array  $headers
-     * @param array  $content
-     * @param array  $files
+     * @param array $parameters
+     * @param array $headers
+     * @param array $content
+     * @param array $files
      *
      * @return null|Response
      */
@@ -136,9 +136,9 @@ abstract class RestTestCase extends WebTestCase
 
     /**
      * @param string $url
-     * @param array  $parameters
-     * @param array  $headers
-     * @param array  $content
+     * @param array $parameters
+     * @param array $headers
+     * @param array $content
      *
      * @return null|Response
      */
@@ -163,8 +163,8 @@ abstract class RestTestCase extends WebTestCase
 
     /**
      * @param string $url
-     * @param array  $parameters
-     * @param array  $headers
+     * @param array $parameters
+     * @param array $headers
      *
      * @return null|Response
      */
@@ -189,7 +189,7 @@ abstract class RestTestCase extends WebTestCase
     protected function transformHeaders(array $headers)
     {
         $transformedHeaders = [
-            'HTTP_ACCEPT'  => 'application/json',
+            'HTTP_ACCEPT' => 'application/json',
             'CONTENT_TYPE' => 'application/json'
         ];
         foreach ($headers as $key => $value) {
@@ -201,10 +201,10 @@ abstract class RestTestCase extends WebTestCase
 
     /**
      * @param Response $response
-     * @param int      $page
-     * @param int      $perPage
-     * @param int      $totalPages
-     * @param int      $total
+     * @param int $page
+     * @param int $perPage
+     * @param int $totalPages
+     * @param int $total
      */
     protected function assertPagination($response, $page, $perPage, $totalPages, $total)
     {

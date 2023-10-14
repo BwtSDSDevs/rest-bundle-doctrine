@@ -10,14 +10,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AssociationTest extends FunctionalTestCase
 {
-    public function testAddManyToOne()
+    public function testAddManyToOne(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([Groups::class], 'secured');
 
-        /** @var User $supervisor */
-        $supervisor = $referenceRepository->getReference(Users::SUPERVISOR);
-        /** @var User $user */
-        $user = $referenceRepository->getReference(Users::EMPLOYEE_2);
+        $supervisor = $referenceRepository->getReference(Users::SUPERVISOR, User::class);
+        $user = $referenceRepository->getReference(Users::EMPLOYEE_2, User::class);
 
         /* Also Testing for Virtual/Includable roles */
         $response = $this->performGet($this->client, sprintf('/rest/users/%s', $user->getId()), ['include' => 'roles']);
@@ -40,12 +38,11 @@ class AssociationTest extends FunctionalTestCase
         $this->assertEquals($supervisor->getId(), $content['supervisor']['id']);
     }
 
-    public function testRemoveManyToOne()
+    public function testRemoveManyToOne(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([Groups::class], 'secured');
 
-        /** @var User $user */
-        $user = $referenceRepository->getReference(Users::EMPLOYEE_1);
+        $user = $referenceRepository->getReference(Users::EMPLOYEE_1, User::class);
 
         $response = $this->performGet($this->client, sprintf('/rest/users/%s', $user->getId()));
         $content = $this->assertJsonResponse($response);
@@ -62,14 +59,12 @@ class AssociationTest extends FunctionalTestCase
         $this->assertNull($content['supervisor']);
     }
 
-    public function testAddOneToMany()
+    public function testAddOneToMany(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([Groups::class], 'secured');
 
-        /** @var User $supervisor */
-        $supervisor = $referenceRepository->getReference(Users::SUPERVISOR);
-        /** @var User $user */
-        $user = $referenceRepository->getReference(Users::EMPLOYEE_2);
+        $supervisor = $referenceRepository->getReference(Users::SUPERVISOR, User::class);
+        $user = $referenceRepository->getReference(Users::EMPLOYEE_2, User::class);
 
         $response = $this->performGet(
             $this->client,
@@ -94,14 +89,12 @@ class AssociationTest extends FunctionalTestCase
         $this->assertCount(2, $content['subordinates']);
     }
 
-    public function testRemoveOneToMany()
+    public function testRemoveOneToMany(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([Groups::class], 'secured');
 
-        /** @var User $supervisor */
-        $supervisor = $referenceRepository->getReference(Users::SUPERVISOR);
-        /** @var User $user */
-        $user = $referenceRepository->getReference(Users::EMPLOYEE_1);
+        $supervisor = $referenceRepository->getReference(Users::SUPERVISOR, User::class);
+        $user = $referenceRepository->getReference(Users::EMPLOYEE_1, User::class);
 
         $response = $this->performGet(
             $this->client,
@@ -126,16 +119,17 @@ class AssociationTest extends FunctionalTestCase
         $this->assertCount(0, $content['subordinates']);
     }
 
-    public function testAddManyToManyOwning()
+    public function testAddManyToManyOwning(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([Groups::class], 'secured');
 
-        /** @var Group $group */
-        $group = $referenceRepository->getReference(Groups::EMPLOYEES);
-        /** @var User $user */
-        $user = $referenceRepository->getReference(Users::EMPLOYEE_2);
+        $group = $referenceRepository->getReference(Groups::EMPLOYEES, Group::class);
+        $user = $referenceRepository->getReference(Users::EMPLOYEE_2, User::class);
 
-        $response = $this->performGet($this->client, sprintf('/rest/groups/%s', $group->getId()), ['include' => 'users']
+        $response = $this->performGet(
+            $this->client,
+            sprintf('/rest/groups/%s', $group->getId()),
+            ['include' => 'users']
         );
         $content = $this->assertJsonResponse($response);
         $this->assertCount(1, $content['users']);
@@ -146,22 +140,26 @@ class AssociationTest extends FunctionalTestCase
         );
         $content = $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT);
 
-        $response = $this->performGet($this->client, sprintf('/rest/groups/%s', $group->getId()), ['include' => 'users']
+        $response = $this->performGet(
+            $this->client,
+            sprintf('/rest/groups/%s', $group->getId()),
+            ['include' => 'users']
         );
         $content = $this->assertJsonResponse($response);
         $this->assertCount(2, $content['users']);
     }
 
-    public function testRemoveManyToManyOwning()
+    public function testRemoveManyToManyOwning(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([Groups::class], 'secured');
 
-        /** @var Group $group */
-        $group = $referenceRepository->getReference(Groups::EMPLOYEES);
-        /** @var User $user */
-        $user = $referenceRepository->getReference(Users::EMPLOYEE_1);
+        $group = $referenceRepository->getReference(Groups::EMPLOYEES, Group::class);
+        $user = $referenceRepository->getReference(Users::EMPLOYEE_1, User::class);
 
-        $response = $this->performGet($this->client, sprintf('/rest/groups/%s', $group->getId()), ['include' => 'users']
+        $response = $this->performGet(
+            $this->client,
+            sprintf('/rest/groups/%s', $group->getId()),
+            ['include' => 'users']
         );
         $content = $this->assertJsonResponse($response);
         $this->assertCount(1, $content['users']);
@@ -172,22 +170,26 @@ class AssociationTest extends FunctionalTestCase
         );
         $content = $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT);
 
-        $response = $this->performGet($this->client, sprintf('/rest/groups/%s', $group->getId()), ['include' => 'users']
+        $response = $this->performGet(
+            $this->client,
+            sprintf('/rest/groups/%s', $group->getId()),
+            ['include' => 'users']
         );
         $content = $this->assertJsonResponse($response);
         $this->assertCount(0, $content['users']);
     }
 
-    public function testAddManyToManyInverse()
+    public function testAddManyToManyInverse(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([Groups::class], 'secured');
 
-        /** @var Group $group */
-        $group = $referenceRepository->getReference(Groups::EMPLOYEES);
-        /** @var User $user */
-        $user = $referenceRepository->getReference(Users::EMPLOYEE_2);
+        $group = $referenceRepository->getReference(Groups::EMPLOYEES, Group::class);
+        $user = $referenceRepository->getReference(Users::EMPLOYEE_2, User::class);
 
-        $response = $this->performGet($this->client, sprintf('/rest/users/%s', $user->getId()), ['include' => 'groups']
+        $response = $this->performGet(
+            $this->client,
+            sprintf('/rest/users/%s', $user->getId()),
+            ['include' => 'groups']
         );
         $content = $this->assertJsonResponse($response);
         $this->assertCount(0, $content['groups']);
@@ -198,22 +200,26 @@ class AssociationTest extends FunctionalTestCase
         );
         $content = $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT);
 
-        $response = $this->performGet($this->client, sprintf('/rest/users/%s', $user->getId()), ['include' => 'groups']
+        $response = $this->performGet(
+            $this->client,
+            sprintf('/rest/users/%s', $user->getId()),
+            ['include' => 'groups']
         );
         $content = $this->assertJsonResponse($response);
         $this->assertCount(1, $content['groups']);
     }
 
-    public function testRemoveManyToManyInverse()
+    public function testRemoveManyToManyInverse(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([Groups::class], 'secured');
 
-        /** @var Group $group */
-        $group = $referenceRepository->getReference(Groups::EMPLOYEES);
-        /** @var User $user */
-        $user = $referenceRepository->getReference(Users::EMPLOYEE_1);
+        $group = $referenceRepository->getReference(Groups::EMPLOYEES, Group::class);
+        $user = $referenceRepository->getReference(Users::EMPLOYEE_1, User::class);
 
-        $response = $this->performGet($this->client, sprintf('/rest/users/%s', $user->getId()), ['include' => 'groups']
+        $response = $this->performGet(
+            $this->client,
+            sprintf('/rest/users/%s', $user->getId()),
+            ['include' => 'groups']
         );
         $content = $this->assertJsonResponse($response);
         $this->assertCount(1, $content['groups']);
@@ -224,7 +230,10 @@ class AssociationTest extends FunctionalTestCase
         );
         $content = $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT);
 
-        $response = $this->performGet($this->client, sprintf('/rest/users/%s', $user->getId()), ['include' => 'groups']
+        $response = $this->performGet(
+            $this->client,
+            sprintf('/rest/users/%s', $user->getId()),
+            ['include' => 'groups']
         );
         $content = $this->assertJsonResponse($response);
         $this->assertCount(0, $content['groups']);

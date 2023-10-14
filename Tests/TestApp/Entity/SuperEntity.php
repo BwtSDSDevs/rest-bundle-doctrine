@@ -4,71 +4,45 @@ namespace Dontdrinkandroot\RestBundle\Tests\TestApp\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
+use Dontdrinkandroot\RestBundle\Metadata\Attribute as REST;
 
 #[ORM\MappedSuperclass]
 class SuperEntity
 {
-    /**
-     * @var int
-     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer", nullable: false)]
-    private $id;
+    private int $id;
 
-    /**
-     * @REST\Excluded()
-     *
-     * @var string
-     */
+    #[REST\Excluded]
     #[ORM\Column(type: Types::STRING, nullable: false)]
-    private $excludedFieldOne;
+    private string $excludedFieldOne;
 
-    /**
-     * @REST\Excluded()
-     *
-     * @var string
-     */
+    #[REST\Excluded]
     #[ORM\Column(type: Types::STRING, nullable: false)]
-    private $excludedFieldTwo;
+    private string $excludedFieldTwo;
 
-    /**
-     * @return int
-     */
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
-    public function getExcludedFieldOne(): ?string
+    public function getExcludedFieldOne(): string
     {
         return $this->excludedFieldOne;
     }
 
-    /**
-     * @param string $excludedFieldOne
-     */
-    public function setExcludedFieldOne(string $excludedFieldOne)
+    public function setExcludedFieldOne(string $excludedFieldOne): void
     {
         $this->excludedFieldOne = $excludedFieldOne;
     }
 
-    /**
-     * @return string
-     */
-    public function getExcludedFieldTwo(): ?string
+    public function getExcludedFieldTwo(): string
     {
         return $this->excludedFieldTwo;
     }
 
-    /**
-     * @param string $excludedFieldTwo
-     */
-    public function setExcludedFieldTwo(string $excludedFieldTwo)
+    public function setExcludedFieldTwo(string $excludedFieldTwo): void
     {
         $this->excludedFieldTwo = $excludedFieldTwo;
     }

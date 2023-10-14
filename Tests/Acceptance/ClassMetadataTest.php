@@ -2,6 +2,7 @@
 
 namespace Dontdrinkandroot\RestBundle\Tests\Acceptance;
 
+use Dontdrinkandroot\Common\CrudOperation;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
@@ -11,7 +12,7 @@ use Metadata\MetadataFactory;
 
 class ClassMetadataTest extends FunctionalTestCase
 {
-    public function testUser()
+    public function testUser(): void
     {
         /** @var MetadataFactory $metadataFactory */
         self::bootKernel(['environment' => 'secured']);
@@ -23,17 +24,17 @@ class ClassMetadataTest extends FunctionalTestCase
         $this->assertCount(2, $methods);
 
         $method = $methods['READ'];
-        $this->assertEquals('READ', $method->name);
+        $this->assertEquals(CrudOperation::READ, $method->method);
         $this->assertNull($method->granted);
         $this->assertNull($method->grantedExpression);
         $this->assertEquals(['supervisor'], $method->defaultIncludes);
 
         $method = $methods['CREATE'];
-        $this->assertEquals('CREATE', $method->name);
+        $this->assertEquals(CrudOperation::CREATE, $method->method);
         $this->assertEquals('ROLE_ADMIN', $method->granted);
     }
 
-    public function testUserSerialization()
+    public function testUserSerialization(): void
     {
         /** @var MetadataFactory $metadataFactory */
         self::bootKernel(['environment' => 'secured'])->getContainer();
@@ -49,7 +50,7 @@ class ClassMetadataTest extends FunctionalTestCase
         $this->assertEquals($classMetadata, $unserializedClassMetadata);
     }
 
-    public function testSubResourceEntity()
+    public function testSubResourceEntity(): void
     {
         /** @var MetadataFactory $metadataFactory */
         self::bootKernel(['environment' => 'secured'])->getContainer();
@@ -68,7 +69,7 @@ class ClassMetadataTest extends FunctionalTestCase
         $this->assertTrue($propertyMetadata->getPuttable()->byReference);
     }
 
-    public function testSubResourceEntitySerialization()
+    public function testSubResourceEntitySerialization(): void
     {
         /** @var MetadataFactory $metadataFactory */
         self::bootKernel(['environment' => 'secured'])->getContainer();

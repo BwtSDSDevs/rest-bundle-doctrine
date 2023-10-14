@@ -10,8 +10,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MinimalEnvironmentTest extends FunctionalTestCase
 {
-
-    public function testList()
+    public function testList(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([MinimalEntities::class], 'minimal');
 
@@ -37,7 +36,7 @@ class MinimalEnvironmentTest extends FunctionalTestCase
         $this->assertArrayNotHasKey('defaultIncludedField', $content[0]);
     }
 
-    public function testGet()
+    public function testGet(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([MinimalEntities::class], 'minimal');
         /** @var MinimalEntity $entity */
@@ -60,7 +59,7 @@ class MinimalEnvironmentTest extends FunctionalTestCase
         $this->assertEquals(10, $content['integerValue']);
     }
 
-    public function testPost()
+    public function testPost(): void
     {
         $this->loadClientAndFixtures([], 'minimal');
         $this->client->catchExceptions(false);
@@ -75,7 +74,7 @@ class MinimalEnvironmentTest extends FunctionalTestCase
         );
     }
 
-    public function testPut()
+    public function testPut(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([MinimalEntities::class], 'minimal');
         $this->client->catchExceptions(false);
@@ -92,7 +91,7 @@ class MinimalEnvironmentTest extends FunctionalTestCase
         );
     }
 
-    public function testDelete()
+    public function testDelete(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([MinimalEntities::class], 'minimal');
         $this->client->catchExceptions(false);
@@ -106,7 +105,7 @@ class MinimalEnvironmentTest extends FunctionalTestCase
         );
     }
 
-    public function testUnmappedPath()
+    public function testUnmappedPath(): void
     {
         $this->loadClientAndFixtures([], 'minimal');
         $this->client->catchExceptions(false);

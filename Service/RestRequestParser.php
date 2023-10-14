@@ -7,7 +7,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Dontdrinkandroot\Common\CrudOperation;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
+use Dontdrinkandroot\RestBundle\Metadata\Attribute\Right;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\MetadataFactory;
 use RuntimeException;

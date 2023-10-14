@@ -1,14 +1,15 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Metadata\Annotation;
+namespace Dontdrinkandroot\RestBundle\Metadata\Attribute;
 
 abstract class Writeable
 {
-    public ?bool $byReference = null;
-
-    public ?string $granted = null;
-
-    public ?string $grantedExpression = null;
+    public function __construct(
+        public ?bool $byReference = null,
+        public ?string $granted = null,
+        public ?string $grantedExpression = null,
+    ) {
+    }
 
     protected static function parseInstance($config, $instance)
     {

@@ -12,28 +12,16 @@ class SubResourceEntity
     #[ORM\Column(type: "integer", nullable: false)]
     private int $id;
 
-    /**
-     * @var SecuredEntity
-     */
     #[ORM\ManyToOne(targetEntity: SecuredEntity::class, inversedBy: "subResources")]
-    private $parentEntity;
+    private SecuredEntity $parentEntity;
 
-    /**
-     * @var User|null
-     */
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: true)]
-    private $creator;
+    private ?User $creator = null;
 
-    /**
-     * @var string|null
-     */
     #[ORM\Column(type: "string", nullable: true)]
-    private $text;
+    private ?string $text = null;
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
@@ -49,33 +37,21 @@ class SubResourceEntity
         return $this->parentEntity;
     }
 
-    /**
-     * @return User|null
-     */
-    public function getCreator()
+    public function getCreator(): ?User
     {
         return $this->creator;
     }
 
-    /**
-     * @param User|null $creator
-     */
-    public function setCreator($creator)
+    public function setCreator(?User $creator): void
     {
         $this->creator = $creator;
     }
 
-    /**
-     * @return null|string
-     */
     public function getText(): ?string
     {
         return $this->text;
     }
 
-    /**
-     * @param null|string $text
-     */
     public function setText(?string $text): void
     {
         $this->text = $text;

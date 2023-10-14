@@ -25,16 +25,16 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
     const DDR_REST_DEPTH = 'ddrRestDepth';
 
     public function __construct(
-        private RestMetadataFactory $metadataFactory,
-        private PropertyAccessorInterface $propertyAccessor,
-        private UrlGeneratorInterface $urlGenerator
+        private readonly RestMetadataFactory $metadataFactory,
+        private readonly PropertyAccessorInterface $propertyAccessor,
+        private readonly UrlGeneratorInterface $urlGenerator
     ) {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function normalize($data, $format = null, array $context = [])
+    public function normalize($object, $format = null, array $context = [])
     {
         if (!array_key_exists(self::DDR_REST_INCLUDES, $context)) {
             throw new LogicException('Includes missing');
@@ -52,16 +52,16 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
         $path = $context[self::DDR_REST_PATH];
         $depth = $context[self::DDR_REST_DEPTH];
 
-        if (is_array($data)) {
+        if (is_array($object)) {
             $normalizedData = [];
-            foreach ($data as $datum) {
+            foreach ($object as $datum) {
                 $normalizedData[] = $this->normalize(
                     $datum,
                     $format,
                     [
                         self::DDR_REST_INCLUDES => $includes,
-                        self::DDR_REST_DEPTH    => $depth + 1,
-                        self::DDR_REST_PATH     => $path
+                        self::DDR_REST_DEPTH => $depth + 1,
+                        self::DDR_REST_PATH => $path
                     ]
                 );
             }
@@ -69,21 +69,20 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
             return $normalizedData;
         }
 
-        if (is_object($data)) {
+        if (is_object($object)) {
             /** @var ClassMetadata $classMetadata */
-            $classMetadata = $this->metadataFactory->getMetadataForClass(ClassUtils::getClass($data));
+            $classMetadata = $this->metadataFactory->getMetadataForClass(ClassUtils::getClass($object));
 
             $normalizedData = [];
 
-            if ($classMetadata->isRestResource() && $classMetadata->hasMethod(CrudOperation::READ) && $this->isIncluded(
-                    $path,
-                    ['_links'],
-                    $includes
-                )
+            if (
+                $classMetadata->isRestResource()
+                && $classMetadata->hasOperation(CrudOperation::READ)
+                && $this->isIncluded($path, ['_links'], $includes)
             ) {
                 $selfLink = $this->urlGenerator->generate(
                     $classMetadata->namePrefix . '.get',
-                    ['id' => $this->propertyAccessor->getValue($data, $classMetadata->getIdField())],
+                    ['id' => $this->propertyAccessor->getValue($object, $classMetadata->getIdField())],
                     UrlGeneratorInterface::ABSOLUTE_URL
                 );
                 $normalizedData['_links'] = [
@@ -100,14 +99,12 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
                 }
 
                 if ($propertyMetadatum->isAssociation()) {
-                    /* Inlude if includable AND it is on include path */
-                    if ($propertyMetadatum->isIncludable() && $this->isIncluded(
-                            $path,
-                            $propertyMetadatum->getIncludablePaths(),
-                            $includes
-                        )
+                    /* Include if includable AND it is on include path */
+                    if (
+                        $propertyMetadatum->isIncludable()
+                        && $this->isIncluded($path, $propertyMetadatum->getIncludablePaths(), $includes)
                     ) {
-                        $value = $this->propertyAccessor->getValue($data, $propertyMetadatum->name);
+                        $value = $this->propertyAccessor->getValue($object, $propertyMetadatum->name);
                         if ($propertyMetadatum->isCollection()) {
                             /** @var Collection $value */
                             $value = $value->getValues();
@@ -117,20 +114,18 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
                             $format,
                             [
                                 self::DDR_REST_INCLUDES => $includes,
-                                self::DDR_REST_DEPTH    => $depth + 1,
-                                self::DDR_REST_PATH     => $this->appendPath($path, $propertyMetadatum->name)
+                                self::DDR_REST_DEPTH => $depth + 1,
+                                self::DDR_REST_PATH => $this->appendPath($path, $propertyMetadatum->name)
                             ]
                         );
                     }
                 } else {
-                    /* Inlude if includable is missing OR it is on include path */
-                    if (!$propertyMetadatum->isIncludable() || $this->isIncluded(
-                            $path,
-                            $propertyMetadatum->getIncludablePaths(),
-                            $includes
-                        )
+                    /* Include if includable is missing OR it is on include path */
+                    if (
+                        !$propertyMetadatum->isIncludable()
+                        || $this->isIncluded($path, $propertyMetadatum->getIncludablePaths(), $includes)
                     ) {
-                        $value = $this->propertyAccessor->getValue($data, $propertyMetadatum->name);
+                        $value = $this->propertyAccessor->getValue($object, $propertyMetadatum->name);
                         if (is_scalar($value) || array_key_exists($propertyMetadatum->getType(), Type::getTypesMap())) {
                             $normalizedData[$propertyMetadatum->name] = $this->normalizeField(
                                 $value,
@@ -142,8 +137,8 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
                                 $format,
                                 [
                                     self::DDR_REST_INCLUDES => $includes,
-                                    self::DDR_REST_DEPTH    => $depth + 1,
-                                    self::DDR_REST_PATH     => $this->appendPath($path, $propertyMetadatum->name)
+                                    self::DDR_REST_DEPTH => $depth + 1,
+                                    self::DDR_REST_PATH => $this->appendPath($path, $propertyMetadatum->name)
                                 ]
                             );
                         }
@@ -154,7 +149,7 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
             return $normalizedData;
         }
 
-        return $data;
+        return $object;
     }
 
     /**
@@ -188,7 +183,7 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
         return false;
     }
 
-    private function appendPath($path, $name)
+    private function appendPath($path, $name): string
     {
         if (null === $path || '' === $path) {
             return $name;

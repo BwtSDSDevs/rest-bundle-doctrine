@@ -2,9 +2,9 @@
 
 namespace Dontdrinkandroot\RestBundle\Metadata\Driver;
 
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Operation;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Postable;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Puttable;
+use Dontdrinkandroot\RestBundle\Metadata\Attribute\Operation;
+use Dontdrinkandroot\RestBundle\Metadata\Attribute\Postable;
+use Dontdrinkandroot\RestBundle\Metadata\Attribute\Puttable;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Metadata\Driver\AbstractFileDriver;
@@ -172,9 +172,7 @@ class YamlDriver extends AbstractFileDriver
     }
 
     /**
-     * @param array $config
-     *
-     * @return Operation[]
+     * @return array<string, Operation>|null
      */
     private function parseOperations(array $config)
     {
@@ -186,7 +184,7 @@ class YamlDriver extends AbstractFileDriver
         $methodsConfig = $config['operations'];
         foreach ($methodsConfig as $name => $operationConfig) {
             $operation = Operation::parse($name, $operationConfig);
-            $operations[$operation->name] = $operation;
+            $operations[$operation->method->value] = $operation;
         }
 
         return $operations;

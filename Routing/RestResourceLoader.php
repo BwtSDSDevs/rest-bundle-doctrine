@@ -64,7 +64,7 @@ class RestResourceLoader extends Loader
                     '_format'      => 'json'
                 ];
 
-                if (null !== $method = $classMetadata->getMethod(CrudOperation::LIST)) {
+                if (null !== $method = $classMetadata->getOperation(CrudOperation::LIST)) {
                     $listRoute = new Route($pathPrefix);
                     $listRoute->setMethods(Request::METHOD_GET);
                     $listRoute->setDefaults(
@@ -79,7 +79,7 @@ class RestResourceLoader extends Loader
                     $routes->add($namePrefix . '.list', $listRoute);
                 }
 
-                if (null !== $method = $classMetadata->getMethod(CrudOperation::CREATE)) {
+                if (null !== $method = $classMetadata->getOperation(CrudOperation::CREATE)) {
                     $postRoute = new Route($pathPrefix);
                     $postRoute->setMethods(Request::METHOD_POST);
                     $postRoute->setDefaults(
@@ -94,7 +94,7 @@ class RestResourceLoader extends Loader
                     $routes->add($namePrefix . '.post', $postRoute);
                 }
 
-                if (null !== $method = $classMetadata->getMethod(CrudOperation::READ)) {
+                if (null !== $method = $classMetadata->getOperation(CrudOperation::READ)) {
                     $getRoute = new Route($pathPrefix . '/{id}');
                     $getRoute->setMethods(Request::METHOD_GET);
                     $getRoute->setDefaults(
@@ -109,7 +109,7 @@ class RestResourceLoader extends Loader
                     $routes->add($namePrefix . '.get', $getRoute);
                 }
 
-                if (null !== $method = $classMetadata->getMethod(CrudOperation::UPDATE)) {
+                if (null !== $method = $classMetadata->getOperation(CrudOperation::UPDATE)) {
                     $putRoute = new Route($pathPrefix . '/{id}');
                     $putRoute->setMethods([Request::METHOD_PUT, Request::METHOD_PATCH]);
                     $putRoute->setDefaults(
@@ -124,7 +124,7 @@ class RestResourceLoader extends Loader
                     $routes->add($namePrefix . '.put', $putRoute);
                 }
 
-                if (null !== $method = $classMetadata->getMethod(CrudOperation::DELETE)) {
+                if (null !== $method = $classMetadata->getOperation(CrudOperation::DELETE)) {
                     $deleteRoute = new Route($pathPrefix . '/{id}');
                     $deleteRoute->setMethods(Request::METHOD_DELETE);
                     $deleteRoute->setDefaults(
@@ -147,7 +147,7 @@ class RestResourceLoader extends Loader
                             $subResourcePath = $propertyMetadata->getSubResourcePath();
                         }
 
-                        if (null !== $method = $propertyMetadata->getMethod(CrudOperation::LIST)) {
+                        if (null !== $method = $propertyMetadata->getOperation(CrudOperation::LIST)) {
                             $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath;
                             $subResourceRoute = new Route($subResourceFullPath);
                             $subResourceRoute->setMethods(Request::METHOD_GET);
@@ -164,7 +164,7 @@ class RestResourceLoader extends Loader
                             $routes->add($namePrefix . '.' . $propertyMetadata->name . '.list', $subResourceRoute);
                         }
 
-                        if (null !== $method = $propertyMetadata->getMethod(CrudOperation::CREATE)) {
+                        if (null !== $method = $propertyMetadata->getOperation(CrudOperation::CREATE)) {
                             $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath;
                             $subResourceRoute = new Route($subResourceFullPath);
                             $subResourceRoute->setMethods(Request::METHOD_POST);
@@ -181,7 +181,7 @@ class RestResourceLoader extends Loader
                             $routes->add($namePrefix . '.' . $propertyMetadata->name . '.post', $subResourceRoute);
                         }
 
-                        if (null !== $method = $propertyMetadata->getMethod(CrudOperation::UPDATE)) {
+                        if (null !== $method = $propertyMetadata->getOperation(CrudOperation::UPDATE)) {
                             $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath . '/{subId}';
                             $subResourceRoute = new Route($subResourceFullPath);
                             $subResourceRoute->setMethods(Request::METHOD_PUT);
@@ -198,7 +198,7 @@ class RestResourceLoader extends Loader
                             $routes->add($namePrefix . '.' . $propertyMetadata->name . '.put', $subResourceRoute);
                         }
 
-                        if (null !== $method = $propertyMetadata->getMethod(CrudOperation::DELETE)) {
+                        if (null !== $method = $propertyMetadata->getOperation(CrudOperation::DELETE)) {
                             if ($propertyMetadata->isCollection()) {
                                 $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath . '/{subId}';
                             } else {

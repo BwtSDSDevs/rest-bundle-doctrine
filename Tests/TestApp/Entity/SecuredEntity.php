@@ -6,107 +6,73 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
+use Dontdrinkandroot\Common\CrudOperation;
+use Dontdrinkandroot\RestBundle\Metadata\Attribute as REST;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @REST\RootResource(
- *      pathPrefix="secured",
- *      operations={
- *          @REST\Operation(name="LIST", granted="ROLE_USER"),
- *          @REST\Operation(name="CREATE", granted="ROLE_ADMIN", defaultIncludes={"details"}),
- *          @REST\Operation(name="DELETE", granted="ROLE_ADMIN"),
- *          @REST\Operation(name="READ", granted="ROLE_USER", defaultIncludes={"details"}),
- *          @REST\Operation(name="UPDATE", granted="ROLE_ADMIN", defaultIncludes={"details"})
- *     }
- * )
- */
+#[REST\RootResource(
+    operations: [
+        new REST\Operation(method: CrudOperation::LIST, granted: "ROLE_USER"),
+        new REST\Operation(method: CrudOperation::CREATE, defaultIncludes: ["details"], granted: "ROLE_ADMIN"),
+        new REST\Operation(method: CrudOperation::DELETE, granted: "ROLE_ADMIN"),
+        new REST\Operation(method: CrudOperation::READ, defaultIncludes: ["details"], granted: "ROLE_USER"),
+        new REST\Operation(method: CrudOperation::UPDATE, defaultIncludes: ["details"], granted: "ROLE_ADMIN")
+    ],
+    pathPrefix: "secured"
+)]
 #[ORM\Entity]
 class SecuredEntity
 {
-    /**
-     * @var int
-     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer", nullable: false)]
-    private $id;
+    private int $id;
 
-    /**
-     * @var Uuid
-     */
     #[ORM\Column(type: "uuid", nullable: false, unique: true)]
-    private $uuid;
+    private Uuid $uuid;
 
-    /**
-     * @REST\Includable("details")
-     * @REST\Puttable()
-     *
-     * @var DateTime|null
-     */
+    #[REST\Includable(["details"])]
+    #[REST\Puttable]
     #[ORM\Column(type: "datetime", nullable: true)]
-    private $dateTimeField;
+    private ?DateTime $dateTimeField = null;
 
-    /**
-     * @REST\Includable("details")
-     * @REST\Puttable()
-     *
-     * @var DateTime|null
-     */
+    #[REST\Includable(["details"])]
+    #[REST\Puttable]
     #[ORM\Column(type: "date", nullable: true)]
-    private $dateField;
+    private ?DateTime $dateField = null;
 
-    /**
-     * @REST\Includable("details")
-     * @ORM\Column(type="time", nullable=true)
-     * @REST\Puttable()
-     *
-     * @var DateTime|null
-     */
+    #[REST\Includable(["details"])]
+    #[REST\Puttable]
     #[ORM\Column(type: "time", nullable: true)]
-    private $timeField;
+    private ?DateTime $timeField = null;
 
-    /**
-     * @REST\Includable("details")
-     * @Assert\Type("integer")
-     * @var int|null
-     * @REST\Postable()
-     */
+    #[REST\Includable(["details"])]
+    #[REST\Postable]
+    #[Assert\Type(type: "integer")]
     #[ORM\Column(type: "integer", nullable: true)]
-    private $integerField;
+    private ?int $integerField = null;
 
     /**
-     * @REST\Includable()
-     * @REST\SubResource(
-     *      operations={
-     *          @REST\Operation(name="LIST", granted="ROLE_USER"),
-     *          @REST\Operation(name="CREATE", granted="ROLE_ADMIN", defaultIncludes={"parentEntity"}),
-     *          @REST\Operation(name="UPDATE", granted="ROLE_ADMIN"),
-     *          @REST\Operation(name="DELETE", granted="ROLE_ADMIN")
-     *      }
-     * )
-     *
-     * @var SubResourceEntity[]|Collection
+     * @var Collection<array-key,SubResourceEntity>
      */
+    #[REST\Includable]
+    #[REST\SubResource([
+        new REST\Operation(method: CrudOperation::LIST, granted: "ROLE_USER"),
+        new REST\Operation(method: CrudOperation::CREATE, defaultIncludes: ["parentEntity"], granted: "ROLE_ADMIN"),
+        new REST\Operation(method: CrudOperation::UPDATE, granted: "ROLE_ADMIN"),
+        new REST\Operation(method: CrudOperation::DELETE, granted: "ROLE_ADMIN")
+    ])]
     #[ORM\OneToMany(targetEntity: SubResourceEntity::class, mappedBy: "parentEntity")]
     private $subResources;
 
-    /**
-     * @REST\Includable("details")
-     * @REST\Puttable()
-     *
-     * @var EmbeddableEntity
-     */
+    #[REST\Puttable]
+    #[REST\Includable(["details"])]
     #[ORM\Embedded(class: EmbeddableEntity::class)]
-    private $embeddedEntity;
+    private EmbeddableEntity $embeddedEntity;
 
-    /**
-     * @REST\Excluded()
-     *
-     * @var mixed
-     */
-    private $unmappedField;
+    #[REST\Excluded]
+    private mixed $unmappedField;
 
     public function __construct()
     {
@@ -115,15 +81,12 @@ class SecuredEntity
         $this->embeddedEntity = new EmbeddableEntity();
     }
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    public function setUuid(string $uuid)
+    public function setUuid(Uuid $uuid)
     {
         $this->uuid = $uuid;
     }
@@ -180,34 +143,22 @@ class SecuredEntity
         $this->subResources->removeElement($subResourceEntity);
     }
 
-    /**
-     * @return EmbeddableEntity
-     */
     public function getEmbeddedEntity(): EmbeddableEntity
     {
         return $this->embeddedEntity;
     }
 
-    /**
-     * @param EmbeddableEntity $embeddedEntity
-     */
     public function setEmbeddedEntity(EmbeddableEntity $embeddedEntity)
     {
         $this->embeddedEntity = $embeddedEntity;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getIntegerField()
+    public function getIntegerField(): ?int
     {
         return $this->integerField;
     }
 
-    /**
-     * @param int|null $integerField
-     */
-    public function setIntegerField($integerField)
+    public function setIntegerField(?int $integerField): void
     {
         $this->integerField = $integerField;
     }

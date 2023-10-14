@@ -2,9 +2,10 @@
 
 namespace Dontdrinkandroot\RestBundle\Metadata;
 
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Operation;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Postable;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Puttable;
+use Dontdrinkandroot\Common\CrudOperation;
+use Dontdrinkandroot\RestBundle\Metadata\Attribute\Operation;
+use Dontdrinkandroot\RestBundle\Metadata\Attribute\Postable;
+use Dontdrinkandroot\RestBundle\Metadata\Attribute\Puttable;
 use InvalidArgumentException;
 use Metadata\MergeableInterface;
 use Metadata\PropertyMetadata as BasePropertyMetadata;
@@ -203,15 +204,15 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         return $otherValue;
     }
 
-    public function getMethod(string $methodName): ?Operation
+    public function getOperation(CrudOperation $method): ?Operation
     {
         if (null === $this->operations) {
             return null;
         }
 
-        foreach ($this->operations as $method) {
-            if ($methodName === $method->name) {
-                return $method;
+        foreach ($this->operations as $operation) {
+            if ($method === $operation->method) {
+                return $operation;
             }
         }
 

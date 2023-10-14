@@ -7,11 +7,13 @@ framework:
         utf8: true
     validation: { enable_annotations: true }
 
+liip_test_fixtures:
+    cache_db:
+        sqlite: 'Liip\TestFixturesBundle\Services\DatabaseBackup\SqliteDatabaseBackup'
+
 doctrine:
     dbal:
-        url: "sqlite:////tmp/ddr_rest_bundle/test.db3"
-        charset: UTF8
-        logging: false
+        url: 'sqlite:////tmp/ddr_rest_bundle/test%env(default::TEST_TOKEN)%.db'
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"

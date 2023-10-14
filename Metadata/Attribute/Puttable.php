@@ -1,11 +1,10 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Metadata\Annotation;
+namespace Dontdrinkandroot\RestBundle\Metadata\Attribute;
 
-/**
- * @Annotation
- * @Target({"PROPERTY"})
- */
+use Attribute;
+
+#[Attribute(Attribute::TARGET_PROPERTY)]
 class Puttable extends Writeable
 {
     public static function parse($config): ?Puttable

@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SecuredEnvironmentTest extends FunctionalTestCase
 {
-    public function testListUnauthorized()
+    public function testListUnauthorized(): void
     {
         $this->client = self::createClient(['environment' => 'secured']);
 
@@ -20,7 +20,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $this->assertJsonResponse($response, Response::HTTP_UNAUTHORIZED);
     }
 
-    public function testList()
+    public function testList(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([Users::class, SecuredEntities::class], 'secured');
 
@@ -30,7 +30,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             [],
             [
                 'PHP_AUTH_USER' => 'user',
-                'PHP_AUTH_PW'   => 'user',
+                'PHP_AUTH_PW' => 'user',
             ]
         );
         $content = $this->assertJsonResponse($response);
@@ -38,14 +38,14 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $this->assertCount(2, $content);
     }
 
-    public function testPostUnauthorized()
+    public function testPostUnauthorized(): void
     {
         $this->client = self::createClient(['environment' => 'secured']);
         $response = $this->performPost($this->client, '/rest/secured');
         $content = $this->assertJsonResponse($response, Response::HTTP_UNAUTHORIZED);
     }
 
-    public function testPost()
+    public function testPost(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([Users::class], 'secured');
 
@@ -55,7 +55,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             [],
             [
                 'PHP_AUTH_USER' => 'admin',
-                'PHP_AUTH_PW'   => 'admin',
+                'PHP_AUTH_PW' => 'admin',
             ],
             [
                 'integerField' => 23,
@@ -66,17 +66,16 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $this->assertHasKeyAndUnset('uuid', $content, true);
         $this->assertContentEquals(
             [
-                'dateField'      => null,
-                'dateTimeField'  => null,
+                'dateField' => null,
+                'dateTimeField' => null,
                 'embeddedEntity' => [
-                    'fieldString'  => null,
+                    'fieldString' => null,
                     'fieldInteger' => null
                 ],
-                'integerField'   => 23,
-                'timeField'      => null,
+                'integerField' => 23,
+                'timeField' => null,
             ],
-            $content,
-            false
+            $content
         );
     }
 
@@ -90,25 +89,24 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             [],
             [
                 'PHP_AUTH_USER' => 'admin',
-                'PHP_AUTH_PW'   => 'admin',
+                'PHP_AUTH_PW' => 'admin',
             ],
             ['integerField' => 'thisisnointeger']
         );
-        $content = $this->assertJsonResponse($response, Response::HTTP_BAD_REQUEST, true);
+        $content = $this->assertJsonResponse($response, Response::HTTP_BAD_REQUEST);
         $this->assertContentEquals(
             [
                 [
                     'propertyPath' => "integerField",
-                    'message'      => "This value should be of type integer.",
-                    'value'        => "thisisnointeger"
+                    'message' => "This value should be of type integer.",
+                    'value' => "thisisnointeger"
                 ]
             ],
-            $content,
-            false
+            $content
         );
     }
 
-    public function testGetUnauthorized()
+    public function testGetUnauthorized(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([SecuredEntities::class], 'secured');
 
@@ -134,20 +132,20 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             [],
             [
                 'PHP_AUTH_USER' => 'user',
-                'PHP_AUTH_PW'   => 'user',
+                'PHP_AUTH_PW' => 'user',
             ]
         );
         $content = $this->assertJsonResponse($response);
 
         $expectedContent = [
-            'id'             => $entity->getId(),
-            'uuid'           => $entity->getUuid(),
-            'dateTimeField'  => '2015-03-04 13:12:11',
-            'dateField'      => '2016-01-02',
-            'timeField'      => '03:13:37',
-            'integerField'   => null,
+            'id' => $entity->getId(),
+            'uuid' => $entity->getUuid(),
+            'dateTimeField' => '2015-03-04 13:12:11',
+            'dateField' => '2016-01-02',
+            'timeField' => '03:13:37',
+            'integerField' => null,
             'embeddedEntity' => [
-                'fieldString'  => null,
+                'fieldString' => null,
                 'fieldInteger' => null
             ]
         ];
@@ -174,7 +172,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             [],
             [
                 'PHP_AUTH_USER' => 'admin',
-                'PHP_AUTH_PW'   => 'admin',
+                'PHP_AUTH_PW' => 'admin',
             ]
         );
         $content = $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT);
@@ -205,7 +203,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             [],
             [
                 'PHP_AUTH_USER' => 'user',
-                'PHP_AUTH_PW'   => 'user',
+                'PHP_AUTH_PW' => 'user',
             ]
         );
         $this->assertJsonResponse($response, Response::HTTP_FORBIDDEN);
@@ -218,11 +216,11 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $entity = $referenceRepository->getReference('secured-entity-0');
 
         $data = [
-            'dateTimeField'  => '2011-02-03 04:05:06',
-            'dateField'      => '2012-05-31',
-            'timeField'      => '12:34:56',
+            'dateTimeField' => '2011-02-03 04:05:06',
+            'dateField' => '2012-05-31',
+            'timeField' => '12:34:56',
             'embeddedEntity' => [
-                'fieldString'  => 'haha',
+                'fieldString' => 'haha',
                 'fieldInteger' => 23
             ]
         ];
@@ -233,7 +231,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             [],
             [
                 'PHP_AUTH_USER' => 'admin',
-                'PHP_AUTH_PW'   => 'admin',
+                'PHP_AUTH_PW' => 'admin',
             ],
             $data
         );
@@ -260,7 +258,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             ['include' => 'subResources,subResources._links'],
             [
                 'PHP_AUTH_USER' => 'user',
-                'PHP_AUTH_PW'   => 'user',
+                'PHP_AUTH_PW' => 'user',
             ]
         );
         $content = $this->assertJsonResponse($response);
@@ -286,7 +284,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             ['page' => 1, 'perPage' => 3],
             [
                 'PHP_AUTH_USER' => 'user',
-                'PHP_AUTH_PW'   => 'user',
+                'PHP_AUTH_PW' => 'user',
             ]
         );
         $content = $this->assertJsonResponse($response);
@@ -309,7 +307,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             [],
             [
                 'PHP_AUTH_USER' => 'admin',
-                'PHP_AUTH_PW'   => 'admin',
+                'PHP_AUTH_PW' => 'admin',
             ]
         );
         $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT);
@@ -320,7 +318,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             [],
             [
                 'PHP_AUTH_USER' => 'admin',
-                'PHP_AUTH_PW'   => 'admin',
+                'PHP_AUTH_PW' => 'admin',
             ]
         );
         $content = $this->assertJsonResponse($response);
@@ -336,14 +334,13 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         /** @var SubResourceEntity $child */
         $child = $referenceRepository->getReference('subresource-entity-0');
 
-
         $response = $this->performPut(
             $this->client,
             sprintf('/rest/subresourceentities/%s/parententity/%s', $child->getId(), $parent->getId()),
             [],
             [
                 'PHP_AUTH_USER' => 'admin',
-                'PHP_AUTH_PW'   => 'admin',
+                'PHP_AUTH_PW' => 'admin',
             ]
         );
         $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT, true);
@@ -354,19 +351,19 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             [],
             [
                 'PHP_AUTH_USER' => 'user',
-                'PHP_AUTH_PW'   => 'user',
+                'PHP_AUTH_PW' => 'user',
             ]
         );
         $content = $this->assertJsonResponse($response);
 
         $this->assertContentEquals(
             [
-                'id'           => $child->getId(),
+                'id' => $child->getId(),
                 'parentEntity' => [
-                    'id'   => $parent->getId(),
+                    'id' => $parent->getId(),
                     'uuid' => $parent->getUuid()
                 ],
-                'text'         => null
+                'text' => null
             ],
             $content,
             false
@@ -383,14 +380,13 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         /** @var SubResourceEntity $subResourceEntity */
         $subResourceEntity = $referenceRepository->getReference('subresource-entity-2');
 
-
         $response = $this->performDelete(
             $this->client,
             sprintf('/rest/secured/%s/subresources/%s', $entity->getId(), $subResourceEntity->getId()),
             [],
             [
                 'PHP_AUTH_USER' => 'admin',
-                'PHP_AUTH_PW'   => 'admin',
+                'PHP_AUTH_PW' => 'admin',
             ]
         );
         $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT);
@@ -401,7 +397,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             [],
             [
                 'PHP_AUTH_USER' => 'admin',
-                'PHP_AUTH_PW'   => 'admin',
+                'PHP_AUTH_PW' => 'admin',
             ]
         );
         $content = $this->assertJsonResponse($response);
@@ -424,7 +420,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             [],
             [
                 'PHP_AUTH_USER' => 'admin',
-                'PHP_AUTH_PW'   => 'admin',
+                'PHP_AUTH_PW' => 'admin',
             ]
         );
         $this->assertJsonResponse($response, Response::HTTP_NO_CONTENT, true);
@@ -435,16 +431,16 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             [],
             [
                 'PHP_AUTH_USER' => 'user',
-                'PHP_AUTH_PW'   => 'user',
+                'PHP_AUTH_PW' => 'user',
             ]
         );
         $content = $this->assertJsonResponse($response);
 
         $this->assertContentEquals(
             [
-                'id'           => $child->getId(),
+                'id' => $child->getId(),
                 'parentEntity' => null,
-                'text'         => null
+                'text' => null
             ],
             $content,
             false
@@ -467,7 +463,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             [],
             [
                 'PHP_AUTH_USER' => 'user',
-                'PHP_AUTH_PW'   => 'user',
+                'PHP_AUTH_PW' => 'user',
             ]
         );
         $content = $this->assertJsonResponse($response);
@@ -498,7 +494,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             [],
             [
                 'PHP_AUTH_USER' => 'admin',
-                'PHP_AUTH_PW'   => 'admin',
+                'PHP_AUTH_PW' => 'admin',
             ],
             ['text' => 'TestText']
         );
@@ -507,10 +503,10 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $this->assertContentEquals(
             [
                 'parentEntity' => [
-                    'id'   => $entity->getId(),
+                    'id' => $entity->getId(),
                     'uuid' => $entity->getUuid()
                 ],
-                'text'         => 'TestText'
+                'text' => 'TestText'
             ],
             $content,
             false
@@ -530,7 +526,7 @@ class SecuredEnvironmentTest extends FunctionalTestCase
             ['text' => 'TestText'],
             [
                 'PHP_AUTH_USER' => 'admin',
-                'PHP_AUTH_PW'   => 'admin',
+                'PHP_AUTH_PW' => 'admin',
             ]
         );
         $content = $this->assertJsonResponse($response, Response::HTTP_CREATED);
@@ -538,10 +534,10 @@ class SecuredEnvironmentTest extends FunctionalTestCase
         $this->assertContentEquals(
             [
                 'parentEntity' => [
-                    'id'   => $entity->getId(),
+                    'id' => $entity->getId(),
                     'uuid' => $entity->getUuid()
                 ],
-                'text'         => 'TestText'
+                'text' => 'TestText'
             ],
             $content,
             false

@@ -4,7 +4,7 @@ namespace Dontdrinkandroot\RestBundle\Controller;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Dontdrinkandroot\Common\CrudOperation;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
+use Dontdrinkandroot\RestBundle\Metadata\Attribute\Right;
 use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
@@ -79,8 +79,8 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
             'json',
             [
                 RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($request),
-                RestNormalizer::DDR_REST_DEPTH    => 0,
-                RestNormalizer::DDR_REST_PATH     => ''
+                RestNormalizer::DDR_REST_DEPTH => 0,
+                RestNormalizer::DDR_REST_PATH => ''
             ]
         );
         $response->setJson($json);
@@ -117,8 +117,8 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
             'json',
             [
                 RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($request),
-                RestNormalizer::DDR_REST_DEPTH    => 0,
-                RestNormalizer::DDR_REST_PATH     => ''
+                RestNormalizer::DDR_REST_DEPTH => 0,
+                RestNormalizer::DDR_REST_PATH => ''
             ]
         );
         $response->setJson($json);
@@ -140,8 +140,8 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
             'json',
             [
                 RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($request),
-                RestNormalizer::DDR_REST_DEPTH    => 0,
-                RestNormalizer::DDR_REST_PATH     => ''
+                RestNormalizer::DDR_REST_DEPTH => 0,
+                RestNormalizer::DDR_REST_PATH => ''
             ]
         );
         $response->setJson($json);
@@ -179,8 +179,8 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
             'json',
             [
                 RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($request),
-                RestNormalizer::DDR_REST_DEPTH    => 0,
-                RestNormalizer::DDR_REST_PATH     => ''
+                RestNormalizer::DDR_REST_DEPTH => 0,
+                RestNormalizer::DDR_REST_PATH => ''
             ]
         );
         $response->setJson($json);
@@ -228,8 +228,8 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
             'json',
             [
                 RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($request),
-                RestNormalizer::DDR_REST_DEPTH    => 0,
-                RestNormalizer::DDR_REST_PATH     => ''
+                RestNormalizer::DDR_REST_DEPTH => 0,
+                RestNormalizer::DDR_REST_PATH => ''
             ]
         );
         $response->setJson($json);
@@ -264,8 +264,8 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
             'json',
             [
                 RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($request),
-                RestNormalizer::DDR_REST_DEPTH    => 0,
-                RestNormalizer::DDR_REST_PATH     => ''
+                RestNormalizer::DDR_REST_DEPTH => 0,
+                RestNormalizer::DDR_REST_PATH => ''
             ]
         );
         $response->setJson($json);
@@ -347,33 +347,33 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
         return $this->getRequestStack()->getCurrentRequest();
     }
 
-    protected function assertMethodGranted(string $methodName, $entity = null)
+    protected function assertMethodGranted(CrudOperation $method, $entity = null)
     {
-        $method = $this->getClassMetadata()->getMethod($methodName);
-        if ($method !== null) {
-            if (null !== $method->granted) {
-                $this->denyAccessUnlessGranted($method->granted);
+        $operation = $this->getClassMetadata()->getOperation($method);
+        if ($operation !== null) {
+            if (null !== $operation->granted) {
+                $this->denyAccessUnlessGranted($operation->granted);
             }
 
-            if (null !== $method->grantedExpression) {
-                $this->denyAccessUnlessGranted(new Expression($method->grantedExpression));
+            if (null !== $operation->grantedExpression) {
+                $this->denyAccessUnlessGranted(new Expression($operation->grantedExpression));
             }
         }
     }
 
-    protected function assertSubResourceMethodGranted(string $methodName, object $entity, string $subresource): void
+    protected function assertSubResourceMethodGranted(CrudOperation $method, object $entity, string $subresource): void
     {
         $classMetadata = $this->getClassMetadata();
         /** @var PropertyMetadata $propertyMetadata */
         $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
-        $method = $propertyMetadata->getMethod($methodName);
-        if (null !== $method) {
-            if (null !== $method->granted) {
-                $this->denyAccessUnlessGranted($method->granted);
+        $operation = $propertyMetadata->getOperation($method);
+        if (null !== $operation) {
+            if (null !== $operation->granted) {
+                $this->denyAccessUnlessGranted($operation->granted);
             }
 
-            if (null !== $method->grantedExpression) {
-                $this->denyAccessUnlessGranted(new Expression($method->grantedExpression));
+            if (null !== $operation->grantedExpression) {
+                $this->denyAccessUnlessGranted(new Expression($operation->grantedExpression));
             }
         }
     }
@@ -420,15 +420,15 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
         }
     }
 
-    protected function parseConstraintViolations(ConstraintViolationListInterface $errors)
+    protected function parseConstraintViolations(ConstraintViolationListInterface $errors): array
     {
         $data = [];
         /** @var ConstraintViolationInterface $error */
         foreach ($errors as $error) {
             $data[] = [
                 'propertyPath' => $error->getPropertyPath(),
-                'message'      => $error->getMessage(),
-                'value'        => $error->getInvalidValue()
+                'message' => $error->getMessage(),
+                'value' => $error->getInvalidValue()
             ];
         }
 
@@ -440,9 +440,9 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
         $response->headers->add(
             [
                 'x-pagination-current-page' => $page,
-                'x-pagination-per-page'     => $perPage,
-                'x-pagination-total'        => $total,
-                'x-pagination-total-pages'  => (int)(($total - 1) / $perPage + 1)
+                'x-pagination-per-page' => $perPage,
+                'x-pagination-total' => $total,
+                'x-pagination-total-pages' => (int)(($total - 1) / $perPage + 1)
             ]
         );
     }
@@ -528,8 +528,8 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     /**
      * @param object $entity
      * @param string $subresource
-     * @param int    $page
-     * @param int    $perPage
+     * @param int $page
+     * @param int $perPage
      *
      * @return Paginator|array
      */
@@ -551,8 +551,8 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     abstract protected function createAssociation($associatedEntity);
 
     /**
-     * @param object     $parent
-     * @param string     $subresource
+     * @param object $parent
+     * @param string $subresource
      * @param int|string $subId
      *
      * @return object
@@ -560,8 +560,8 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     abstract protected function addAssociation($parent, string $subresource, $subId);
 
     /**
-     * @param object          $parent
-     * @param string          $subresource
+     * @param object $parent
+     * @param string $subresource
      * @param int|string|null $subId
      *
      * @return mixed
@@ -570,7 +570,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
 
     /**
      * @param Request $request
-     * @param string  $subresource
+     * @param string $subresource
      *
      * @return mixed
      */

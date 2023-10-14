@@ -1,6 +1,6 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Metadata\Annotation;
+namespace Dontdrinkandroot\RestBundle\Metadata\Attribute;
 
 class ParseUtils
 {

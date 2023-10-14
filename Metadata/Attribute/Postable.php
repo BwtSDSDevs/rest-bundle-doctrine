@@ -1,13 +1,10 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Metadata\Annotation;
+namespace Dontdrinkandroot\RestBundle\Metadata\Attribute;
 
-use Doctrine\ORM\Mapping\Annotation;
+use Attribute;
 
-/**
- * @Annotation
- * @Target({"PROPERTY"})
- */
+#[Attribute(Attribute::TARGET_PROPERTY)]
 class Postable extends Writeable
 {
     public static function parse($config): ?Postable

@@ -18,15 +18,14 @@
             <argument type="service" id="Dontdrinkandroot\RestBundle\Metadata\Driver\DoctrineDriver" />
         </service>
 
-        <service id="Dontdrinkandroot\RestBundle\Metadata\Driver\AnnotationDriver">
-            <argument type="service" id="annotation_reader" />
+        <service id="Dontdrinkandroot\RestBundle\Metadata\Driver\AttributeDriver">
             <argument type="service" id="Dontdrinkandroot\RestBundle\Metadata\Driver\DoctrineDriver" />
         </service>
 
         <service id="ddr_rest.metadata.driver.chain" class="Metadata\Driver\DriverChain">
             <argument type="collection">
                 <argument type="service" id="Dontdrinkandroot\RestBundle\Metadata\Driver\YamlDriver" />
-                <argument type="service" id="Dontdrinkandroot\RestBundle\Metadata\Driver\AnnotationDriver" />
+                <argument type="service" id="Dontdrinkandroot\RestBundle\Metadata\Driver\AttributeDriver"/>
             </argument>
         </service>
 

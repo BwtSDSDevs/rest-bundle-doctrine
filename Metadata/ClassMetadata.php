@@ -3,7 +3,8 @@
 namespace Dontdrinkandroot\RestBundle\Metadata;
 
 use Doctrine\Inflector\InflectorFactory;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Operation;
+use Dontdrinkandroot\Common\CrudOperation;
+use Dontdrinkandroot\RestBundle\Metadata\Attribute\Operation;
 use Metadata\MergeableClassMetadata;
 use Metadata\MergeableInterface;
 use ReflectionClass;
@@ -20,7 +21,7 @@ class ClassMetadata extends MergeableClassMetadata
 
     public ?string $controller = null;
 
-    /** @var list<Operation>|null */
+    /** @var array<string,CrudOperation>|null */
     public ?array $operations = null;
 
     public function __construct($name)
@@ -122,7 +123,7 @@ class ClassMetadata extends MergeableClassMetadata
     }
 
     /**
-     * @param Operation[]|null $operations
+     * @param array<string,Operation>|null $operations
      */
     public function setOperations($operations)
     {
@@ -163,24 +164,24 @@ class ClassMetadata extends MergeableClassMetadata
         return $mergedMetadata;
     }
 
-    public function getMethod(string $methodName): ?Operation
+    public function getOperation(CrudOperation $method): ?Operation
     {
         if (null === $this->operations) {
             return null;
         }
 
-        foreach ($this->operations as $method) {
-            if ($methodName === $method->name) {
-                return $method;
+        foreach ($this->operations as $operation) {
+            if ($method === $operation->method) {
+                return $operation;
             }
         }
 
         return null;
     }
 
-    public function hasMethod($methodName)
+    public function hasOperation(CrudOperation $method)
     {
-        return null !== $this->getMethod($methodName);
+        return null !== $this->getOperation($method);
     }
 
     private function mergeField($existing, $toMerge)

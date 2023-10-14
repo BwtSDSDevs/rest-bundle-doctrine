@@ -7,25 +7,15 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class InheritedEntity extends SuperEntity
 {
-    /**
-     * @var string|null
-     */
-    private $subClassField;
+    private ?string $subClassField;
 
-    /**
-     * @return null|string
-     */
     public function getSubClassField(): ?string
     {
         return $this->subClassField;
     }
 
-    /**
-     * @param null|string $subClassField
-     */
-    public function setSubClassField(?string $subClassField)
+    public function setSubClassField(?string $subClassField): void
     {
         $this->subClassField = $subClassField;
     }
-
 }

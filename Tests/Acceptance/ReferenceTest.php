@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ReferenceTest extends FunctionalTestCase
 {
-    public function testPostByReference()
+    public function testPostByReference(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([Users::class], 'secured');
 
@@ -28,7 +28,7 @@ class ReferenceTest extends FunctionalTestCase
                 ]
             ]
         );
-        $content = $this->assertJsonResponse($response, Response::HTTP_CREATED, true);
+        $content = $this->assertJsonResponse($response, Response::HTTP_CREATED);
         $this->assertHasKeyAndUnset('id', $content, true);
         $this->assertContentEquals(
             [
@@ -45,7 +45,7 @@ class ReferenceTest extends FunctionalTestCase
         );
     }
 
-    public function testPutByReference()
+    public function testPutByReference(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([Users::class, SubResourceEntities::class], 'secured');
 

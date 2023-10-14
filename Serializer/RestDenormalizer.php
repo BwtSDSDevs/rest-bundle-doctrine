@@ -9,8 +9,8 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Dontdrinkandroot\Common\CrudOperation;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Right;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation\Writeable;
+use Dontdrinkandroot\RestBundle\Metadata\Attribute\Right;
+use Dontdrinkandroot\RestBundle\Metadata\Attribute\Writeable;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
 use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
 use Symfony\Component\ExpressionLanguage\Expression;
@@ -70,12 +70,7 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
         return true;
     }
 
-    /**
-     * @param object $object Access by reference.
-     * @param string $method
-     * @param array  $data
-     */
-    protected function updateObject(&$object, $method, $data)
+    protected function updateObject(object $object, CrudOperation $method, array $data)
     {
         $classMetadata = $this->metadataFactory->getMetadataForClass(ClassUtils::getClass($object));
 
@@ -90,14 +85,12 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
         }
     }
 
-    /**
-     * @param object           $object Access by reference.
-     * @param string           $method
-     * @param PropertyMetadata $propertyMetadata
-     * @param mixed            $value
-     */
-    protected function updateProperty(&$object, string $method, PropertyMetadata $propertyMetadata, $value)
-    {
+    protected function updateProperty(
+        object $object,
+        CrudOperation $method,
+        PropertyMetadata $propertyMetadata,
+        mixed $value
+    ) {
         $byReference = $this->isUpdateableByReference($propertyMetadata, $method);
         if ($byReference) {
             $this->updateByReference($object, $propertyMetadata, $value);
@@ -109,7 +102,7 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
         }
     }
 
-    private function updateByReference(&$object, PropertyMetadata $propertyMetadata, $value)
+    private function updateByReference(object $object, PropertyMetadata $propertyMetadata, $value)
     {
         if (null === $value) {
             $this->propertyAccessor->setValue($object, $propertyMetadata->name, null);
@@ -126,8 +119,12 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
         }
     }
 
-    protected function updatePropertyObject(&$object, string $method, PropertyMetadata $propertyMetadata, $value)
-    {
+    protected function updatePropertyObject(
+        object $object,
+        CrudOperation $method,
+        PropertyMetadata $propertyMetadata,
+        $value
+    ) {
         $propertyObject = $this->propertyAccessor->getValue($object, $propertyMetadata->name);
         if (null === $propertyObject) {
             $type = $propertyMetadata->getType();
@@ -138,14 +135,7 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
         $this->propertyAccessor->setValue($object, $propertyMetadata->name, $propertyObject);
     }
 
-    /**
-     * @param string           $method
-     * @param object           $object
-     * @param PropertyMetadata $propertyMetadata
-     *
-     * @return bool
-     */
-    protected function isUpdateable($object, string $method, PropertyMetadata $propertyMetadata): bool
+    protected function isUpdateable(object $object, CrudOperation $method, PropertyMetadata $propertyMetadata): bool
     {
         if (CrudOperation::UPDATE === $method && $propertyMetadata->isPuttable()) {
             return $this->isGranted($object, $propertyMetadata->getPuttable());
@@ -195,17 +185,13 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
             return $value;
         }
 
-        switch ($type) {
-            case Types::DATETIME_MUTABLE:
-            case Types::DATE_MUTABLE:
-            case Types::TIME_MUTABLE:
-                return new DateTime($value);
-            default:
-                return $value;
-        }
+        return match ($type) {
+            Types::DATETIME_MUTABLE, Types::DATE_MUTABLE, Types::TIME_MUTABLE => new DateTime($value),
+            default => $value,
+        };
     }
 
-    private function isUpdateableByReference(PropertyMetadata $propertyMetadata, string $method)
+    private function isUpdateableByReference(PropertyMetadata $propertyMetadata, CrudOperation $method)
     {
         if (
             CrudOperation::UPDATE === $method

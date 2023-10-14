@@ -16,7 +16,6 @@
     ],
     "require": {
         "php": "^8.1",
-        "doctrine/annotations": "^1.2",
         "dontdrinkandroot/common": "dev-master",
         "jms/metadata": "^2.6",
         "symfony/expression-language": "^5.4",
@@ -28,6 +27,7 @@
         "symfony/validator": "^5.4"
     },
     "require-dev": {
+        "brianium/paratest": "^6.10",
         "doctrine/doctrine-bundle": "^2.5",
         "doctrine/doctrine-fixtures-bundle": "^3.0",
         "liip/test-fixtures-bundle": "^2.2",
@@ -48,6 +48,10 @@
         ]
     },
     "extra": {
+        "symfony": {
+            "require": "5.4.*",
+            "allow-contrib": true
+        },
         "branch-alias": {
             "dev-master": "0.2.x-dev"
         }
@@ -55,8 +59,7 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            "composer/package-versions-deprecated": true,
-            "symfony/flex": true
+            "composer/package-versions-deprecated": true
         }
     }
 }

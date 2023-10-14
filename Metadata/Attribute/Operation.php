@@ -1,50 +1,30 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Metadata\Annotation;
+namespace Dontdrinkandroot\RestBundle\Metadata\Attribute;
 
-use Doctrine\Common\Annotations\Annotation\Required;
 use Dontdrinkandroot\Common\CrudOperation;
 use Dontdrinkandroot\RestBundle\Metadata\PropertyNode;
-use PhpParser\Builder\Property;
 
-/**
- * @Annotation
- * @Target({"ANNOTATION"})
- */
 class Operation
 {
     /**
-     * @Required()
-     * @var string
+     * @param string[]|null $defaultIncludes
+     * @param PropertyNode[] $properties
      */
-    public $name;
+    public function __construct(
+        public CrudOperation $method,
+        public ?array $defaultIncludes = null,
+        public ?string $granted = null,
+        public ?string $grantedExpression = null,
+        public array $properties = [],
+    ) {
+    }
 
-    /**
-     * @var array<string>
-     */
-    public $defaultIncludes;
-
-    public ?string $granted = null;
-
-    public ?string $grantedExpression = null;
-
-    /** @var list<PropertyNode> */
-    public array $properties = [];
-
-    public static function parse($name, $config): ?Operation
+    public static function parse($method, $config): ?Operation
     {
-        assert(
-            in_array($name, [
-                CrudOperation::LIST,
-                CrudOperation::CREATE,
-                CrudOperation::READ,
-                CrudOperation::UPDATE,
-                CrudOperation::DELETE
-            ], true)
+        $operation = new Operation(
+            method: CrudOperation::from($method),
         );
-
-        $operation = new Operation();
-        $operation->name = $name;
         if (is_bool($config) && true === $config) {
             return $operation;
         }

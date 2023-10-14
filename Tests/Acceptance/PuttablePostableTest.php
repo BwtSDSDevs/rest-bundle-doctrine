@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PuttablePostableTest extends FunctionalTestCase
 {
-    public function testPutAnon()
+    public function testPutAnon(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([PuttablePostableAnnotationEntities::class], 'secured');
 
@@ -44,7 +44,7 @@ class PuttablePostableTest extends FunctionalTestCase
         );
     }
 
-    public function testPostAnon()
+    public function testPostAnon(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([PuttablePostableAnnotationEntities::class], 'secured');
         $response = $this->performPost(
@@ -76,7 +76,7 @@ class PuttablePostableTest extends FunctionalTestCase
         );
     }
 
-    public function testPutUser()
+    public function testPutUser(): void
     {
         $referenceRepository = $this->loadClientAndFixtures(
             [Users::class, PuttablePostableAnnotationEntities::class],
@@ -117,7 +117,7 @@ class PuttablePostableTest extends FunctionalTestCase
         );
     }
 
-    public function testPostUser()
+    public function testPostUser(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([Users::class], 'secured');
 
@@ -153,7 +153,7 @@ class PuttablePostableTest extends FunctionalTestCase
         );
     }
 
-    public function testPutAdmin()
+    public function testPutAdmin(): void
     {
         $referenceRepository = $this->loadClientAndFixtures(
             [Users::class, PuttablePostableAnnotationEntities::class],
@@ -194,7 +194,7 @@ class PuttablePostableTest extends FunctionalTestCase
         );
     }
 
-    public function testPostAdmin()
+    public function testPostAdmin(): void
     {
         $referenceRepository = $this->loadClientAndFixtures([Users::class], 'secured');
 

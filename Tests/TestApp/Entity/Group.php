@@ -5,79 +5,53 @@ namespace Dontdrinkandroot\RestBundle\Tests\TestApp\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
+use Dontdrinkandroot\Common\CrudOperation;
+use Dontdrinkandroot\RestBundle\Metadata\Attribute as REST;
 
-/**
- * @REST\RootResource(
- *     operations = {
- *         @REST\Operation(name="READ")
- *     }
- * )
- */
+#[REST\RootResource([new REST\Operation(CrudOperation::READ)])]
 #[ORM\Entity]
 #[ORM\Table(name: "`Group`")]
 class Group
 {
-    /**
-     * @var int
-     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer", nullable: false)]
-    private $id;
+    private int $id;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(type: "string", nullable: false)]
-    private $name;
+    private string $name;
 
     /**
-     * @REST\SubResource(
-     *     operations = {
-     *         @REST\Operation("UPDATE"),
-     *         @REST\Operation("DELETE")
-     *     }
-     * )
-     * @REST\Includable()
-     *
-     * @var Collection|User[]
+     * @var Collection<array-key,User>
      */
+    #[REST\SubResource([
+        new REST\Operation(CrudOperation::UPDATE),
+        new REST\Operation(CrudOperation::DELETE)
+    ])]
+    #[REST\Includable]
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: "groups")]
-    private $users;
+    private Collection $users;
 
     function __construct()
     {
         $this->users = new ArrayCollection();
     }
 
-    /**
-     * @return string
-     */
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
     public function setName(string $name)
     {
         $this->name = $name;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return Collection
-     */
     public function getUsers(): Collection
     {
         return $this->users;

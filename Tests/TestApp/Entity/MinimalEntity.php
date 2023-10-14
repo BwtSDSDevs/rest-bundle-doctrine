@@ -4,43 +4,26 @@ namespace Dontdrinkandroot\RestBundle\Tests\TestApp\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Dontdrinkandroot\RestBundle\Metadata\Annotation as REST;
+use Dontdrinkandroot\Common\CrudOperation;
+use Dontdrinkandroot\RestBundle\Metadata\Attribute as REST;
 
-/**
- * @REST\RootResource(
- *     operations={
- *         @REST\Operation("LIST"),
- *         @REST\Operation(name="READ",defaultIncludes={"detail", "arbitrary"})
- *     }
- * )
- */
+#[REST\RootResource([
+    new REST\Operation(CrudOperation::LIST),
+    new REST\Operation(method: CrudOperation::READ, defaultIncludes: ["detail", "arbitrary"])
+])]
 #[ORM\Entity]
 class MinimalEntity
 {
-    /**
-     * @ORM\Column(type="integer", nullable=false)
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     *
-     * @var int
-     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer", nullable: false)]
     private $id;
 
-    /**
-     * @var int|null
-     */
     #[ORM\Column(type: "integer", nullable: true)]
-    private $integerValue;
+    private ?int $integerValue;
 
-    /**
-     * @REST\Includable("detail")
-     *
-     * @var string
-     */
-    private $defaultIncludedField = 'detail';
+    #[REST\Includable(["detail"])]
+    private string $defaultIncludedField = 'detail';
 
     function __construct()
     {
@@ -62,9 +45,6 @@ class MinimalEntity
         $this->integerValue = $integerValue;
     }
 
-    /**
-     * @return string
-     */
     public function getDefaultIncludedField(): string
     {
         return $this->defaultIncludedField;
