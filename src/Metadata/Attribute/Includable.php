@@ -10,7 +10,7 @@ class Includable
     /**
      * @param string[]|null $paths
      */
-    public function __construct(public ?array $paths)
+    public function __construct(public ?array $paths = null)
     {
     }
 }

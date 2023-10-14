@@ -25,7 +25,7 @@ class DdrRestExtension extends Extension
 
         $container->setParameter('ddr_rest.paths', $config['paths']);
 
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../../config'));
         $loader->load('services.xml');
 
         $directories = [];
