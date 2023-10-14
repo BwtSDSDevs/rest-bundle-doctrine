@@ -20,7 +20,7 @@ class ReferenceTest extends FunctionalTestCase
             [],
             [
                 'PHP_AUTH_USER' => 'admin',
-                'PHP_AUTH_PW'   => 'admin',
+                'PHP_AUTH_PW' => 'admin',
             ],
             [
                 'creator' => [
@@ -33,13 +33,13 @@ class ReferenceTest extends FunctionalTestCase
         $this->assertContentEquals(
             [
                 'creator' => [
-                    'id'       => $creator->getId(),
+                    'id' => $creator->getId(),
                     'username' => 'employee1',
-                    'roles'    => [
+                    'roles' => [
                         'ROLE_USER'
                     ]
                 ],
-                'text'    => null
+                'text' => null
             ],
             $content
         );
@@ -58,7 +58,7 @@ class ReferenceTest extends FunctionalTestCase
             [],
             [
                 'PHP_AUTH_USER' => 'admin',
-                'PHP_AUTH_PW'   => 'admin',
+                'PHP_AUTH_PW' => 'admin',
             ],
             [
                 'creator' => [
@@ -71,13 +71,13 @@ class ReferenceTest extends FunctionalTestCase
         $this->assertContentEquals(
             [
                 'creator' => [
-                    'id'       => $creator->getId(),
+                    'id' => $creator->getId(),
                     'username' => 'employee1',
-                    'roles'    => [
+                    'roles' => [
                         'ROLE_USER'
                     ]
                 ],
-                'text'    => null
+                'text' => null
             ],
             $content
         );

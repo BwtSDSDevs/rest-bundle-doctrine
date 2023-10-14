@@ -7,20 +7,14 @@ namespace Dontdrinkandroot\RestBundle\Tests\TestApp\Entity;
  */
 class UnmappedClass
 {
-    private $someField;
+    private mixed $someField;
 
-    /**
-     * @return mixed
-     */
-    public function getSomeField()
+    public function getSomeField(): mixed
     {
         return $this->someField;
     }
 
-    /**
-     * @param mixed $someField
-     */
-    public function setSomeField($someField)
+    public function setSomeField(mixed $someField): void
     {
         $this->someField = $someField;
     }

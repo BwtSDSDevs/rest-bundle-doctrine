@@ -28,37 +28,42 @@ class Users extends Fixture implements ContainerAwareInterface
         /** @var UserPasswordEncoderInterface $passwordEncoder */
         $passwordEncoder = $this->container->get('security.password_encoder');
 
-        $user = new User();
-        $user->setUsername('user');
-        $user->setRole('ROLE_USER');
+        $user = new User(
+            'user',
+            'ROLE_USER'
+        );
         $user->setPassword($passwordEncoder->encodePassword($user, 'user'));
         $manager->persist($user);
         $this->addReference('user-user', $user);
 
-        $user = new User();
-        $user->setUsername('admin');
-        $user->setRole('ROLE_ADMIN');
+        $user = new User(
+            'admin',
+            'ROLE_ADMIN'
+        );
         $user->setPassword($passwordEncoder->encodePassword($user, 'admin'));
         $manager->persist($user);
         $this->addReference('user-admin', $user);
 
-        $supervisor = new User();
-        $supervisor->setRole('ROLE_USER');
-        $supervisor->setUsername('supervisor');
+        $supervisor = new User(
+            'supervisor',
+            'ROLE_SUPERVISOR'
+        );
         $manager->persist($supervisor);
         $this->addReference(self::SUPERVISOR, $supervisor);
 
-        $user = new User();
-        $user->setRole('ROLE_USER');
-        $user->setUsername('employee1');
+        $user = new User(
+            'employee',
+            'ROLE_USER'
+        );
         $user->setPassword($passwordEncoder->encodePassword($user, 'employee1'));
         $user->setSupervisor($supervisor);
         $manager->persist($user);
         $this->addReference(self::EMPLOYEE_1, $user);
 
-        $user = new User();
-        $user->setRole('ROLE_USER');
-        $user->setUsername('employee2');
+        $user = new User(
+            'employee',
+            'ROLE_USER'
+        );
         $user->setPassword($passwordEncoder->encodePassword($user, 'employee2'));
         $manager->persist($user);
         $this->addReference(self::EMPLOYEE_2, $user);

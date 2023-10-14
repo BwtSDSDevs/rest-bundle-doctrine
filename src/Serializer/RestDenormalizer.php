@@ -36,7 +36,7 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $class, $format = null, array $context = [])
+    public function denormalize($data, $type, $format = null, array $context = [])
     {
         if (!array_key_exists(self::DDR_REST_METHOD, $context)) {
             throw new BadMethodCallException('No REST Method specified');
@@ -46,7 +46,7 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
         $entity = array_key_exists(self::DDR_REST_ENTITY, $context) ? $context[self::DDR_REST_ENTITY] : null;
 
         if (null === $entity) {
-            $entity = new $class;
+            $entity = new $type;
         }
 
         $this->updateObject($entity, $method, $data);
@@ -70,7 +70,7 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
         return true;
     }
 
-    protected function updateObject(object $object, CrudOperation $method, array $data)
+    protected function updateObject(object $object, CrudOperation $method, array $data): void
     {
         $classMetadata = $this->metadataFactory->getMetadataForClass(ClassUtils::getClass($object));
 
@@ -90,7 +90,7 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
         CrudOperation $method,
         PropertyMetadata $propertyMetadata,
         mixed $value
-    ) {
+    ): void {
         $byReference = $this->isUpdateableByReference($propertyMetadata, $method);
         if ($byReference) {
             $this->updateByReference($object, $propertyMetadata, $value);
@@ -102,7 +102,7 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
         }
     }
 
-    private function updateByReference(object $object, PropertyMetadata $propertyMetadata, $value)
+    private function updateByReference(object $object, PropertyMetadata $propertyMetadata, $value): void
     {
         if (null === $value) {
             $this->propertyAccessor->setValue($object, $propertyMetadata->name, null);
@@ -124,7 +124,7 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
         CrudOperation $method,
         PropertyMetadata $propertyMetadata,
         $value
-    ) {
+    ): void {
         $propertyObject = $this->propertyAccessor->getValue($object, $propertyMetadata->name);
         if (null === $propertyObject) {
             $type = $propertyMetadata->getType();
@@ -170,7 +170,7 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
         return true;
     }
 
-    private function resolveSubject($entity, $propertyPath)
+    private function resolveSubject($entity, $propertyPath): mixed
     {
         if ('this' === $propertyPath) {
             return $entity;
@@ -179,7 +179,7 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
         return $this->propertyAccessor->getValue($entity, $propertyPath);
     }
 
-    private function convert(?string $type, $value)
+    private function convert(?string $type, mixed $value): mixed
     {
         if (null === $value) {
             return $value;
@@ -191,7 +191,7 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
         };
     }
 
-    private function isUpdateableByReference(PropertyMetadata $propertyMetadata, CrudOperation $method)
+    private function isUpdateableByReference(PropertyMetadata $propertyMetadata, CrudOperation $method): bool
     {
         if (
             CrudOperation::UPDATE === $method
@@ -210,7 +210,7 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
         return false;
     }
 
-    public function setAuthorizationChecker(AuthorizationCheckerInterface $authorizationChecker)
+    public function setAuthorizationChecker(AuthorizationCheckerInterface $authorizationChecker): void
     {
         $this->authorizationChecker = $authorizationChecker;
     }
