@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+
+        <!-- Services -->
+
+        <service id="Niebvelungen\RestBundleDoctrine\Metadata\Driver\DoctrineDriver">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
+        <service id="Niebvelungen\RestBundleDoctrine\Metadata\Driver\AttributeDriver">
+            <argument type="service" id="Niebvelungen\RestBundleDoctrine\Metadata\Driver\DoctrineDriver" />
+        </service>
+
+        <service id="ddr_rest.metadata.driver.chain" class="Metadata\Driver\DriverChain">
+            <argument type="collection">
+                <argument type="service" id="Niebvelungen\RestBundleDoctrine\Metadata\Driver\AttributeDriver"/>
+            </argument>
+        </service>
+
+        <service id="ddr_rest.metadata.cache" class="Metadata\Cache\PsrCacheAdapter">
+            <argument type="string">ddr_rest</argument>
+            <argument type="service" id="cache.system" />
+        </service>
+
+        <service id="Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory">
+            <argument type="service" id="ddr_rest.metadata.driver.chain" />
+            <call method="setCache">
+                <argument type="service" id="ddr_rest.metadata.cache" />
+            </call>
+        </service>
+
+        <service id="Niebvelungen\RestBundleDoctrine\Routing\RestResourceLoader">
+            <argument type="service" id="Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <tag name="routing.loader" />
+        </service>
+
+        <!-- Serialization -->
+
+        <service id="Niebvelungen\RestBundleDoctrine\Serializer\RestNormalizer">
+            <argument type="service" id="Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory" />
+            <argument type="service" id="property_accessor" />
+            <argument type="service" id="router" />
+            <tag name="serializer.normalizer" />
+        </service>
+
+        <service id="Niebvelungen\RestBundleDoctrine\Serializer\RestDenormalizer">
+            <argument type="service" id="Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory" />
+            <argument type="service" id="property_accessor" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <call method="setAuthorizationChecker">
+                <argument type="service" id="security.authorization_checker" on-invalid="ignore" />
+            </call>
+            <tag name="serializer.normalizer" />
+        </service>
+
+        <!-- Encoder -->
+        <service id="Niebvelungen\RestBundleDoctrine\Serializer\RestJsonEncoder">
+            <tag name="serializer.encoder" />
+        </service>
+
+
+        <!-- Controller -->
+
+        <service id="Niebvelungen\RestBundleDoctrine\Controller\DoctrineRestResourceController" public="true">
+            <argument type="service" id="validator" />
+            <argument type="service" id="request_stack" />
+            <argument type="service" id="Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory" />
+            <argument type="service" id="property_accessor" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="serializer" />
+            <call method="setAuthorizationChecker">
+                <argument type="service" id="security.authorization_checker" on-invalid="ignore" />
+            </call>
+        </service>
+
+        <!-- Commands -->
+
+    </services>
+
+</container>
