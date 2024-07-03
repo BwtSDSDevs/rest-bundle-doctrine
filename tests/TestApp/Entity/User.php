@@ -1,12 +1,12 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\TestApp\Entity;
+namespace Niebvelungen\RestBundleDoctrine\Tests\TestApp\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Mapping as ORM;
-use Dontdrinkandroot\RestBundle\Metadata\Attribute as REST;
+use Niebvelungen\RestBundleDoctrine\Metadata\Attribute as REST;
 use RuntimeException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;

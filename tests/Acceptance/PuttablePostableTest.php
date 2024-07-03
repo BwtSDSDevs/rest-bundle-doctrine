@@ -1,10 +1,10 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\Acceptance;
+namespace Niebvelungen\RestBundleDoctrine\Tests\Acceptance;
 
-use Dontdrinkandroot\RestBundle\Tests\TestApp\DataFixtures\PuttablePostableAnnotationEntities;
-use Dontdrinkandroot\RestBundle\Tests\TestApp\DataFixtures\Users;
-use Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\PuttablePostableAnnotationEntity;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\DataFixtures\PuttablePostableAnnotationEntities;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\DataFixtures\Users;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\Entity\PuttablePostableAnnotationEntity;
 use Symfony\Component\HttpFoundation\Response;
 
 class PuttablePostableTest extends FunctionalTestCase

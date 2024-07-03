@@ -1,15 +1,16 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Controller;
+namespace Niebvelungen\RestBundleDoctrine\Controller;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Dontdrinkandroot\Common\CrudOperation;
-use Dontdrinkandroot\RestBundle\Metadata\Attribute\Right;
-use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
-use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
-use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
-use Dontdrinkandroot\RestBundle\Serializer\RestDenormalizer;
-use Dontdrinkandroot\RestBundle\Serializer\RestNormalizer;
+use Niebvelungen\RestBundleDoctrine\Defaults\Defaults;
+use Niebvelungen\RestBundleDoctrine\Metadata\Attribute\Right;
+use Niebvelungen\RestBundleDoctrine\Metadata\ClassMetadata;
+use Niebvelungen\RestBundleDoctrine\Metadata\PropertyMetadata;
+use Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory;
+use Niebvelungen\RestBundleDoctrine\Serializer\RestDenormalizer;
+use Niebvelungen\RestBundleDoctrine\Serializer\RestNormalizer;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,14 +56,14 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     /**
      * {@inheritdoc}
      */
-    public function listAction(Request $request)
+    public function searchEntityAction(Request $request)
     {
         $page = $request->query->get('page', 1);
         $perPage = $request->query->get('perPage', 50);
 
         $this->assertMethodGranted(CrudOperation::LIST);
 
-        $listResult = $this->listEntities($page, $perPage);
+        $listResult = $this->searchEntities($request);
 
         $response = new JsonResponse();
 
@@ -76,7 +77,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
 
         $json = $this->getSerializer()->serialize(
             $entities,
-            'json',
+            Defaults::SERIALIZE_FORMAT,
             [
                 RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($request),
                 RestNormalizer::DDR_REST_DEPTH => 0,
@@ -91,7 +92,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     /**
      * {@inheritdoc}
      */
-    public function postAction(Request $request)
+    public function updateEntityAction(Request $request)
     {
         $this->assertMethodGranted(CrudOperation::CREATE);
 
@@ -114,7 +115,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
 
         $json = $this->getSerializer()->serialize(
             $entity,
-            'json',
+            Defaults::SERIALIZE_FORMAT,
             [
                 RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($request),
                 RestNormalizer::DDR_REST_DEPTH => 0,
@@ -129,15 +130,15 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     /**
      * {@inheritdoc}
      */
-    public function getAction(Request $request, $id)
+    public function getEntityByIdAction(Request $request, $id)
     {
-        $entity = $this->fetchEntity($id);
+        $entity = $this->getEntityById($id);
         $this->assertMethodGranted(CrudOperation::READ, $entity);
 
         $response = new JsonResponse();
         $json = $this->getSerializer()->serialize(
             $entity,
-            'json',
+            Defaults::SERIALIZE_FORMAT,
             [
                 RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($request),
                 RestNormalizer::DDR_REST_DEPTH => 0,
@@ -152,15 +153,15 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     /**
      * {@inheritdoc}
      */
-    public function putAction(Request $request, $id)
+    public function insertEntityAction(Request $request, $id)
     {
-        $entity = $this->fetchEntity($id);
+        $entity = $this->getEntityById($id);
         $this->assertMethodGranted(CrudOperation::UPDATE, $entity);
 
         $entity = $this->serializer->deserialize(
             $request->getContent(),
             $this->getEntityClass(),
-            'json',
+            Defaults::SERIALIZE_FORMAT,
             [RestDenormalizer::DDR_REST_METHOD => CrudOperation::UPDATE, RestDenormalizer::DDR_REST_ENTITY => $entity]
         );
         $entity = $this->postProcessPuttedEntity($entity);
@@ -176,7 +177,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
 
         $json = $this->getSerializer()->serialize(
             $entity,
-            'json',
+            Defaults::SERIALIZE_FORMAT,
             [
                 RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($request),
                 RestNormalizer::DDR_REST_DEPTH => 0,
@@ -191,108 +192,11 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     /**
      * {@inheritdoc}
      */
-    public function deleteAction(Request $request, $id)
+    public function deleteEntityAction(Request $request, $id)
     {
-        $entity = $this->fetchEntity($id);
+        $entity = $this->getEntityById($id);
         $this->assertMethodGranted(CrudOperation::DELETE, $entity);
-        $this->removeEntity($entity);
-
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function listSubresourceAction(Request $request, $id, string $subresource)
-    {
-        $page = $request->query->get('page', 1);
-        $perPage = $request->query->get('perPage', 50);
-
-        $entity = $this->fetchEntity($id);
-        $this->assertSubResourceMethodGranted(CrudOperation::LIST, $entity, $subresource);
-
-        $listResult = $this->listSubresource($entity, $subresource, $page, $perPage);
-
-        $response = new JsonResponse();
-
-        if ($listResult instanceof Paginator) {
-            $entities = iterator_to_array($listResult->getIterator());
-            $total = $listResult->count();
-            $this->addPaginationHeaders($response, $page, $perPage, $total);
-        } else {
-            $entities = $listResult;
-        }
-
-        $json = $this->getSerializer()->serialize(
-            $entities,
-            'json',
-            [
-                RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($request),
-                RestNormalizer::DDR_REST_DEPTH => 0,
-                RestNormalizer::DDR_REST_PATH => ''
-            ]
-        );
-        $response->setJson($json);
-
-        return $response;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function postSubresourceAction(Request $request, $id, string $subresource)
-    {
-        $parent = $this->fetchEntity($id);
-        $this->assertSubResourceMethodGranted(CrudOperation::CREATE, $parent, $subresource);
-
-        $entity = $this->getSubresourcePostedEntity($request, $subresource);
-
-        $entity = $this->buildAssociation($parent, $subresource, $entity);
-        $entity = $this->postProcessSubResourcePostedEntity($parent, $subresource, $entity);
-
-        $errors = $this->getValidator()->validate($entity);
-
-        if ($errors->count() > 0) {
-            return new JsonResponse($this->parseConstraintViolations($errors), Response::HTTP_BAD_REQUEST);
-        }
-
-        $entity = $this->createAssociation($entity);
-
-        $response = new JsonResponse(null, Response::HTTP_CREATED);
-        $json = $this->getSerializer()->serialize(
-            $entity,
-            'json',
-            [
-                RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($request),
-                RestNormalizer::DDR_REST_DEPTH => 0,
-                RestNormalizer::DDR_REST_PATH => ''
-            ]
-        );
-        $response->setJson($json);
-
-        return $response;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function putSubresourceAction(Request $request, $id, string $subresource, $subId)
-    {
-        $parent = $this->fetchEntity($id);
-        $this->assertSubResourceMethodGranted(CrudOperation::UPDATE, $parent, $subresource);
-        $this->addAssociation($parent, $subresource, $subId);
-
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function deleteSubresourceAction(Request $request, $id, string $subresource, $subId = null)
-    {
-        $parent = $this->fetchEntity($id);
-        $this->assertSubResourceMethodGranted(CrudOperation::DELETE, $parent, $subresource);
-        $this->removeAssociation($parent, $subresource, $subId);
+        $this->deleteEntity($entity);
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
@@ -313,18 +217,6 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
      * @return object
      */
     protected function postProcessPuttedEntity($entity)
-    {
-        return $entity;
-    }
-
-    /**
-     * @param object $parent
-     * @param string $subresource
-     * @param object $entity
-     *
-     * @return object
-     */
-    protected function postProcessSubResourcePostedEntity($parent, $subresource, $entity)
     {
         return $entity;
     }
@@ -361,23 +253,6 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
         }
     }
 
-    protected function assertSubResourceMethodGranted(CrudOperation $method, object $entity, string $subresource): void
-    {
-        $classMetadata = $this->getClassMetadata();
-        /** @var PropertyMetadata $propertyMetadata */
-        $propertyMetadata = $classMetadata->propertyMetadata[$subresource];
-        $operation = $propertyMetadata->getOperation($method);
-        if (null !== $operation) {
-            if (null !== $operation->granted) {
-                $this->denyAccessUnlessGranted($operation->granted);
-            }
-
-            if (null !== $operation->grantedExpression) {
-                $this->denyAccessUnlessGranted(new Expression($operation->grantedExpression));
-            }
-        }
-    }
-
     protected function getClassMetadata(): ?ClassMetadata
     {
         return $this->getMetadataFactory()->getMetadataForClass($this->getEntityClass());
@@ -393,19 +268,14 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
 
     protected function parseIncludes(Request $request)
     {
-        $defaultIncludes = $request->attributes->get('_defaultincludes');
-        if (null == $defaultIncludes) {
-            $defaultIncludes = [];
-        }
-
-        $includeString = $request->query->get('include');
-        if (empty($includeString)) {
+        $requestContent = $request->toArray();
+        if (!isset($requestContent['associations'])) {
             $includes = [];
         } else {
-            $includes = explode(',', $includeString);
+            $includes = $requestContent['associations'];
         }
 
-        return array_merge($defaultIncludes, $includes);
+        return $includes;
     }
 
     protected function denyAccessUnlessGranted($attribute, $object = null, $message = 'Access Denied.')
@@ -491,7 +361,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
      *
      * @return Paginator|array
      */
-    abstract protected function listEntities(int $page = 1, int $perPage = 50);
+    abstract protected function searchEntities(Request $request);
 
     /**
      * @param int|string $id
@@ -500,7 +370,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
      *
      * @throws NotFoundHttpException Thrown if entity with the given id could not be found.
      */
-    abstract protected function fetchEntity($id);
+    abstract protected function getEntityById($id);
 
     /**
      * @param object $entity
@@ -523,7 +393,7 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
      *
      * @throws NotFoundHttpException Thrown if entity with the given id could not be found.
      */
-    abstract protected function removeEntity($entity);
+    abstract protected function deleteEntity($entity);
 
     /**
      * @param object $entity
@@ -567,34 +437,4 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
      * @return mixed
      */
     abstract protected function removeAssociation($parent, string $subresource, $subId = null);
-
-    /**
-     * @param Request $request
-     * @param string $subresource
-     *
-     * @return mixed
-     */
-    protected function getSubresourcePostedEntity(Request $request, string $subresource)
-    {
-        $content = null;
-        $requestParameters = $request->request->all();
-        if (!empty($requestParameters)) {
-            $content = json_encode($requestParameters);
-        } else {
-            $content = $request->getContent();
-        }
-
-        if (null === $content || '' === $content) {
-            $content = '{}';
-        }
-
-        $entity = $this->serializer->deserialize(
-            $content,
-            $this->getSubResourceEntityClass($subresource),
-            'json',
-            [RestDenormalizer::DDR_REST_METHOD => CrudOperation::CREATE]
-        );
-
-        return $entity;
-    }
 }

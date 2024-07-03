@@ -1,8 +1,8 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\Integration\Routing;
+namespace Niebvelungen\RestBundleDoctrine\Tests\Integration\Routing;
 
-use Dontdrinkandroot\RestBundle\Tests\Acceptance\FunctionalTestCase;
+use Niebvelungen\RestBundleDoctrine\Tests\Acceptance\FunctionalTestCase;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouterInterface;
 

@@ -1,9 +1,0 @@
-Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\InheritedEntity:
-    rootResource: true
-    operations:
-        READ:
-    fields:
-        excludedFieldTwo:
-            excluded: false
-        subClassField:
-            excluded: true

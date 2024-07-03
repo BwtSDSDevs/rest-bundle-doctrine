@@ -1,8 +1,8 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Service;
+namespace Niebvelungen\RestBundleDoctrine\Service;
 
-use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
+use Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory;
 
 /**
  * @author Philip Washington Sorst <philip@sorst.net>

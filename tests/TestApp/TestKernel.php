@@ -1,6 +1,6 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\TestApp;
+namespace Niebvelungen\RestBundleDoctrine\Tests\TestApp;
 
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;

@@ -5,5 +5,5 @@ services:
         autoconfigure: true
         public: false
 
-    Dontdrinkandroot\RestBundle\Tests\TestApp\DataFixtures\:
+    Niebvelungen\RestBundleDoctrine\Tests\TestApp\DataFixtures\:
         resource: '../DataFixtures/*'

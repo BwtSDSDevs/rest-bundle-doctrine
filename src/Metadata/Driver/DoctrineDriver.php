@@ -1,11 +1,11 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Metadata\Driver;
+namespace Niebvelungen\RestBundleDoctrine\Metadata\Driver;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\MappingException as OrmMappingException;
-use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
-use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
+use Niebvelungen\RestBundleDoctrine\Metadata\ClassMetadata;
+use Niebvelungen\RestBundleDoctrine\Metadata\PropertyMetadata;
 use Metadata\Driver\DriverInterface;
 use ReflectionClass;
 
@@ -41,10 +41,10 @@ class DoctrineDriver implements DriverInterface
         }
 
         foreach ($doctrineClassMetadata->fieldMappings as $fieldMapping) {
-            if (!array_key_exists('declared', $fieldMapping) && !array_key_exists('declaredField', $fieldMapping)) {
+            if (!empty($fieldMapping->declared) && !empty($fieldMapping->declaredField)) {
                 $ddrRestPropertyMetadata = new PropertyMetadata(
                     $doctrineClassMetadata->getName(),
-                    $fieldMapping['fieldName']
+                    $fieldMapping->fieldName
                 );
                 $ddrRestPropertyMetadata->setType($fieldMapping['type']);
                 $ddrRestClassMetadata->addPropertyMetadata($ddrRestPropertyMetadata);

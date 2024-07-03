@@ -1,6 +1,6 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests;
+namespace Niebvelungen\RestBundleDoctrine\Tests;
 
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;

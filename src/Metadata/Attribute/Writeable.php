@@ -1,6 +1,6 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Metadata\Attribute;
+namespace Niebvelungen\RestBundleDoctrine\Metadata\Attribute;
 
 abstract class Writeable
 {

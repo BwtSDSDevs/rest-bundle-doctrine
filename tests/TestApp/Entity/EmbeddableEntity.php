@@ -1,10 +1,10 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\TestApp\Entity;
+namespace Niebvelungen\RestBundleDoctrine\Tests\TestApp\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Dontdrinkandroot\RestBundle\Metadata\Attribute\Puttable;
+use Niebvelungen\RestBundleDoctrine\Metadata\Attribute\Puttable;
 
 #[ORM\Embeddable]
 class EmbeddableEntity

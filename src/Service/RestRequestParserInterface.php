@@ -1,6 +1,6 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Service;
+namespace Niebvelungen\RestBundleDoctrine\Service;
 
 use Symfony\Component\HttpFoundation\Request;
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Metadata\Attribute;
+namespace Niebvelungen\RestBundleDoctrine\Metadata\Attribute;
 
 use Dontdrinkandroot\Common\CrudOperation;
-use Dontdrinkandroot\RestBundle\Metadata\PropertyNode;
+use Niebvelungen\RestBundleDoctrine\Metadata\PropertyNode;
 
 class Operation
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Controller;
+namespace Niebvelungen\RestBundleDoctrine\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 
@@ -9,21 +9,13 @@ use Symfony\Component\HttpFoundation\Request;
  */
 interface RestResourceControllerInterface
 {
-    public function listAction(Request $request);
+    public function searchEntityAction(Request $request);
 
-    public function postAction(Request $request);
+    public function updateEntityAction(Request $request);
 
-    public function getAction(Request $request, $id);
+    public function getEntityByIdAction(Request $request, $id);
 
-    public function putAction(Request $request, $id);
+    public function insertEntityAction(Request $request, $id);
 
-    public function deleteAction(Request $request, $id);
-
-    public function listSubresourceAction(Request $request, $id, string $subresource);
-
-    public function postSubresourceAction(Request $request, $id, string $subresource);
-
-    public function putSubresourceAction(Request $request, $id, string $subresource, $subId);
-
-    public function deleteSubresourceAction(Request $request, $id, string $subresource, $subId);
+    public function deleteEntityAction(Request $request, $id);
 }

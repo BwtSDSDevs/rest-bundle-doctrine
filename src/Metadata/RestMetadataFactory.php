@@ -1,6 +1,6 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Metadata;
+namespace Niebvelungen\RestBundleDoctrine\Metadata;
 
 use Metadata\MetadataFactory;
 

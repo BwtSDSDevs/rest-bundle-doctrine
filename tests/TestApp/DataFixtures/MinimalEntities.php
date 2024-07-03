@@ -1,10 +1,10 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\TestApp\DataFixtures;
+namespace Niebvelungen\RestBundleDoctrine\Tests\TestApp\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\MinimalEntity;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\Entity\MinimalEntity;
 
 class MinimalEntities extends Fixture
 {

@@ -1,13 +1,13 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\Acceptance;
+namespace Niebvelungen\RestBundleDoctrine\Tests\Acceptance;
 
-use Dontdrinkandroot\RestBundle\Tests\TestApp\DataFixtures\InheritedEntities;
-use Dontdrinkandroot\RestBundle\Tests\TestApp\DataFixtures\SecuredEntities;
-use Dontdrinkandroot\RestBundle\Tests\TestApp\DataFixtures\Users;
-use Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\InheritedEntity;
-use Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\SecuredEntity;
-use Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\SubResourceEntity;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\DataFixtures\InheritedEntities;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\DataFixtures\SecuredEntities;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\DataFixtures\Users;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\Entity\InheritedEntity;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\Entity\SecuredEntity;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\Entity\SubResourceEntity;
 use Symfony\Component\HttpFoundation\Response;
 
 class SecuredEnvironmentTest extends FunctionalTestCase

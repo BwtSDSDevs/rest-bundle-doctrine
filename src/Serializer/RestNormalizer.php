@@ -1,24 +1,23 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Serializer;
+namespace Niebvelungen\RestBundleDoctrine\Serializer;
 
 use DateTimeInterface;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Dontdrinkandroot\Common\Asserted;
 use Dontdrinkandroot\Common\CrudOperation;
-use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
-use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
-use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
+use Niebvelungen\RestBundleDoctrine\Defaults\Defaults;
+use Niebvelungen\RestBundleDoctrine\Metadata\ClassMetadata;
+use Niebvelungen\RestBundleDoctrine\Metadata\PropertyMetadata;
+use Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory;
 use LogicException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
+class RestNormalizer implements NormalizerInterface
 {
     const DDR_REST_INCLUDES = 'ddrRestIncludes';
     const DDR_REST_PATH = 'ddrRestPath';
@@ -34,8 +33,9 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = [])
+    public function normalize($object, $format = null, array $context = []): float|int|bool|\ArrayObject|array|string|null
     {
+
         if (!array_key_exists(self::DDR_REST_INCLUDES, $context)) {
             throw new LogicException('Includes missing');
         }
@@ -71,7 +71,7 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
 
         if (is_object($object)) {
             /** @var ClassMetadata $classMetadata */
-            $classMetadata = $this->metadataFactory->getMetadataForClass(ClassUtils::getClass($object));
+            $classMetadata = $this->metadataFactory->getMetadataForClass(get_class($object));
 
             $normalizedData = [];
 
@@ -154,10 +154,13 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
 
     /**
      * {@inheritdoc}
+     * @param mixed $data
+     * @param null $format
+     * @param array $context
      */
-    public function supportsNormalization($data, $format = null): bool
+    public function supportsNormalization($data, $format = null, array $context = []): bool
     {
-        return 'json' === $format;
+        return Defaults::SERIALIZE_FORMAT === $format;
     }
 
     /**
@@ -219,5 +222,13 @@ class RestNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
             default:
                 return $value;
         }
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        if(Defaults::SERIALIZE_FORMAT === $format)
+            return [ '*' => true];
+
+        return [];
     }
 }

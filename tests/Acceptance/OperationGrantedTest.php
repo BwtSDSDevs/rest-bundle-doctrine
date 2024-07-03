@@ -2,8 +2,8 @@
 
 namespace Acceptance;
 
-use Dontdrinkandroot\RestBundle\Tests\Acceptance\FunctionalTestCase;
-use Dontdrinkandroot\RestBundle\Tests\TestApp\DataFixtures\Users;
+use Niebvelungen\RestBundleDoctrine\Tests\Acceptance\FunctionalTestCase;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\DataFixtures\Users;
 use Symfony\Component\HttpFoundation\Response;
 
 class OperationGrantedTest extends FunctionalTestCase

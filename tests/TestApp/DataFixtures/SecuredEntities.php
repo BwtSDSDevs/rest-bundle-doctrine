@@ -1,12 +1,12 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\TestApp\DataFixtures;
+namespace Niebvelungen\RestBundleDoctrine\Tests\TestApp\DataFixtures;
 
 use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\SecuredEntity;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\Entity\SecuredEntity;
 
 class SecuredEntities extends Fixture implements DependentFixtureInterface
 {

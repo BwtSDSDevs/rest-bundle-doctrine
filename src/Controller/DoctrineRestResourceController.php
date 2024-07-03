@@ -1,13 +1,14 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Controller;
+namespace Niebvelungen\RestBundleDoctrine\Controller;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
+use Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -45,11 +46,14 @@ class DoctrineRestResourceController extends AbstractRestResourceController
         return $this->entityManager;
     }
 
-    protected function listEntities(int $page = 1, int $perPage = 50)
+    protected function searchEntities(Request $request): Paginator
     {
+        $page = 1;
+        $limit = 50;
+
         $queryBuilder = $this->createFindAllQueryBuilder();
-        $queryBuilder->setFirstResult(($page - 1) * $perPage);
-        $queryBuilder->setMaxResults($perPage);
+        $queryBuilder->setFirstResult(($page - 1) * $limit);
+        $queryBuilder->setMaxResults($limit);
 
         return new Paginator($queryBuilder);
     }
@@ -63,7 +67,7 @@ class DoctrineRestResourceController extends AbstractRestResourceController
         return $queryBuilder;
     }
 
-    protected function fetchEntity($id)
+    protected function getEntityById($id)
     {
         $entity = $this->entityManager->find($this->getEntityClass(), $id);
         if (null === $entity) {
@@ -88,7 +92,7 @@ class DoctrineRestResourceController extends AbstractRestResourceController
         return $entity;
     }
 
-    protected function removeEntity($entity)
+    protected function deleteEntity($entity)
     {
         $this->entityManager->remove($entity);
         $this->entityManager->flush();

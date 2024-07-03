@@ -1,10 +1,10 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\TestApp\DataFixtures;
+namespace Niebvelungen\RestBundleDoctrine\Tests\TestApp\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\User;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;

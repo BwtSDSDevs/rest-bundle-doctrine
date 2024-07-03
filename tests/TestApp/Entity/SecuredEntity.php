@@ -1,13 +1,13 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\TestApp\Entity;
+namespace Niebvelungen\RestBundleDoctrine\Tests\TestApp\Entity;
 
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Dontdrinkandroot\Common\CrudOperation;
-use Dontdrinkandroot\RestBundle\Metadata\Attribute as REST;
+use Niebvelungen\RestBundleDoctrine\Metadata\Attribute as REST;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 

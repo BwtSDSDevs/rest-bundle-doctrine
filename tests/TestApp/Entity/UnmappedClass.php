@@ -1,6 +1,6 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\TestApp\Entity;
+namespace Niebvelungen\RestBundleDoctrine\Tests\TestApp\Entity;
 
 /**
  * Unmapped Classes should be ignored.

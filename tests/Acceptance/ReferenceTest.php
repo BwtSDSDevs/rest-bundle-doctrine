@@ -1,9 +1,9 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\Acceptance;
+namespace Niebvelungen\RestBundleDoctrine\Tests\Acceptance;
 
-use Dontdrinkandroot\RestBundle\Tests\TestApp\DataFixtures\SubResourceEntities;
-use Dontdrinkandroot\RestBundle\Tests\TestApp\DataFixtures\Users;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\DataFixtures\SubResourceEntities;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\DataFixtures\Users;
 use Symfony\Component\HttpFoundation\Response;
 
 class ReferenceTest extends FunctionalTestCase

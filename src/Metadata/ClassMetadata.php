@@ -1,10 +1,10 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Metadata;
+namespace Niebvelungen\RestBundleDoctrine\Metadata;
 
 use Doctrine\Inflector\InflectorFactory;
 use Dontdrinkandroot\Common\CrudOperation;
-use Dontdrinkandroot\RestBundle\Metadata\Attribute\Operation;
+use Niebvelungen\RestBundleDoctrine\Metadata\Attribute\Operation;
 use Metadata\MergeableClassMetadata;
 use Metadata\MergeableInterface;
 use ReflectionClass;

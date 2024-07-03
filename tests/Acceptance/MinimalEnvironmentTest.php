@@ -1,9 +1,9 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\Acceptance;
+namespace Niebvelungen\RestBundleDoctrine\Tests\Acceptance;
 
-use Dontdrinkandroot\RestBundle\Tests\TestApp\DataFixtures\MinimalEntities;
-use Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\MinimalEntity;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\DataFixtures\MinimalEntities;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\Entity\MinimalEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

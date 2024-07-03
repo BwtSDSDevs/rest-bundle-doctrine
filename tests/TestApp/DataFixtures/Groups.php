@@ -1,11 +1,11 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\TestApp\DataFixtures;
+namespace Niebvelungen\RestBundleDoctrine\Tests\TestApp\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\Group;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\Entity\Group;
 
 class Groups extends Fixture implements DependentFixtureInterface
 {

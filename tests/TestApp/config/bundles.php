@@ -2,7 +2,7 @@
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
-use Dontdrinkandroot\RestBundle\DdrRestBundle;
+use Niebvelungen\RestBundleDoctrine\DdrRestBundle;
 use Liip\TestFixturesBundle\LiipTestFixturesBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;

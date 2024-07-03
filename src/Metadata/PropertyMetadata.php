@@ -1,11 +1,11 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Metadata;
+namespace Niebvelungen\RestBundleDoctrine\Metadata;
 
 use Dontdrinkandroot\Common\CrudOperation;
-use Dontdrinkandroot\RestBundle\Metadata\Attribute\Operation;
-use Dontdrinkandroot\RestBundle\Metadata\Attribute\Postable;
-use Dontdrinkandroot\RestBundle\Metadata\Attribute\Puttable;
+use Niebvelungen\RestBundleDoctrine\Metadata\Attribute\Operation;
+use Niebvelungen\RestBundleDoctrine\Metadata\Attribute\Postable;
+use Niebvelungen\RestBundleDoctrine\Metadata\Attribute\Puttable;
 use InvalidArgumentException;
 use Metadata\MergeableInterface;
 use Metadata\PropertyMetadata as BasePropertyMetadata;

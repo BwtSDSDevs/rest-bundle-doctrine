@@ -1,10 +1,10 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\TestApp\Entity;
+namespace Niebvelungen\RestBundleDoctrine\Tests\TestApp\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Dontdrinkandroot\Common\CrudOperation;
-use Dontdrinkandroot\RestBundle\Metadata\Attribute as REST;
+use Niebvelungen\RestBundleDoctrine\Metadata\Attribute as REST;
 
 #[REST\RootResource(
     operations: [

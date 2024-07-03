@@ -1,13 +1,13 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\Acceptance;
+namespace Niebvelungen\RestBundleDoctrine\Tests\Acceptance;
 
 use Dontdrinkandroot\Common\CrudOperation;
-use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
-use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
-use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
-use Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\SubResourceEntity;
-use Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\User;
+use Niebvelungen\RestBundleDoctrine\Metadata\ClassMetadata;
+use Niebvelungen\RestBundleDoctrine\Metadata\PropertyMetadata;
+use Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\Entity\SubResourceEntity;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\Entity\User;
 use Metadata\MetadataFactory;
 
 class ClassMetadataTest extends FunctionalTestCase

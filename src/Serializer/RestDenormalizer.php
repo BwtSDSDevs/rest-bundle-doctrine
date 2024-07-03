@@ -1,25 +1,23 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Serializer;
+namespace Niebvelungen\RestBundleDoctrine\Serializer;
 
 use BadMethodCallException;
 use DateTime;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Dontdrinkandroot\Common\CrudOperation;
-use Dontdrinkandroot\RestBundle\Metadata\Attribute\Right;
-use Dontdrinkandroot\RestBundle\Metadata\Attribute\Writeable;
-use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
-use Dontdrinkandroot\RestBundle\Metadata\RestMetadataFactory;
+use Niebvelungen\RestBundleDoctrine\Defaults\Defaults;
+use Niebvelungen\RestBundleDoctrine\Metadata\Attribute\Writeable;
+use Niebvelungen\RestBundleDoctrine\Metadata\PropertyMetadata;
+use Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethodInterface
+class RestDenormalizer implements DenormalizerInterface
 {
     const DDR_REST_METHOD = 'ddrRestMethod';
     const DDR_REST_ENTITY = 'ddrRestEntity';
@@ -36,7 +34,7 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $type, $format = null, array $context = [])
+    public function denormalize($data, $type, $format = null, array $context = []): mixed
     {
         if (!array_key_exists(self::DDR_REST_METHOD, $context)) {
             throw new BadMethodCallException('No REST Method specified');
@@ -56,10 +54,14 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
 
     /**
      * {@inheritdoc}
+     * @param mixed $data
+     * @param string $type
+     * @param null $format
+     * @param array $context
      */
-    public function supportsDenormalization($data, $type, $format = null): bool
+    public function supportsDenormalization($data, $type, $format = null, array $context = []): bool
     {
-        return 'json' === $format;
+        return Defaults::SERIALIZE_FORMAT === $format;
     }
 
     /**
@@ -72,7 +74,7 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
 
     protected function updateObject(object $object, CrudOperation $method, array $data): void
     {
-        $classMetadata = $this->metadataFactory->getMetadataForClass(ClassUtils::getClass($object));
+        $classMetadata = $this->metadataFactory->getMetadataForClass(get_class($object));
 
         foreach ($data as $key => $value) {
             if (array_key_exists($key, $classMetadata->propertyMetadata)) {
@@ -213,5 +215,13 @@ class RestDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
     public function setAuthorizationChecker(AuthorizationCheckerInterface $authorizationChecker): void
     {
         $this->authorizationChecker = $authorizationChecker;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        if(Defaults::SERIALIZE_FORMAT === $format)
+            return [ '*' => true];
+
+        return [];
     }
 }

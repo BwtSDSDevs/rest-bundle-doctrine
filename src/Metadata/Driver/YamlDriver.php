@@ -1,12 +1,12 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Metadata\Driver;
+namespace Niebvelungen\RestBundleDoctrine\Metadata\Driver;
 
-use Dontdrinkandroot\RestBundle\Metadata\Attribute\Operation;
-use Dontdrinkandroot\RestBundle\Metadata\Attribute\Postable;
-use Dontdrinkandroot\RestBundle\Metadata\Attribute\Puttable;
-use Dontdrinkandroot\RestBundle\Metadata\ClassMetadata;
-use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
+use Niebvelungen\RestBundleDoctrine\Metadata\Attribute\Operation;
+use Niebvelungen\RestBundleDoctrine\Metadata\Attribute\Postable;
+use Niebvelungen\RestBundleDoctrine\Metadata\Attribute\Puttable;
+use Niebvelungen\RestBundleDoctrine\Metadata\ClassMetadata;
+use Niebvelungen\RestBundleDoctrine\Metadata\PropertyMetadata;
 use Metadata\Driver\AbstractFileDriver;
 use Metadata\Driver\DriverInterface;
 use Metadata\Driver\FileLocatorInterface;

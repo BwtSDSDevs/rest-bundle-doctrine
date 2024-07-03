@@ -1,14 +1,14 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Service;
+namespace Niebvelungen\RestBundleDoctrine\Service;
 
 use DateTime;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Dontdrinkandroot\Common\CrudOperation;
-use Dontdrinkandroot\RestBundle\Metadata\Attribute\Right;
-use Dontdrinkandroot\RestBundle\Metadata\PropertyMetadata;
+use Niebvelungen\RestBundleDoctrine\Metadata\Attribute\Right;
+use Niebvelungen\RestBundleDoctrine\Metadata\PropertyMetadata;
 use Metadata\MetadataFactory;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;

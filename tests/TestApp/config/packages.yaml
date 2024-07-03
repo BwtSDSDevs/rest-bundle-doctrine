@@ -23,5 +23,5 @@ doctrine:
                 is_bundle: false
                 type: attribute
                 dir: '%kernel.project_dir%/Entity'
-                prefix: 'Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\'
+                prefix: 'Niebvelungen\RestBundleDoctrine\Tests\TestApp\Entity\'
                 alias: TestApp

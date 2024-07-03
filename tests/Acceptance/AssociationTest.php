@@ -1,11 +1,11 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\Acceptance;
+namespace Niebvelungen\RestBundleDoctrine\Tests\Acceptance;
 
-use Dontdrinkandroot\RestBundle\Tests\TestApp\DataFixtures\Groups;
-use Dontdrinkandroot\RestBundle\Tests\TestApp\DataFixtures\Users;
-use Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\Group;
-use Dontdrinkandroot\RestBundle\Tests\TestApp\Entity\User;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\DataFixtures\Groups;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\DataFixtures\Users;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\Entity\Group;
+use Niebvelungen\RestBundleDoctrine\Tests\TestApp\Entity\User;
 use Symfony\Component\HttpFoundation\Response;
 
 class AssociationTest extends FunctionalTestCase

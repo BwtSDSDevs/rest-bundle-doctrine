@@ -1,8 +1,8 @@
 <?php
 
-namespace Dontdrinkandroot\RestBundle\Tests\Acceptance;
+namespace Niebvelungen\RestBundleDoctrine\Tests\Acceptance;
 
-use Dontdrinkandroot\RestBundle\Tests\RestTestCase;
+use Niebvelungen\RestBundleDoctrine\Tests\RestTestCase;
 
 abstract class FunctionalTestCase extends RestTestCase
 {
