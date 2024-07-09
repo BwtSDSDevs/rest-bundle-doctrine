@@ -5,6 +5,7 @@ namespace Niebvelungen\RestBundleDoctrine\Controller;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Dontdrinkandroot\Common\CrudOperation;
 use Niebvelungen\RestBundleDoctrine\Defaults\Defaults;
+use Niebvelungen\RestBundleDoctrine\Exceptions\InvalidFilterException;
 use Niebvelungen\RestBundleDoctrine\Metadata\Attribute\Right;
 use Niebvelungen\RestBundleDoctrine\Metadata\ClassMetadata;
 use Niebvelungen\RestBundleDoctrine\Metadata\PropertyMetadata;
@@ -63,7 +64,12 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
 
         $this->assertMethodGranted(CrudOperation::LIST);
 
-        $listResult = $this->searchEntities($request);
+        try {
+            $listResult = $this->searchEntities($request);
+        }
+        catch (InvalidFilterException $exception){
+            return new JsonResponse(['error' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
 
         $response = new JsonResponse();
 
@@ -358,6 +364,8 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     /**
      * @param int $page
      * @param int $perPage
+     *
+     * @throws InvalidFilterException
      *
      * @return Paginator|array
      */

@@ -3,11 +3,16 @@
 namespace Niebvelungen\RestBundleDoctrine\Controller;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Niebvelungen\RestBundleDoctrine\Exceptions\InvalidFilterException;
 use Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory;
+use Niebvelungen\RestBundleDoctrine\Service\QueryMapperService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -26,7 +31,8 @@ class DoctrineRestResourceController extends AbstractRestResourceController
         RestMetadataFactory $metadataFactory,
         PropertyAccessorInterface $propertyAccessor,
         EntityManagerInterface $entityManager,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        private readonly QueryMapperService $queryMapperService
     ) {
         parent::__construct(
             $validator,
@@ -46,14 +52,47 @@ class DoctrineRestResourceController extends AbstractRestResourceController
         return $this->entityManager;
     }
 
+    /**
+     * @throws QueryException
+     * @throws InvalidFilterException
+     */
     protected function searchEntities(Request $request): Paginator
     {
+        $body = $request->toArray();
+
         $page = 1;
         $limit = 50;
+
+        if(isset($body['page']))
+            $page = $body['page'];
+
+        if(isset($body['limit']))
+            $limit = $body['limit'];
+
 
         $queryBuilder = $this->createFindAllQueryBuilder();
         $queryBuilder->setFirstResult(($page - 1) * $limit);
         $queryBuilder->setMaxResults($limit);
+
+        $criteria = Criteria::create();
+
+        if(isset($body['filter'])){
+            $this->queryMapperService->validateFilters($body['filter']);
+            $joins = $this->queryMapperService->getJoinsForFilter($body['filter']);
+            /** @var string $join */
+            foreach ($joins as $join){
+                $queryBuilder->innerJoin('entity.'.$join, $join);
+                $queryBuilder->addSelect($join);
+            }
+            $criteria = $this->queryMapperService->applyFiltersToCriteria($body['filter'], $criteria);
+        }
+
+        if(isset($body['sort'])){
+            $this->queryMapperService->validateSorting($body['sort']);
+            $criteria = $this->queryMapperService->applySortingToCriteria($body['sort'], $criteria);
+        }
+
+        $queryBuilder->addCriteria($criteria);
 
         return new Paginator($queryBuilder);
     }
