@@ -10,7 +10,13 @@
     "version": "0.1",
     "authors": [
         {
-            "name": "Dominik Ahammer"
+            "name": "Dominik Ahammer",
+            "email": "ahammer.dominik@gmail.com"
+        },
+        {
+            "name": "Philip Washington Sorst",
+            "email": "philip@sorst.net",
+            "homepage": "https://sorst.net"
         }
     ],
     "require": {

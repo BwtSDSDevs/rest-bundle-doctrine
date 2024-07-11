@@ -5,7 +5,7 @@ namespace Niebvelungen\RestBundleDoctrine\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @author Philip Washington Sorst <philip@sorst.net>
+ * @author Dominik Ahammer <ahammer.dominik@gmail.com>
  */
 interface RestResourceControllerInterface
 {
