@@ -29,7 +29,6 @@ class DoctrineRestResourceController extends AbstractRestResourceController
         ValidatorInterface $validator,
         RequestStack $requestStack,
         RestMetadataFactory $metadataFactory,
-        PropertyAccessorInterface $propertyAccessor,
         EntityManagerInterface $entityManager,
         SerializerInterface $serializer,
         private readonly QueryMapperService $queryMapperService
@@ -38,7 +37,6 @@ class DoctrineRestResourceController extends AbstractRestResourceController
             $validator,
             $requestStack,
             $metadataFactory,
-            $propertyAccessor,
             $serializer
         );
         $this->entityManager = $entityManager;
@@ -80,9 +78,10 @@ class DoctrineRestResourceController extends AbstractRestResourceController
             $this->queryMapperService->validateFilters($body['filter']);
             $joins = $this->queryMapperService->getJoinsForFilter($body['filter']);
             /** @var string $join */
-            foreach ($joins as $join){
+            foreach ($joins as $join => $selectTable){
                 $queryBuilder->innerJoin('entity.'.$join, $join);
-                $queryBuilder->addSelect($join);
+                if($selectTable)
+                    $queryBuilder->addSelect($join);
             }
             $criteria = $this->queryMapperService->applyFiltersToCriteria($body['filter'], $criteria);
         }
@@ -115,6 +114,15 @@ class DoctrineRestResourceController extends AbstractRestResourceController
 
         return $entity;
     }
+    protected function checkEntityWithIdExists($id): bool
+    {
+        $entity = $this->entityManager->find($this->getEntityClass(), $id);
+        if (null === $entity) {
+            return false;
+        }
+
+        return true;
+    }
 
     protected function createEntity($entity)
     {
@@ -126,6 +134,14 @@ class DoctrineRestResourceController extends AbstractRestResourceController
 
     protected function updateEntity($entity)
     {
+        $this->entityManager->flush();
+
+        return $entity;
+    }
+
+    protected function insertEntity($entity)
+    {
+        $this->entityManager->persist($entity);
         $this->entityManager->flush();
 
         return $entity;

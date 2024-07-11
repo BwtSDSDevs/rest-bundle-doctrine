@@ -2,7 +2,7 @@
 
 namespace Niebvelungen\RestBundleDoctrine\Metadata\Attribute;
 
-use Dontdrinkandroot\Common\CrudOperation;
+use Niebvelungen\RestBundleDoctrine\Metadata\Common\CrudOperation;
 use Niebvelungen\RestBundleDoctrine\Metadata\PropertyNode;
 
 class Operation

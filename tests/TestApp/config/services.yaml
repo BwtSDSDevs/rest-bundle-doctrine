@@ -1,9 +1,0 @@
-services:
-
-    _defaults:
-        autowire: true
-        autoconfigure: true
-        public: false
-
-    Niebvelungen\RestBundleDoctrine\Tests\TestApp\DataFixtures\:
-        resource: '../DataFixtures/*'

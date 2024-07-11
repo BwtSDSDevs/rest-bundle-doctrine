@@ -42,8 +42,6 @@
         <service id="Niebvelungen\RestBundleDoctrine\Service\QueryMapperService">
         </service>
 
-
-
         <!-- Serialization -->
 
         <service id="Niebvelungen\RestBundleDoctrine\Serializer\RestNormalizer">
@@ -57,9 +55,6 @@
             <argument type="service" id="Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory" />
             <argument type="service" id="property_accessor" />
             <argument type="service" id="doctrine.orm.entity_manager" />
-            <call method="setAuthorizationChecker">
-                <argument type="service" id="security.authorization_checker" on-invalid="ignore" />
-            </call>
             <tag name="serializer.normalizer" />
         </service>
 
@@ -68,20 +63,15 @@
             <tag name="serializer.encoder" />
         </service>
 
-
         <!-- Controller -->
 
         <service id="Niebvelungen\RestBundleDoctrine\Controller\DoctrineRestResourceController" public="true">
             <argument type="service" id="validator" />
             <argument type="service" id="request_stack" />
             <argument type="service" id="Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory" />
-            <argument type="service" id="property_accessor" />
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="serializer" />
             <argument type="service" id="Niebvelungen\RestBundleDoctrine\Service\QueryMapperService" />
-            <call method="setAuthorizationChecker">
-                <argument type="service" id="security.authorization_checker" on-invalid="ignore" />
-            </call>
         </service>
 
         <!-- Commands -->

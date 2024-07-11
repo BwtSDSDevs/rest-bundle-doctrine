@@ -17,6 +17,10 @@ class AttributeDriver implements DriverInterface
     const ORM_TYPES = [ManyToMany::class, OneToMany::class, ManyToOne::class];
 
     const DOCTRINE_EXCLUDE_FIELDS = ['lazyObjectState'];
+    const MAPPED_TYPES = [
+        "int" => "integer",
+        "bool" => "boolean"
+    ];
 
     private $doctrineDriver;
 
@@ -42,37 +46,32 @@ class AttributeDriver implements DriverInterface
                 $propertyMetadata = new PropertyMetadata($class->getName(), $reflectionProperty->getName());
             }
 
+            $type = $reflectionProperty->getType()->getName();
+            if(str_starts_with('?', $type))
+                $type = str_replace('?', '', $type);
+
+            $type = self::MAPPED_TYPES[$type] ?? $type;
+
+            $propertyMetadata->setType($type);
+
             $attributes = array_filter($reflectionProperty->getAttributes(), function (ReflectionAttribute $attribute) {
                 return in_array($attribute->getName(), self::ORM_TYPES);
             });
 
-            if(!empty($attributes))
+            if(!empty($attributes)){
                 $this->parseIncludable($propertyMetadata);
+                $nonNullClass = str_starts_with('?', $reflectionProperty->getType()->getName())
+                    ? substr($reflectionProperty->getType()->getName(), 1)
+                    : $reflectionProperty->getType()->getName();
+                $propertyMetadata->setEntityClass($nonNullClass);
+            }
+
+            $propertyMetadata->setPuttable(true);
+            $propertyMetadata->setPostable(true);
 
             if (in_array($reflectionProperty->getName(), self::DOCTRINE_EXCLUDE_FIELDS)) {
                 $propertyMetadata->setExcluded(true);
             }
-
-
-//            if (null !== ($subResourceAttribute = $this->getSinglePropertyAttribute(
-//                    $reflectionProperty,
-//                    SubResource::class
-//                ))) {
-//                $propertyMetadata->setSubResource(true);
-//
-//                if (null !== $subResourceAttribute->path) {
-//                    $propertyMetadata->setSubResourcePath($subResourceAttribute->path);
-//                }
-//
-//                if (null !== $subResourceAttribute->operations) {
-//                    $operations = [];
-//                    $operationAnnotations = $subResourceAttribute->operations;
-//                    foreach ($operationAnnotations as $operationAnnotation) {
-//                        $operations[$operationAnnotation->method->value] = $operationAnnotation;
-//                    }
-//                    $propertyMetadata->setOperations($operations);
-//                }
-//            }
 
             $ddrRestClassMetadata->addPropertyMetadata($propertyMetadata);
         }

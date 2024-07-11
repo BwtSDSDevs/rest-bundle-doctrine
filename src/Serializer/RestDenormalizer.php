@@ -7,22 +7,17 @@ use DateTime;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
-use Dontdrinkandroot\Common\CrudOperation;
+use Niebvelungen\RestBundleDoctrine\Metadata\Common\CrudOperation;
 use Niebvelungen\RestBundleDoctrine\Defaults\Defaults;
-use Niebvelungen\RestBundleDoctrine\Metadata\Attribute\Writeable;
 use Niebvelungen\RestBundleDoctrine\Metadata\PropertyMetadata;
 use Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory;
-use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class RestDenormalizer implements DenormalizerInterface
 {
     const DDR_REST_METHOD = 'ddrRestMethod';
     const DDR_REST_ENTITY = 'ddrRestEntity';
-
-    private ?AuthorizationCheckerInterface $authorizationChecker = null;
 
     public function __construct(
         private RestMetadataFactory $metadataFactory,
@@ -64,14 +59,6 @@ class RestDenormalizer implements DenormalizerInterface
         return Defaults::SERIALIZE_FORMAT === $format;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function hasCacheableSupportsMethod(): bool
-    {
-        return true;
-    }
-
     protected function updateObject(object $object, CrudOperation $method, array $data): void
     {
         $classMetadata = $this->metadataFactory->getMetadataForClass(get_class($object));
@@ -88,41 +75,33 @@ class RestDenormalizer implements DenormalizerInterface
     }
 
     protected function updateProperty(
-        object $object,
+        object &$object,
         CrudOperation $method,
         PropertyMetadata $propertyMetadata,
         mixed $value
     ): void {
-        $byReference = $this->isUpdateableByReference($propertyMetadata, $method);
-        if ($byReference) {
-            $this->updateByReference($object, $propertyMetadata, $value);
-        } elseif (array_key_exists($propertyMetadata->getType(), Type::getTypesMap())) {
+        if(!empty($propertyMetadata->getEntityClass())){
+            $this->updateObjectByReference($object, $method, $propertyMetadata, $value);
+        }
+        else if (array_key_exists($propertyMetadata->getType(), Type::getTypesMap())) {
             $convertedValue = $this->convert($propertyMetadata->getType(), $value);
-            $this->propertyAccessor->setValue($object, $propertyMetadata->name, $convertedValue);
+            if(method_exists($object, 'set' . ucfirst($propertyMetadata->name))) {
+                $this->propertyAccessor->setValue($object, $propertyMetadata->name, $convertedValue);
+            }
+            else{
+                $reflectionClass = new \ReflectionClass(get_class($object));
+                $reflectionProperty = $reflectionClass->getProperty($propertyMetadata->name);
+                $reflectionProperty->setAccessible(true);
+                $reflectionProperty->setValue($object, $convertedValue);
+            }
+
         } else {
             $this->updatePropertyObject($object, $method, $propertyMetadata, $value);
         }
     }
 
-    private function updateByReference(object $object, PropertyMetadata $propertyMetadata, $value): void
-    {
-        if (null === $value) {
-            $this->propertyAccessor->setValue($object, $propertyMetadata->name, null);
-        } else {
-            $type = $propertyMetadata->getType();
-            $classMetadata = $this->entityManager->getClassMetadata($type);
-            $identifiers = $classMetadata->getIdentifier();
-            $id = [];
-            foreach ($identifiers as $idName) {
-                $id[$idName] = $value[$idName];
-            }
-            $reference = $this->entityManager->getReference($type, $id);
-            $this->propertyAccessor->setValue($object, $propertyMetadata->name, $reference);
-        }
-    }
-
     protected function updatePropertyObject(
-        object $object,
+        object &$object,
         CrudOperation $method,
         PropertyMetadata $propertyMetadata,
         $value
@@ -137,48 +116,44 @@ class RestDenormalizer implements DenormalizerInterface
         $this->propertyAccessor->setValue($object, $propertyMetadata->name, $propertyObject);
     }
 
+    protected function updateObjectByReference(
+        object &$object,
+        CrudOperation $method,
+        PropertyMetadata $propertyMetadata,
+        $value
+    ) : void
+    {
+        if (null === $value) {
+            $this->propertyAccessor->setValue($object, $propertyMetadata->name, null);
+        } else if(!is_array($value)) {
+            $type = $propertyMetadata->getType();
+            $reference = $this->entityManager->getReference($type, $value);
+            $this->propertyAccessor->setValue($object, $propertyMetadata->name, $reference);
+        }
+        else if(!empty($value)){
+            $type = $propertyMetadata->getType();
+//            $classMetadata = $this->entityManager->getClassMetadata($type);
+//            $identifier = $classMetadata->getIdentifier();
+            $references = [];
+            foreach ($value as $val){
+                $references[] = $this->entityManager->getReference($type, $val);
+            }
+
+            $this->propertyAccessor->setValue($object, $propertyMetadata->name, $references);
+        }
+    }
+
     protected function isUpdateable(object $object, CrudOperation $method, PropertyMetadata $propertyMetadata): bool
     {
         if (CrudOperation::UPDATE === $method && $propertyMetadata->isPuttable()) {
-            return $this->isGranted($object, $propertyMetadata->getPuttable());
-        }
-
-        if (CrudOperation::CREATE === $method && $propertyMetadata->isPostable()) {
-            return $this->isGranted($object, $propertyMetadata->getPostable());
-        }
-
-        return false;
-    }
-
-    private function isGranted($object, ?Writeable $writeable): bool
-    {
-        if (null === $writeable) {
             return true;
         }
 
-        /* If no Security is enabled always deny access */
-        if (null === $this->authorizationChecker) {
-            return false;
+        if (CrudOperation::CREATE === $method && $propertyMetadata->isPostable()) {
+            return true;
         }
 
-        if (null !== $writeable->granted) {
-            return $this->authorizationChecker->isGranted($writeable->granted);
-        }
-
-        if (null !== $writeable->grantedExpression) {
-            return $this->authorizationChecker->isGranted(new Expression($writeable->grantedExpression), $object);
-        }
-
-        return true;
-    }
-
-    private function resolveSubject($entity, $propertyPath): mixed
-    {
-        if ('this' === $propertyPath) {
-            return $entity;
-        }
-
-        return $this->propertyAccessor->getValue($entity, $propertyPath);
+        return false;
     }
 
     private function convert(?string $type, mixed $value): mixed
@@ -191,30 +166,6 @@ class RestDenormalizer implements DenormalizerInterface
             Types::DATETIME_MUTABLE, Types::DATE_MUTABLE, Types::TIME_MUTABLE => new DateTime($value),
             default => $value,
         };
-    }
-
-    private function isUpdateableByReference(PropertyMetadata $propertyMetadata, CrudOperation $method): bool
-    {
-        if (
-            CrudOperation::UPDATE === $method
-            && null !== $propertyMetadata->getPuttable() && true === $propertyMetadata->getPuttable()->byReference
-        ) {
-            return true;
-        }
-
-        if (
-            CrudOperation::CREATE === $method
-            && null !== $propertyMetadata->getPostable() && true === $propertyMetadata->getPostable()->byReference
-        ) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public function setAuthorizationChecker(AuthorizationCheckerInterface $authorizationChecker): void
-    {
-        $this->authorizationChecker = $authorizationChecker;
     }
 
     public function getSupportedTypes(?string $format): array

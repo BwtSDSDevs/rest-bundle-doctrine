@@ -24,6 +24,10 @@ class QueryMapperService
     const FILTER_TYPE_FIELD = 'type';
     const VALUE_FIELD = 'value';
     const FIELD_NAME_FIELD = 'field';
+    const FILTER_MODE_FIELD = 'mode';
+
+    const FULL_FILTER_MODE = 'full';
+
     const SORTING_ORDER = 'order';
 
     const SORTING_ORDERS = [Order::Ascending->value, Order::Descending->value];
@@ -64,10 +68,11 @@ class QueryMapperService
         $joins = [];
         foreach ($filters as $filter){
             $field = $filter[self::FIELD_NAME_FIELD];
+            $mode = $filter[self::FILTER_MODE_FIELD] ?? null;
             $pathArray = explode('.', $field);
 
             if(count($pathArray) == self::ALLOWED_FILTER_DEPTH)
-                $joins[] = array_shift($pathArray);
+                $joins[array_shift($pathArray)] = $mode === self::FULL_FILTER_MODE;
 
             unset($pathArray);
         }

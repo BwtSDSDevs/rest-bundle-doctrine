@@ -6,10 +6,11 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
-use Dontdrinkandroot\Common\Asserted;
-use Dontdrinkandroot\Common\CrudOperation;
+
 use Niebvelungen\RestBundleDoctrine\Defaults\Defaults;
 use Niebvelungen\RestBundleDoctrine\Metadata\ClassMetadata;
+use Niebvelungen\RestBundleDoctrine\Metadata\Common\Asserted;
+use Niebvelungen\RestBundleDoctrine\Metadata\Common\CrudOperation;
 use Niebvelungen\RestBundleDoctrine\Metadata\PropertyMetadata;
 use Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory;
 use LogicException;
@@ -161,14 +162,6 @@ class RestNormalizer implements NormalizerInterface
     public function supportsNormalization($data, $format = null, array $context = []): bool
     {
         return Defaults::SERIALIZE_FORMAT === $format;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hasCacheableSupportsMethod(): bool
-    {
-        return true;
     }
 
     private function isIncluded($currentPath, array $paths, ?array $includes): bool

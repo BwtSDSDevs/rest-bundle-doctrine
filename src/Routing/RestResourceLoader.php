@@ -26,8 +26,8 @@ class RestResourceLoader extends Loader
 
 
     public function __construct(
-        private MetadataFactoryInterface $metadataFactory,
-        private EntityManagerInterface $entityManager,
+        private readonly MetadataFactoryInterface $metadataFactory,
+        private readonly EntityManagerInterface   $entityManager,
     ) {
         parent::__construct();
     }
@@ -75,12 +75,12 @@ class RestResourceLoader extends Loader
             $getRoute->setDefaults(array_merge($defaults,['_controller' => $controller . self::GET_ACTION]));
             $routes->add($namePrefix . '.get', $getRoute);
 
-            $updateRoute = new Route(self::ROUTE_PREFIX . 'update/' . $pathPrefix);
+            $updateRoute = new Route(self::ROUTE_PREFIX . 'update/' . $pathPrefix. '/{id}');
             $updateRoute->setMethods(Request::METHOD_POST);
             $updateRoute->setDefaults(array_merge($defaults,['_controller' => $controller . self::UPDATE_ACTION]));
             $routes->add($namePrefix . '.update', $updateRoute);
 
-            $insertRoute = new Route(self::ROUTE_PREFIX . 'insert/' . $pathPrefix . '/{id}');
+            $insertRoute = new Route(self::ROUTE_PREFIX . 'insert/' . $pathPrefix);
             $insertRoute->setMethods([Request::METHOD_PUT, Request::METHOD_PATCH]);
             $insertRoute->setDefaults(array_merge($defaults,['_controller' => $controller . self::INSERT_ACTION]));
             $routes->add($namePrefix . '.insert', $insertRoute);
@@ -89,72 +89,6 @@ class RestResourceLoader extends Loader
             $deleteRoute->setMethods(Request::METHOD_DELETE);
             $deleteRoute->setDefaults(array_merge($defaults,['_controller' => $controller . self::DELETE_ACTION]));
             $routes->add($namePrefix . '.delete', $deleteRoute);
-
-//            /** @var PropertyMetadata $propertyMetadata */
-//            foreach ($classMetadata->propertyMetadata as $propertyMetadata) {
-//                $subResourcePath = strtolower($propertyMetadata->name);
-//                if (null !== $propertyMetadata->getSubResourcePath()) {
-//                    $subResourcePath = $propertyMetadata->getSubResourcePath();
-//                }
-//
-//                $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath;
-//
-//                $subResourceRoute = new Route($subResourceFullPath);
-//                $subResourceRoute->setMethods(Request::METHOD_GET);
-//                $subResourceRoute->setDefaults(
-//                    array_merge(
-//                        $defaults,
-//                        [
-//                            '_controller'      => $controller . ':listSubresourceAction',
-//                            'subresource'      => $propertyMetadata->name
-//                        ]
-//                    )
-//                );
-//                $routes->add($namePrefix . '.' . $propertyMetadata->name . '.list', $subResourceRoute);
-//
-//                $subResourceRoute = new Route($subResourceFullPath);
-//                $subResourceRoute->setMethods(Request::METHOD_POST);
-//                $subResourceRoute->setDefaults(
-//                    array_merge(
-//                        $defaults,
-//                        [
-//                            '_controller'      => $controller . ':postSubresourceAction',
-//                            'subresource'      => $propertyMetadata->name
-//                        ]
-//                    )
-//                );
-//                $routes->add($namePrefix . '.' . $propertyMetadata->name . '.post', $subResourceRoute);
-//
-//                $subResourceRoute = new Route($subResourceFullPath);
-//                $subResourceRoute->setMethods(Request::METHOD_PUT);
-//                $subResourceRoute->setDefaults(
-//                    array_merge(
-//                        $defaults,
-//                        [
-//                            '_controller'      => $controller . ':putSubresourceAction',
-//                            'subresource'      => $propertyMetadata->name
-//                        ]
-//                    )
-//                );
-//                $routes->add($namePrefix . '.' . $propertyMetadata->name . '.put', $subResourceRoute);
-//
-//                if ($propertyMetadata->isCollection()) {
-//                    $subResourceFullPath = $pathPrefix . '/{id}/' . $subResourcePath . '/{subId}';
-//                }
-//
-//                $subResourceRoute = new Route($subResourceFullPath);
-//                $subResourceRoute->setMethods(Request::METHOD_DELETE);
-//                $subResourceRoute->setDefaults(
-//                    array_merge(
-//                        $defaults,
-//                        [
-//                            '_controller' => $controller . ':deleteSubresourceAction',
-//                            'subresource' => $propertyMetadata->name,
-//                        ]
-//                    )
-//                );
-//                $routes->add($namePrefix . '.' . $propertyMetadata->name . '.delete', $subResourceRoute);
-//            }
         }
 
         $this->isLoaded = true;

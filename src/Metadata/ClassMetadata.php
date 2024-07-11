@@ -3,7 +3,7 @@
 namespace Niebvelungen\RestBundleDoctrine\Metadata;
 
 use Doctrine\Inflector\InflectorFactory;
-use Dontdrinkandroot\Common\CrudOperation;
+use Niebvelungen\RestBundleDoctrine\Metadata\Common\CrudOperation;
 use Niebvelungen\RestBundleDoctrine\Metadata\Attribute\Operation;
 use Metadata\MergeableClassMetadata;
 use Metadata\MergeableInterface;
@@ -137,31 +137,6 @@ class ClassMetadata extends MergeableClassMetadata
         }
 
         return null;
-    }
-
-    /**
-     * @param MergeableInterface $object
-     *
-     * @return array
-     */
-    protected function mergePropertyMetadata(MergeableInterface $object): array
-    {
-        assert($object instanceof ClassMetadata);
-
-        /** @var ClassMetadata $object */
-        /** @var PropertyMetadata[] $mergedMetadata */
-        $mergedMetadata = $this->propertyMetadata;
-
-        foreach ($object->propertyMetadata as $otherMetadata) {
-            /** @var PropertyMetadata $otherMetadata */
-            if (array_key_exists($otherMetadata->name, $mergedMetadata)) {
-                $mergedMetadata[$otherMetadata->name] = $mergedMetadata[$otherMetadata->name]->merge($otherMetadata);
-            } else {
-                $mergedMetadata[$otherMetadata->name] = $otherMetadata;
-            }
-        }
-
-        return $mergedMetadata;
     }
 
     public function getOperation(CrudOperation $method): ?Operation

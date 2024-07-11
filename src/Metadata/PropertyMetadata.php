@@ -2,10 +2,8 @@
 
 namespace Niebvelungen\RestBundleDoctrine\Metadata;
 
-use Dontdrinkandroot\Common\CrudOperation;
+use Niebvelungen\RestBundleDoctrine\Metadata\Common\CrudOperation;
 use Niebvelungen\RestBundleDoctrine\Metadata\Attribute\Operation;
-use Niebvelungen\RestBundleDoctrine\Metadata\Attribute\Postable;
-use Niebvelungen\RestBundleDoctrine\Metadata\Attribute\Puttable;
 use InvalidArgumentException;
 use Metadata\MergeableInterface;
 use Metadata\PropertyMetadata as BasePropertyMetadata;
@@ -16,16 +14,14 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
 
     private ?bool $excluded = null;
 
-    private ?Puttable $puttable = null;
+    private ?bool $puttable = null;
 
-    private ?Postable $postable = null;
+    private ?bool $postable = null;
 
     private ?bool $includable = null;
 
     /** @var list<string>|null */
     private ?array $includablePaths = null;
-
-    private ?bool $subResource = null;
 
     /** @var list<Operation>|null */
     private ?array $operations = null;
@@ -34,21 +30,19 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
 
     private ?bool $collection = null;
 
-    private ?bool $virtual = null;
-
-    private ?string $subResourcePath = null;
+    private ?string $entityClass = null;
 
     public function isPuttable(): bool
     {
         return null !== $this->puttable;
     }
 
-    public function setPuttable(?Puttable $puttable)
+    public function setPuttable(bool $puttable)
     {
         $this->puttable = $puttable;
     }
 
-    public function getPuttable(): ?Puttable
+    public function getPuttable(): ?bool
     {
         return $this->puttable;
     }
@@ -58,12 +52,12 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         return null !== $this->postable;
     }
 
-    public function setPostable(?Postable $postable)
+    public function setPostable(?bool $postable)
     {
         $this->postable = $postable;
     }
 
-    public function getPostable(): ?Postable
+    public function getPostable(): ?bool
     {
         return $this->postable;
     }
@@ -73,39 +67,10 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         return $this->getBool($this->includable, false);
     }
 
-    public function isVirtual(): bool
-    {
-        return $this->getBool($this->virtual, false);
-    }
-
-    public function setVirtual(bool $virtual)
-    {
-        $this->virtual = $virtual;
-    }
 
     public function setIncludable(bool $includable)
     {
         $this->includable = $includable;
-    }
-
-    public function isSubResource(): bool
-    {
-        return $this->getBool($this->subResource, false);
-    }
-
-    public function setSubResource(bool $subResource)
-    {
-        $this->subResource = $subResource;
-    }
-
-    public function getSubResourcePath(): ?string
-    {
-        return $this->subResourcePath;
-    }
-
-    public function setSubResourcePath(string $subResourcePath)
-    {
-        $this->subResourcePath = $subResourcePath;
     }
 
     public function isExcluded(): bool
@@ -158,6 +123,15 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         $this->type = $type;
     }
 
+    public function getEntityClass(): ?bool{
+        return $this->entityClass;
+    }
+
+    public function setEntityClass(?string $class)
+    {
+        $this->entityClass = $class;
+    }
+
     /**
      * @param Operation[] $operations
      */
@@ -177,16 +151,14 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         $this->postable = $this->mergeField($other->postable, $this->postable);
         $this->excluded = $this->mergeField($other->excluded, $this->excluded);
         $this->includable = $this->mergeField($other->includable, $this->includable);
-        $this->subResource = $this->mergeField($other->subResource, $this->subResource);
         $this->includablePaths = $this->mergeField($other->includablePaths, $this->includablePaths);
         $this->association = $this->mergeField($other->association, $this->association);
         $this->collection = $this->mergeField($other->collection, $this->collection);
-        $this->subResourcePath = $this->mergeField($other->subResourcePath, $this->subResourcePath);
         $this->operations = $this->mergeField($other->operations, $this->operations);
-        $this->virtual = $this->mergeField($other->virtual, $this->virtual);
+        $this->entityClass = $this->mergeField($other->entityClass, $this->entityClass);
     }
 
-    protected function getBool(?bool $value, bool $default)
+    protected function getBool(?bool $value, bool $default): bool
     {
         if (null === $value) {
             return $default;
@@ -234,12 +206,10 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
                 $this->postable,
                 $this->includable,
                 $this->includablePaths,
-                $this->subResource,
                 $this->operations,
                 $this->association,
                 $this->collection,
-                $this->virtual,
-                $this->subResourcePath,
+                $this->entityClass,
             ]
         );
     }
@@ -258,12 +228,10 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
             $this->postable,
             $this->includable,
             $this->includablePaths,
-            $this->subResource,
             $this->operations,
             $this->association,
             $this->collection,
-            $this->virtual,
-            $this->subResourcePath
+            $this->entityClass,
             ) = unserialize($str);
     }
 }
