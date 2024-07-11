@@ -13,23 +13,231 @@ It generates get, search, update, insert and delete routes.
 ## Install
 
 Install via composer
-
-`composer require niebvelungen/rest-bundle-doctrine`
+```
+composer require niebvelungen/rest-bundle-doctrine
+```
 
 Enable the Bundle in the `config/bundles.php` file of your Symfony project:
 
-`return [
-Niebvelungen\RestBundleDoctrine\DdrRestBundle::class => ['all' => true]
-];`
+```php
+return [
+    ...
+    Niebvelungen\RestBundleDoctrine\DdrRestBundle::class => ['all' => true]
+];
+```
 
 Register the routes in the `config/routes.xml` file of your Symfony project:
+```xml
 <?xml version="1.0" encoding="UTF-8" ?>
-`<routes xmlns="http://symfony.com/schema/routing"
+<routes xmlns="http://symfony.com/schema/routing"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://symfony.com/schema/routing
 https://symfony.com/schema/routing/routing-1.0.xsd">
-..
-<import resource="." type="rest_json"/>
-..
-</routes>`
+...
+    <import resource="." type="rest_json"/>
+</routes>
+```
+
+## Usage
+
+After fully installing there should be routes available for all entities that are registered in the Doctrine ORM
+
+Routes will return or take data in JSON format.
+
+If you want to see a list of all routes use:
+```
+bin/console debug:router
+```
+
+The entityName will get mapped to its plural: so a User entity will become:
+/api/doctrine/search/users
+
+### Search
+```
+    /api/doctrine/search/{entityName}
+```
+*Method: **POST***
+
+#### Request Options
+
+Body Schema
+```
+{
+    "associations":[
+        "...",
+        "..."
+    ],
+    "filter":[
+        {
+            "type": "equals",
+            "field": "id",
+            "value": 1
+        }
+    ],
+    "sort":[
+        {
+            "field": "id",
+            "order": "ASC"
+        }
+    ]
+}
+```
+
+#### Associations
+You can freely add associations that will be loaded **with** the requested entity. 
+
+Associations need to be given in snake case and as a string. 
+
+Associations can be up to 2 paths deep.
+
+Example:
+
+User has a connected Table UserRole and we want to load it.
+
+Our Body would look like this:
+```
+{
+    "associations":[
+        "user_role"
+    ]
+}
+```
+
+For nested associations you can chain them with _entity_._entity_
+
+e.g. if UserRoles had a connected Table permissions and we want to load them too
+
+Our Body would look like this:
+```
+{
+    "associations":[
+        "user_role.permissions"
+    ]
+}
+```
+
+
+#### Filter
+
+Available Filters
+* `equals`
+* `not_equals`
+* `gt` (greater than)
+* `lt` (less than)
+
+To get for e.x. a User with the id 1 our body would look like this
+
+Our Body would look like this:
+```
+{
+    "filter":[
+        {
+            "type": "equals",
+            "field": "id",
+            "value": 1
+        }
+    ],
+}
+```
+
+If we want to filter for a User with a specific Role we can also do that
+
+```
+{
+    "filter":[
+        {
+            "type": "equals",
+            "field": "userRole.id",
+            "value": 1
+        }
+    ],
+}
+```
+
+This will return all users that have the UserRole with id 1.
+
+If we want to load and filter the association simultaneously we can give the filter a `mode` parameter.
+
+As of writing this doc only `"mode": "full"` is supported everything else will not have any impact.
+
+So if we want to get a User that has the UserRole id 1 and the corresponding UserRole our Body looks like this:
+
+```
+{
+    "associations":[
+        "user_role"
+    ],
+    "filter":[
+        {
+            "type": "equals",
+            "field": "userRole.id",
+            "value": 1,
+            "mode": "full"
+        }
+    ],
+}
+```
+
+If we want to get all UserRoles but still only Users with the UserRole.id 1 we can just remove the `"mode":"full"` parameter.
+
+#### Sorting
+
+We can define sortings to our entities by giving the request body a `sort` array.
+
+Sample Body
+```
+{
+    "sort":[
+        {
+            "field": "id",
+            "order": "ASC"
+        }
+    ]
+}
+```
+
+Available sort orders
+* `ASC`
+* `DESC`
+
+
+### Get
+```
+    /api/doctrine/get/{entityName}/{id}
+```
+*Method: **GET***
+
+Returns an Entity with the given name and id.
+
+Get can also use Associations see **Associations** above.
+
+### Insert 
+```
+    /api/doctrine/insert/{entityName}
+```
+
+*Method: **POST***
+
+Returns 201 if successful
+
+### Update
+```
+    /api/doctrine/update/{entityName}/{id}
+```
+
+Returns 200 if successful
+
+*Method: **PUT/PATCH***
+
+### Delete
+```
+    /api/doctrine/delete/{entityName}/{id}
+```
+*Method: **DELETE***
+
+Deletes an entity with the given id.
+
+Will return an Error if the id does not exist.
+
+Returns 204 if successful
 

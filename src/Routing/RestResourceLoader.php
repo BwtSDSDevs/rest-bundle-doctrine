@@ -76,12 +76,12 @@ class RestResourceLoader extends Loader
             $routes->add($namePrefix . '.get', $getRoute);
 
             $updateRoute = new Route(self::ROUTE_PREFIX . 'update/' . $pathPrefix. '/{id}');
-            $updateRoute->setMethods(Request::METHOD_POST);
+            $updateRoute->setMethods([Request::METHOD_PUT, Request::METHOD_PATCH]);
             $updateRoute->setDefaults(array_merge($defaults,['_controller' => $controller . self::UPDATE_ACTION]));
             $routes->add($namePrefix . '.update', $updateRoute);
 
             $insertRoute = new Route(self::ROUTE_PREFIX . 'insert/' . $pathPrefix);
-            $insertRoute->setMethods([Request::METHOD_PUT, Request::METHOD_PATCH]);
+            $insertRoute->setMethods(Request::METHOD_POST);
             $insertRoute->setDefaults(array_merge($defaults,['_controller' => $controller . self::INSERT_ACTION]));
             $routes->add($namePrefix . '.insert', $insertRoute);
 
