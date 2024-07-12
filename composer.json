@@ -54,7 +54,7 @@
             "allow-contrib": true
         },
         "branch-alias": {
-            "dev-master": "0.1"
+            "master": "0.1"
         }
     },
     "config": {
