@@ -52,9 +52,6 @@
         "symfony": {
             "require": "7.1.*",
             "allow-contrib": true
-        },
-        "branch-alias": {
-            "dev-master": "0.2.x-dev"
         }
     },
     "config": {
