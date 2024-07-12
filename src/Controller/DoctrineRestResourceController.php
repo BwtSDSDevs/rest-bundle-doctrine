@@ -31,13 +31,15 @@ class DoctrineRestResourceController extends AbstractRestResourceController
         RestMetadataFactory $metadataFactory,
         EntityManagerInterface $entityManager,
         SerializerInterface $serializer,
-        private readonly QueryMapperService $queryMapperService
+        private readonly QueryMapperService $queryMapperService,
+        private readonly string $projectBasePath
     ) {
         parent::__construct(
             $validator,
             $requestStack,
             $metadataFactory,
-            $serializer
+            $serializer,
+            $projectBasePath
         );
         $this->entityManager = $entityManager;
     }

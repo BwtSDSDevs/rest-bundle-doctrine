@@ -72,6 +72,7 @@
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="serializer" />
             <argument type="service" id="SdsDev\RestBundleDoctrine\Service\QueryMapperService" />
+            <argument>%kernel.project_dir%</argument>
         </service>
 
         <!-- Commands -->

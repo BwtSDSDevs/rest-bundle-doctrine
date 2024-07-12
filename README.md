@@ -38,6 +38,22 @@ https://symfony.com/schema/routing/routing-1.0.xsd">
 </routes>
 ```
 
+### Authentication
+
+To enable the default Symfony `#[CurrentUser]` Authentication on all endpoints do the flowing steps:
+
+- Create new folder `config/` called `doctrineRest`
+- Create a new yaml file in `config/doctrineRest` called `doctrine_rest_auth.yaml`
+- Add the following below to `config/doctrineRest/doctrine_rest_auth.yaml`
+```YAML
+auth:
+  true
+```
+
+This will enable the basic Symfony auth on all endpoints so they can only be accessed if you are logged in.
+
+[Symfony Security Docs](https://symfony.com/doc/current/security.html)
+
 ## Usage
 
 After fully installing there should be routes available for all entities that are registered in the Doctrine ORM

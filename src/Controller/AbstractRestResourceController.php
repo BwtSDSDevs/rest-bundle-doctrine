@@ -15,38 +15,33 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Yaml\Yaml;
 
-abstract class AbstractRestResourceController implements RestResourceControllerInterface
+abstract class AbstractRestResourceController
 {
-    private ValidatorInterface $validator;
-
-    private RequestStack $requestStack;
-
-    private RestMetadataFactory $metadataFactory;
-
-    private SerializerInterface $serializer;
-
     public function __construct(
-        ValidatorInterface $validator,
-        RequestStack $requestStack,
-        RestMetadataFactory $metadataFactory,
-        SerializerInterface $serializer
+        private readonly ValidatorInterface $validator,
+        private readonly RequestStack $requestStack,
+        private readonly RestMetadataFactory $metadataFactory,
+        private readonly SerializerInterface $serializer,
+        private readonly string $projectBasePath
     ) {
-        $this->validator = $validator;
-        $this->requestStack = $requestStack;
-        $this->metadataFactory = $metadataFactory;
-        $this->serializer = $serializer;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function searchEntityAction(Request $request): JsonResponse
+    public function searchEntityAction(#[CurrentUser] $user,Request $request): JsonResponse
     {
+        if($this->isUserAuthRequired() && empty($user))
+            return new JsonResponse(["Error" => "Unauthorized"], Response::HTTP_UNAUTHORIZED);
+
         $page = $request->query->get('page', 1);
         $perPage = $request->query->get('perPage', 50);
 
@@ -84,8 +79,11 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     /**
      * {@inheritdoc}
      */
-    public function updateEntityAction(Request $request, $id): JsonResponse
+    public function updateEntityAction(#[CurrentUser] $user, Request $request, $id): JsonResponse
     {
+        if($this->isUserAuthRequired() && empty($user))
+            return new JsonResponse(["Error" => "Unauthorized"], Response::HTTP_UNAUTHORIZED);
+
         $entity = $this->getEntityById($id);
 
         $entity = $this->serializer->deserialize(
@@ -109,8 +107,11 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     /**
      * {@inheritdoc}
      */
-    public function getEntityByIdAction(Request $request, $id): JsonResponse
+    public function getEntityByIdAction(#[CurrentUser] $user, Request $request, $id): JsonResponse
     {
+        if($this->isUserAuthRequired() && empty($user))
+            return new JsonResponse(["Error" => "Unauthorized"], Response::HTTP_UNAUTHORIZED);
+
         $entity = $this->getEntityById($id);
 
         $response = new JsonResponse();
@@ -131,8 +132,11 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     /**
      * {@inheritdoc}
      */
-    public function insertEntityAction(Request $request): JsonResponse
+    public function insertEntityAction(#[CurrentUser] $user, Request $request): JsonResponse
     {
+        if($this->isUserAuthRequired() && empty($user))
+            return new JsonResponse(["Error" => "Unauthorized"], Response::HTTP_UNAUTHORIZED);
+
         $entity = $this->serializer->deserialize(
             $request->getContent(),
             $this->getEntityClass(),
@@ -153,8 +157,11 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     /**
      * {@inheritdoc}
      */
-    public function deleteEntityAction(Request $request, $id): JsonResponse
+    public function deleteEntityAction(#[CurrentUser] $user, Request $request, $id): JsonResponse
     {
+        if($this->isUserAuthRequired() && empty($user))
+            return new JsonResponse(["Error" => "Unauthorized"], Response::HTTP_UNAUTHORIZED);
+
         $entity = $this->getEntityById($id);
         $this->deleteEntity($entity);
 
@@ -238,6 +245,21 @@ abstract class AbstractRestResourceController implements RestResourceControllerI
     protected function getSerializer(): SerializerInterface
     {
         return $this->serializer;
+    }
+
+    protected function isUserAuthRequired() : bool
+    {
+        try {
+            $value = Yaml::parseFile($this->projectBasePath . '/config/doctrineRest/doctrine_rest_auth.yaml');
+
+            if(!empty($value['auth']))
+                return true;
+        }
+        catch (ParseException $exception) {
+            return false;
+        }
+
+        return false;
     }
 
     /**
