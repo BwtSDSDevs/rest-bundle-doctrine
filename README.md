@@ -61,7 +61,7 @@ The entityName will get mapped to its plural: so a User entity will become:
 #### Request Options
 
 Body Schema
-```
+```JSON
 {
     "associations":[
         "...",
@@ -95,7 +95,7 @@ Example:
 User has a connected Table UserRole and we want to load it.
 
 Our Body would look like this:
-```
+```JSON
 {
     "associations":[
         "user_role"
@@ -108,7 +108,7 @@ For nested associations you can chain them with _entity_._entity_
 e.g. if UserRoles had a connected Table permissions and we want to load them too
 
 Our Body would look like this:
-```
+```JSON
 {
     "associations":[
         "user_role.permissions"
@@ -128,7 +128,7 @@ Available Filters
 To get for e.x. a User with the id 1 our body would look like this
 
 Our Body would look like this:
-```
+```JSON
 {
     "filter":[
         {
@@ -142,7 +142,7 @@ Our Body would look like this:
 
 If we want to filter for a User with a specific Role we can also do that
 
-```
+```JSON
 {
     "filter":[
         {
@@ -162,7 +162,7 @@ As of writing this doc only `"mode": "full"` is supported everything else will n
 
 So if we want to get a User that has the UserRole id 1 and the corresponding UserRole our Body looks like this:
 
-```
+```JSON
 {
     "associations":[
         "user_role"
@@ -185,7 +185,7 @@ If we want to get all UserRoles but still only Users with the UserRole.id 1 we c
 We can define sortings to our entities by giving the request body a `sort` array.
 
 Sample Body
-```
+```JSON
 {
     "sort":[
         {
@@ -225,7 +225,7 @@ User has id, name, username, additionalName, a Country (ManyToOne Entity) and we
 
 Your Body to insert a new User would look like this
 
-```
+```JSON
 {
     "id": 1,
     "name": "Test User",
@@ -252,7 +252,7 @@ User has id, name, username and we want to update the username
 
 Your Body to update would look like this
 
-```
+```JSON
 {
     "username": "New User Name",
 }
