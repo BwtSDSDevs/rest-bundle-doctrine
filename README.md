@@ -50,7 +50,7 @@ bin/console debug:router
 ```
 
 The entityName will get mapped to its plural: so a User entity will become:
-/api/doctrine/search/users
+`/api/doctrine/search/users`
 
 ### Search
 ```
@@ -209,7 +209,7 @@ Available sort orders
 
 Returns an Entity with the given name and id.
 
-Get can also use Associations see **Associations** above.
+Get can also use Associations see [Associations](#associations) above.
 
 ### Insert 
 ```
