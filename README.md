@@ -218,6 +218,26 @@ Get can also use Associations see **Associations** above.
 
 *Method: **POST***
 
+Body is a JSON representation of the object that you want to create.
+
+If we assume you have a User Entity
+User has id, name, username, additionalName, a Country (ManyToOne Entity) and we got a country with id 1 in there.
+
+Your Body to insert a new User would look like this
+
+```
+{
+    "id": 1,
+    "name": "Test User",
+    "username": "TestAccount",
+    "additionalName": null,
+    "country": 1
+}
+```
+(If id is autoincrement you have to delete the `"id"` field in the json)
+
+**If a mandatory foreign key is not set the api will return an Error!**
+
 Returns 201 if successful
 
 ### Update
@@ -225,9 +245,20 @@ Returns 201 if successful
     /api/doctrine/update/{entityName}/{id}
 ```
 
-Returns 200 if successful
-
 *Method: **PUT/PATCH***
+
+If we assume you have a User Entity
+User has id, name, username and we want to update the username
+
+Your Body to update would look like this
+
+```
+{
+    "username": "New User Name",
+}
+```
+
+Returns 200 if successful
 
 ### Delete
 ```
