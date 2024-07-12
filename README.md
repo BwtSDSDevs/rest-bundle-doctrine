@@ -8,7 +8,7 @@ Updated Project to work with Doctrine ORM 3 and Symfony 7.1.*
 
 This Symfony Bundle automatically generates Routes for all registered Doctrine ORM Entities.
 
-It generates get, search, update, insert and delete routes.
+It generates [get](#get), [search](#search), [update](#update), [insert](#insert) and [delete](#delete) routes.
 
 ## Install
 
