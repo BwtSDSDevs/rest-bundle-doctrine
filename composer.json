@@ -52,9 +52,6 @@
         "symfony": {
             "require": "7.1.*",
             "allow-contrib": true
-        },
-        "branch-alias": {
-            "master": "0.1"
         }
     },
     "config": {
