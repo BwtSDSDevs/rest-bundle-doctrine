@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
 
-namespace Niebvelungen\RestBundleDoctrine\Service;
+namespace SdsDev\RestBundleDoctrine\Service;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Order;
-use Niebvelungen\RestBundleDoctrine\Exceptions\InvalidFilterException;
+use SdsDev\RestBundleDoctrine\Exceptions\InvalidFilterException;
 
 class QueryMapperService
 {

@@ -1,15 +1,15 @@
 <?php
 
-namespace Niebvelungen\RestBundleDoctrine\Controller;
+namespace SdsDev\RestBundleDoctrine\Controller;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Niebvelungen\RestBundleDoctrine\Metadata\Common\CrudOperation;
-use Niebvelungen\RestBundleDoctrine\Defaults\Defaults;
-use Niebvelungen\RestBundleDoctrine\Exceptions\InvalidFilterException;
-use Niebvelungen\RestBundleDoctrine\Metadata\ClassMetadata;
-use Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory;
-use Niebvelungen\RestBundleDoctrine\Serializer\RestDenormalizer;
-use Niebvelungen\RestBundleDoctrine\Serializer\RestNormalizer;
+use SdsDev\RestBundleDoctrine\Metadata\Common\CrudOperation;
+use SdsDev\RestBundleDoctrine\Defaults\Defaults;
+use SdsDev\RestBundleDoctrine\Exceptions\InvalidFilterException;
+use SdsDev\RestBundleDoctrine\Metadata\ClassMetadata;
+use SdsDev\RestBundleDoctrine\Metadata\RestMetadataFactory;
+use SdsDev\RestBundleDoctrine\Serializer\RestDenormalizer;
+use SdsDev\RestBundleDoctrine\Serializer\RestNormalizer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;

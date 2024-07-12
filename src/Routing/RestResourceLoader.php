@@ -1,11 +1,11 @@
 <?php
 
-namespace Niebvelungen\RestBundleDoctrine\Routing;
+namespace SdsDev\RestBundleDoctrine\Routing;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Niebvelungen\RestBundleDoctrine\Controller\DoctrineRestResourceController;
-use Niebvelungen\RestBundleDoctrine\Defaults\Defaults;
-use Niebvelungen\RestBundleDoctrine\Metadata\ClassMetadata;
+use SdsDev\RestBundleDoctrine\Controller\DoctrineRestResourceController;
+use SdsDev\RestBundleDoctrine\Defaults\Defaults;
+use SdsDev\RestBundleDoctrine\Metadata\ClassMetadata;
 use Exception;
 use Metadata\MetadataFactoryInterface;
 use RuntimeException;

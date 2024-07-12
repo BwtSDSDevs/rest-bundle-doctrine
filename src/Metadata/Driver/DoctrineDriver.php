@@ -1,11 +1,11 @@
 <?php
 
-namespace Niebvelungen\RestBundleDoctrine\Metadata\Driver;
+namespace SdsDev\RestBundleDoctrine\Metadata\Driver;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\MappingException as OrmMappingException;
-use Niebvelungen\RestBundleDoctrine\Metadata\ClassMetadata;
-use Niebvelungen\RestBundleDoctrine\Metadata\PropertyMetadata;
+use SdsDev\RestBundleDoctrine\Metadata\ClassMetadata;
+use SdsDev\RestBundleDoctrine\Metadata\PropertyMetadata;
 use Metadata\Driver\DriverInterface;
 use ReflectionClass;
 

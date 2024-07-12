@@ -1,9 +1,9 @@
 <?php
 
-namespace Niebvelungen\RestBundleDoctrine\Metadata\Attribute;
+namespace SdsDev\RestBundleDoctrine\Metadata\Attribute;
 
-use Niebvelungen\RestBundleDoctrine\Metadata\Common\CrudOperation;
-use Niebvelungen\RestBundleDoctrine\Metadata\PropertyNode;
+use SdsDev\RestBundleDoctrine\Metadata\Common\CrudOperation;
+use SdsDev\RestBundleDoctrine\Metadata\PropertyNode;
 
 class Operation
 {

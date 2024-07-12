@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Niebvelungen\RestBundleDoctrine\Metadata\Common;
+namespace SdsDev\RestBundleDoctrine\Metadata\Common;
 
 enum CrudOperation: string
 {

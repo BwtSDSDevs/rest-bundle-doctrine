@@ -1,5 +1,5 @@
 {
-    "name": "niebvelungen/rest-bundle-doctrine",
+    "name": "sdsdev/rest-bundle-doctrine",
     "description": "Symfony bundle that enables you to easily expose your Doctrine Entities via REST",
     "type": "symfony-bundle",
     "keywords": [
@@ -45,12 +45,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Niebvelungen\\RestBundleDoctrine\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Niebvelungen\\RestBundleDoctrine\\Tests\\": "tests/"
+            "SdsDev\\RestBundleDoctrine\\": "src/"
         }
     },
     "extra": {

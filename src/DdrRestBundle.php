@@ -1,6 +1,6 @@
 <?php
 
-namespace Niebvelungen\RestBundleDoctrine;
+namespace SdsDev\RestBundleDoctrine;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;

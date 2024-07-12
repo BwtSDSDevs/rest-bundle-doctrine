@@ -14,7 +14,7 @@ It generates [get](#get), [search](#search), [update](#update), [insert](#insert
 
 Install via composer
 ```
-composer require niebvelungen/rest-bundle-doctrine
+composer require sdsdev/rest-bundle-doctrine
 ```
 
 Enable the Bundle in the `config/bundles.php` file of your Symfony project:
@@ -22,7 +22,7 @@ Enable the Bundle in the `config/bundles.php` file of your Symfony project:
 ```php
 return [
     ...
-    Niebvelungen\RestBundleDoctrine\DdrRestBundle::class => ['all' => true]
+    SdsDev\RestBundleDoctrine\DdrRestBundle::class => ['all' => true]
 ];
 ```
 

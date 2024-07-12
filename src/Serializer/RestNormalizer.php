@@ -1,18 +1,18 @@
 <?php
 
-namespace Niebvelungen\RestBundleDoctrine\Serializer;
+namespace SdsDev\RestBundleDoctrine\Serializer;
 
 use DateTimeInterface;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 
-use Niebvelungen\RestBundleDoctrine\Defaults\Defaults;
-use Niebvelungen\RestBundleDoctrine\Metadata\ClassMetadata;
-use Niebvelungen\RestBundleDoctrine\Metadata\Common\Asserted;
-use Niebvelungen\RestBundleDoctrine\Metadata\Common\CrudOperation;
-use Niebvelungen\RestBundleDoctrine\Metadata\PropertyMetadata;
-use Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory;
+use SdsDev\RestBundleDoctrine\Defaults\Defaults;
+use SdsDev\RestBundleDoctrine\Metadata\ClassMetadata;
+use SdsDev\RestBundleDoctrine\Metadata\Common\Asserted;
+use SdsDev\RestBundleDoctrine\Metadata\Common\CrudOperation;
+use SdsDev\RestBundleDoctrine\Metadata\PropertyMetadata;
+use SdsDev\RestBundleDoctrine\Metadata\RestMetadataFactory;
 use LogicException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;

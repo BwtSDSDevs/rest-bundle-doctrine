@@ -1,9 +1,9 @@
 <?php
 
-namespace Niebvelungen\RestBundleDoctrine\Metadata;
+namespace SdsDev\RestBundleDoctrine\Metadata;
 
-use Niebvelungen\RestBundleDoctrine\Metadata\Common\CrudOperation;
-use Niebvelungen\RestBundleDoctrine\Metadata\Attribute\Operation;
+use SdsDev\RestBundleDoctrine\Metadata\Common\CrudOperation;
+use SdsDev\RestBundleDoctrine\Metadata\Attribute\Operation;
 use InvalidArgumentException;
 use Metadata\MergeableInterface;
 use Metadata\PropertyMetadata as BasePropertyMetadata;

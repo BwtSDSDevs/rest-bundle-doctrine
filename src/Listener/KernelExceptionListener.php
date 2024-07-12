@@ -1,6 +1,6 @@
 <?php
 
-namespace Niebvelungen\RestBundleDoctrine\Listener;
+namespace SdsDev\RestBundleDoctrine\Listener;
 
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\JsonResponse;

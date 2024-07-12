@@ -1,6 +1,6 @@
 <?php
 
-namespace Niebvelungen\RestBundleDoctrine\Metadata\Attribute;
+namespace SdsDev\RestBundleDoctrine\Metadata\Attribute;
 
 class ParseUtils
 {

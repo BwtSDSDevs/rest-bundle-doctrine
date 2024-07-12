@@ -1,6 +1,6 @@
 <?php
 
-namespace Niebvelungen\RestBundleDoctrine\Metadata;
+namespace SdsDev\RestBundleDoctrine\Metadata;
 
 use Metadata\MetadataFactory;
 

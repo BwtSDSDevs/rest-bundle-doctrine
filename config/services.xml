@@ -7,17 +7,17 @@
 
         <!-- Services -->
 
-        <service id="Niebvelungen\RestBundleDoctrine\Metadata\Driver\DoctrineDriver">
+        <service id="SdsDev\RestBundleDoctrine\Metadata\Driver\DoctrineDriver">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
 
-        <service id="Niebvelungen\RestBundleDoctrine\Metadata\Driver\AttributeDriver">
-            <argument type="service" id="Niebvelungen\RestBundleDoctrine\Metadata\Driver\DoctrineDriver" />
+        <service id="SdsDev\RestBundleDoctrine\Metadata\Driver\AttributeDriver">
+            <argument type="service" id="SdsDev\RestBundleDoctrine\Metadata\Driver\DoctrineDriver" />
         </service>
 
         <service id="ddr_rest.metadata.driver.chain" class="Metadata\Driver\DriverChain">
             <argument type="collection">
-                <argument type="service" id="Niebvelungen\RestBundleDoctrine\Metadata\Driver\AttributeDriver"/>
+                <argument type="service" id="SdsDev\RestBundleDoctrine\Metadata\Driver\AttributeDriver"/>
             </argument>
         </service>
 
@@ -26,52 +26,52 @@
             <argument type="service" id="cache.system" />
         </service>
 
-        <service id="Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory">
+        <service id="SdsDev\RestBundleDoctrine\Metadata\RestMetadataFactory">
             <argument type="service" id="ddr_rest.metadata.driver.chain" />
             <call method="setCache">
                 <argument type="service" id="ddr_rest.metadata.cache" />
             </call>
         </service>
 
-        <service id="Niebvelungen\RestBundleDoctrine\Routing\RestResourceLoader">
-            <argument type="service" id="Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory" />
+        <service id="SdsDev\RestBundleDoctrine\Routing\RestResourceLoader">
+            <argument type="service" id="SdsDev\RestBundleDoctrine\Metadata\RestMetadataFactory" />
             <argument type="service" id="doctrine.orm.entity_manager" />
             <tag name="routing.loader" />
         </service>
 
-        <service id="Niebvelungen\RestBundleDoctrine\Service\QueryMapperService">
+        <service id="SdsDev\RestBundleDoctrine\Service\QueryMapperService">
         </service>
 
         <!-- Serialization -->
 
-        <service id="Niebvelungen\RestBundleDoctrine\Serializer\RestNormalizer">
-            <argument type="service" id="Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory" />
+        <service id="SdsDev\RestBundleDoctrine\Serializer\RestNormalizer">
+            <argument type="service" id="SdsDev\RestBundleDoctrine\Metadata\RestMetadataFactory" />
             <argument type="service" id="property_accessor" />
             <argument type="service" id="router" />
             <tag name="serializer.normalizer" />
         </service>
 
-        <service id="Niebvelungen\RestBundleDoctrine\Serializer\RestDenormalizer">
-            <argument type="service" id="Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory" />
+        <service id="SdsDev\RestBundleDoctrine\Serializer\RestDenormalizer">
+            <argument type="service" id="SdsDev\RestBundleDoctrine\Metadata\RestMetadataFactory" />
             <argument type="service" id="property_accessor" />
             <argument type="service" id="doctrine.orm.entity_manager" />
             <tag name="serializer.normalizer" />
         </service>
 
         <!-- Encoder -->
-        <service id="Niebvelungen\RestBundleDoctrine\Serializer\RestJsonEncoder">
+        <service id="SdsDev\RestBundleDoctrine\Serializer\RestJsonEncoder">
             <tag name="serializer.encoder" />
         </service>
 
         <!-- Controller -->
 
-        <service id="Niebvelungen\RestBundleDoctrine\Controller\DoctrineRestResourceController" public="true">
+        <service id="SdsDev\RestBundleDoctrine\Controller\DoctrineRestResourceController" public="true">
             <argument type="service" id="validator" />
             <argument type="service" id="request_stack" />
-            <argument type="service" id="Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory" />
+            <argument type="service" id="SdsDev\RestBundleDoctrine\Metadata\RestMetadataFactory" />
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="serializer" />
-            <argument type="service" id="Niebvelungen\RestBundleDoctrine\Service\QueryMapperService" />
+            <argument type="service" id="SdsDev\RestBundleDoctrine\Service\QueryMapperService" />
         </service>
 
         <!-- Commands -->

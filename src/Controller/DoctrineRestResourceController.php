@@ -1,6 +1,6 @@
 <?php
 
-namespace Niebvelungen\RestBundleDoctrine\Controller;
+namespace SdsDev\RestBundleDoctrine\Controller;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
@@ -10,9 +10,9 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Niebvelungen\RestBundleDoctrine\Exceptions\InvalidFilterException;
-use Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory;
-use Niebvelungen\RestBundleDoctrine\Service\QueryMapperService;
+use SdsDev\RestBundleDoctrine\Exceptions\InvalidFilterException;
+use SdsDev\RestBundleDoctrine\Metadata\RestMetadataFactory;
+use SdsDev\RestBundleDoctrine\Service\QueryMapperService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

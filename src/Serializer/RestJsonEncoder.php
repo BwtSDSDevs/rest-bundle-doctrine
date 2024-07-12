@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
 
-namespace Niebvelungen\RestBundleDoctrine\Serializer;
+namespace SdsDev\RestBundleDoctrine\Serializer;
 
-use Niebvelungen\RestBundleDoctrine\Defaults\Defaults;
+use SdsDev\RestBundleDoctrine\Defaults\Defaults;
 use Symfony\Component\Serializer\Encoder\DecoderInterface;
 use Symfony\Component\Serializer\Encoder\EncoderInterface;
 use Symfony\Component\Serializer\Encoder\JsonDecode;

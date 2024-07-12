@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace Niebvelungen\RestBundleDoctrine\Defaults;
+namespace SdsDev\RestBundleDoctrine\Defaults;
 
 class Defaults
 {

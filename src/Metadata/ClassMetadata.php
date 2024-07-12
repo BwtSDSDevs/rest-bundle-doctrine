@@ -1,10 +1,10 @@
 <?php
 
-namespace Niebvelungen\RestBundleDoctrine\Metadata;
+namespace SdsDev\RestBundleDoctrine\Metadata;
 
 use Doctrine\Inflector\InflectorFactory;
-use Niebvelungen\RestBundleDoctrine\Metadata\Common\CrudOperation;
-use Niebvelungen\RestBundleDoctrine\Metadata\Attribute\Operation;
+use SdsDev\RestBundleDoctrine\Metadata\Common\CrudOperation;
+use SdsDev\RestBundleDoctrine\Metadata\Attribute\Operation;
 use Metadata\MergeableClassMetadata;
 use Metadata\MergeableInterface;
 use ReflectionClass;

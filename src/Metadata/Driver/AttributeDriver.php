@@ -1,13 +1,13 @@
 <?php
 
-namespace Niebvelungen\RestBundleDoctrine\Metadata\Driver;
+namespace SdsDev\RestBundleDoctrine\Metadata\Driver;
 
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
-use Niebvelungen\RestBundleDoctrine\Helper\StringHelper;
-use Niebvelungen\RestBundleDoctrine\Metadata\ClassMetadata;
-use Niebvelungen\RestBundleDoctrine\Metadata\PropertyMetadata;
+use SdsDev\RestBundleDoctrine\Helper\StringHelper;
+use SdsDev\RestBundleDoctrine\Metadata\ClassMetadata;
+use SdsDev\RestBundleDoctrine\Metadata\PropertyMetadata;
 use Metadata\Driver\DriverInterface;
 use ReflectionAttribute;
 use ReflectionClass;

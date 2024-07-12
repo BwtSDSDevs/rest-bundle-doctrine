@@ -1,16 +1,16 @@
 <?php
 
-namespace Niebvelungen\RestBundleDoctrine\Serializer;
+namespace SdsDev\RestBundleDoctrine\Serializer;
 
 use BadMethodCallException;
 use DateTime;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
-use Niebvelungen\RestBundleDoctrine\Metadata\Common\CrudOperation;
-use Niebvelungen\RestBundleDoctrine\Defaults\Defaults;
-use Niebvelungen\RestBundleDoctrine\Metadata\PropertyMetadata;
-use Niebvelungen\RestBundleDoctrine\Metadata\RestMetadataFactory;
+use SdsDev\RestBundleDoctrine\Metadata\Common\CrudOperation;
+use SdsDev\RestBundleDoctrine\Defaults\Defaults;
+use SdsDev\RestBundleDoctrine\Metadata\PropertyMetadata;
+use SdsDev\RestBundleDoctrine\Metadata\RestMetadataFactory;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 

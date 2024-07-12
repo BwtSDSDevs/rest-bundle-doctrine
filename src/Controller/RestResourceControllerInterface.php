@@ -1,6 +1,6 @@
 <?php
 
-namespace Niebvelungen\RestBundleDoctrine\Controller;
+namespace SdsDev\RestBundleDoctrine\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 
