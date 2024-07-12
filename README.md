@@ -42,7 +42,7 @@ https://symfony.com/schema/routing/routing-1.0.xsd">
 
 To enable the default Symfony `#[CurrentUser]` Authentication on all endpoints do the flowing steps:
 
-- Create new folder `config/` called `doctrineRest`
+- Create new folder in `config/` called `doctrineRest`
 - Create a new yaml file in `config/doctrineRest` called `doctrine_rest_auth.yaml`
 - Add the following below to `config/doctrineRest/doctrine_rest_auth.yaml`
 ```YAML
