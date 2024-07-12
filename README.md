@@ -103,7 +103,9 @@ Our Body would look like this:
 }
 ```
 
-For nested associations you can chain them with _entity_._entity_
+###### Nested associations
+
+For **nested associations** you can chain them with `entity.entity`
 
 e.g. if UserRoles had a connected Table permissions and we want to load them too
 
