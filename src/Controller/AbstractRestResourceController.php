@@ -190,6 +190,9 @@ abstract class AbstractRestResourceController
 
     protected function parseIncludes(Request $request)
     {
+        if(empty($request->getContent()))
+            return [];
+
         $requestContent = $request->toArray();
         if (!isset($requestContent['associations'])) {
             $includes = [];
