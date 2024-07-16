@@ -65,8 +65,7 @@ If you want to see a list of all routes use:
 bin/console debug:router
 ```
 
-The entityName will get mapped to its plural: so a User entity will become:
-`/api/doctrine/search/users`
+The entityName is the name of your entity in lowercase so `UserRole` would be `userrole` 
 
 ### Search
 ```
@@ -96,7 +95,7 @@ Body Schema
             "order": "ASC"
         }
     ],
-    "page": 2,
+    "page": 2
 }
 ```
 
@@ -227,7 +226,7 @@ To control Pagination you can pass `page` and `perPage` in your request body.
 ```JSON
 {
     "page": 1,
-    "perPage": 20,
+    "perPage": 20
 }
 ```
 
@@ -286,7 +285,7 @@ Your Body to update would look like this
 
 ```JSON
 {
-    "username": "New User Name",
+    "username": "New User Name"
 }
 ```
 
