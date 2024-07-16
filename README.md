@@ -95,7 +95,8 @@ Body Schema
             "field": "id",
             "order": "ASC"
         }
-    ]
+    ],
+    "page": 2,
 }
 ```
 
@@ -217,6 +218,19 @@ Sample Body
 Available sort orders
 * `ASC`
 * `DESC`
+
+
+#### Pagination
+
+Pagination is enabled by default (`page: 1`, `perPage: 50`)
+To control Pagination you can pass `page` and `perPage` in your request body.
+```JSON
+{
+    "page": 1,
+    "perPage": 20,
+}
+```
+
 
 
 ### Get
