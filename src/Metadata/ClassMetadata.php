@@ -31,7 +31,7 @@ class ClassMetadata extends MergeableClassMetadata
         $reflection = new ReflectionClass($name);
         $inflector = InflectorFactory::create()->build();
         $this->namePrefix = $inflector->tableize($reflection->getShortName());
-        $this->pathPrefix = $inflector->pluralize(strtolower($reflection->getShortName()));
+        $this->pathPrefix = strtolower($reflection->getShortName());
     }
 
     /**
