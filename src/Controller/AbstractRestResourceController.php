@@ -42,11 +42,13 @@ abstract class AbstractRestResourceController
         if($this->isUserAuthRequired() && empty($user))
             return new JsonResponse(["Error" => "Unauthorized"], Response::HTTP_UNAUTHORIZED);
 
-        $page = $request->query->get('page', 1);
-        $perPage = $request->query->get('perPage', 50);
+        $parsedContent = $this->parseContent($request);
+
+        $page = $parsedContent['page'] ?? 1;
+        $perPage = $parsedContent['perPage'] ?? 50;
 
         try {
-            $listResult = $this->searchEntities($request);
+            $listResult = $this->searchEntities($request, $page, $perPage);
         }
         catch (InvalidFilterException $exception){
             return new JsonResponse(['error' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
@@ -66,7 +68,7 @@ abstract class AbstractRestResourceController
             $entities,
             Defaults::SERIALIZE_FORMAT,
             [
-                RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($request),
+                RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($parsedContent),
                 RestNormalizer::DDR_REST_DEPTH => 0,
                 RestNormalizer::DDR_REST_PATH => ''
             ]
@@ -188,12 +190,8 @@ abstract class AbstractRestResourceController
         return $this->getMetadataFactory()->getMetadataForClass($this->getEntityClass());
     }
 
-    protected function parseIncludes(Request $request)
+    protected function parseIncludes(array $requestContent)
     {
-        if(empty($request->getContent()))
-            return [];
-
-        $requestContent = $request->toArray();
         if (!isset($requestContent['associations'])) {
             $includes = [];
         } else {
@@ -201,6 +199,14 @@ abstract class AbstractRestResourceController
         }
 
         return $includes;
+    }
+
+    protected function parseContent(Request $request): array
+    {
+        if(empty($request->getContent()))
+            return [];
+
+        return $request->toArray();
     }
 
     protected function parseConstraintViolations(ConstraintViolationListInterface $errors): array
@@ -273,7 +279,7 @@ abstract class AbstractRestResourceController
      *
      * @return Paginator|array
      */
-    abstract protected function searchEntities(Request $request);
+    abstract protected function searchEntities(Request $request, int $page, int $limit);
 
     /**
      * @param int|string $id

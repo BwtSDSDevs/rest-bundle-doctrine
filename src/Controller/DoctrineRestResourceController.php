@@ -56,12 +56,9 @@ class DoctrineRestResourceController extends AbstractRestResourceController
      * @throws QueryException
      * @throws InvalidFilterException
      */
-    protected function searchEntities(Request $request): Paginator
+    protected function searchEntities(Request $request, int $page, int $limit): Paginator
     {
         $body = $request->toArray();
-
-        $page = 1;
-        $limit = 50;
 
         if(isset($body['page']))
             $page = $body['page'];
