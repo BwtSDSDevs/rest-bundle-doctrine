@@ -116,12 +116,14 @@ abstract class AbstractRestResourceController
 
         $entity = $this->getEntityById($id);
 
+        $parsedContent = $this->parseContent($request);
+
         $response = new JsonResponse();
         $json = $this->getSerializer()->serialize(
             $entity,
             Defaults::SERIALIZE_FORMAT,
             [
-                RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($request),
+                RestNormalizer::DDR_REST_INCLUDES => $this->parseIncludes($parsedContent),
                 RestNormalizer::DDR_REST_DEPTH => 0,
                 RestNormalizer::DDR_REST_PATH => ''
             ]
