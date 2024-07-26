@@ -197,7 +197,12 @@ abstract class AbstractRestResourceController
         if (!isset($requestContent['associations'])) {
             $includes = [];
         } else {
-            $includes = $requestContent['associations'];
+            $associations = $requestContent['associations'];
+
+            if(is_string($associations))
+                $associations = explode(',',$associations);
+
+            $includes = $associations;
         }
 
         return $includes;
@@ -205,10 +210,15 @@ abstract class AbstractRestResourceController
 
     protected function parseContent(Request $request): array
     {
-        if(empty($request->getContent()))
-            return [];
+        if($request->getMethod() == Request::METHOD_GET) {
+            return $request->query->all();
+        }
+        else{
+            if(empty($request->getContent()))
+                return [];
 
-        return $request->toArray();
+            return $request->toArray();
+        }
     }
 
     protected function parseConstraintViolations(ConstraintViolationListInterface $errors): array
