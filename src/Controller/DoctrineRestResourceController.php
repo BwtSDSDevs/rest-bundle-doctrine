@@ -60,13 +60,6 @@ class DoctrineRestResourceController extends AbstractRestResourceController
     {
         $body = $request->toArray();
 
-        if(isset($body['page']))
-            $page = $body['page'];
-
-        if(isset($body['limit']))
-            $limit = $body['limit'];
-
-
         $queryBuilder = $this->createFindAllQueryBuilder();
         $queryBuilder->setFirstResult(($page - 1) * $limit);
         $queryBuilder->setMaxResults($limit);
