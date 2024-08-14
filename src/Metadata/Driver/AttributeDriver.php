@@ -59,6 +59,7 @@ class AttributeDriver implements DriverInterface
             });
 
             if(!empty($attributes)){
+                $propertyMetadata->setAttributes($attributes);
                 $this->parseIncludable($propertyMetadata);
                 $nonNullClass = str_starts_with('?', $reflectionProperty->getType()->getName())
                     ? substr($reflectionProperty->getType()->getName(), 1)

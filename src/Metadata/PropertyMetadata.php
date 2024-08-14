@@ -32,6 +32,8 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
 
     private ?string $entityClass = null;
 
+    private ?array $attributes = null;
+
     public function isPuttable(): bool
     {
         return null !== $this->puttable;
@@ -140,6 +142,16 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         $this->operations = $operations;
     }
 
+    public function getAttributes(): ?array
+    {
+        return $this->attributes;
+    }
+
+    public function setAttributes(?array $attributes): void
+    {
+        $this->attributes = $attributes;
+    }
+
     public function merge(MergeableInterface $other): void
     {
         if (!$other instanceof PropertyMetadata) {
@@ -156,6 +168,7 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
         $this->collection = $this->mergeField($other->collection, $this->collection);
         $this->operations = $this->mergeField($other->operations, $this->operations);
         $this->entityClass = $this->mergeField($other->entityClass, $this->entityClass);
+        $this->attributes = $this->mergeField($other->attributes, $this->attributes);
     }
 
     protected function getBool(?bool $value, bool $default): bool
@@ -210,6 +223,7 @@ class PropertyMetadata extends BasePropertyMetadata implements MergeableInterfac
                 $this->association,
                 $this->collection,
                 $this->entityClass,
+                $this->attributes,
             ]
         );
     }

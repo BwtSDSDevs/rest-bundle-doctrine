@@ -7,6 +7,7 @@ use DateTime;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
+use ReflectionAttribute;
 use SdsDev\RestBundleDoctrine\Metadata\Common\CrudOperation;
 use SdsDev\RestBundleDoctrine\Defaults\Defaults;
 use SdsDev\RestBundleDoctrine\Metadata\PropertyMetadata;
@@ -132,6 +133,12 @@ class RestDenormalizer implements DenormalizerInterface
         }
         else if(!empty($value)){
             $type = $propertyMetadata->getType();
+            if(!empty($propertyMetadata->getAttributes()))
+                /** @var ReflectionAttribute $attribute */
+                $attribute = $propertyMetadata->getAttributes()[0] ?? null;
+                if(!empty($attribute) && isset($attribute->getArguments()['targetEntity']))
+                    $type = $attribute->getArguments()['targetEntity'];
+
 //            $classMetadata = $this->entityManager->getClassMetadata($type);
 //            $identifier = $classMetadata->getIdentifier();
             $references = [];
