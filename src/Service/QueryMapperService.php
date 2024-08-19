@@ -14,12 +14,18 @@ class QueryMapperService
         self::NOT_EQUALS_FILTER,
         self::GREATER_THAN_FILTER,
         self::LESS_THAN_FILTER,
+        self::CONTAINS_FILTER,
+        self::STARTS_WITH_FILTER,
+        self::ENDS_WITH_FILTER,
     ];
 
     const EQUALS_FILTER = 'equals';
     const NOT_EQUALS_FILTER = 'not_equals';
     const GREATER_THAN_FILTER = 'gt';
     const LESS_THAN_FILTER = 'lt';
+    const CONTAINS_FILTER = 'contains';
+    const STARTS_WITH_FILTER = 'starts_with';
+    const ENDS_WITH_FILTER = 'ends_with';
 
     const FILTER_TYPE_FIELD = 'type';
     const VALUE_FIELD = 'value';
@@ -100,6 +106,16 @@ class QueryMapperService
                 case self::LESS_THAN_FILTER:
                     $criteria->andWhere(Criteria::expr()->lt($field, $value));
                     break;
+                case self::CONTAINS_FILTER:
+                    $criteria->andWhere(Criteria::expr()->contains($field, $value));
+                    break;
+                case self::STARTS_WITH_FILTER:
+                    $criteria->andWhere(Criteria::expr()->startsWith($field, $value));
+                    break;
+                case self::ENDS_WITH_FILTER:
+                    $criteria->andWhere(Criteria::expr()->endsWith($field, $value));
+                    break;
+
             }
         }
 
